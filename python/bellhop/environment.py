@@ -152,6 +152,11 @@ class Environment(MutableMapping[str, Any]):
         This function is run as the first step of `.check()`.
         """
 
+        if self.dimension == _Strings.two_d:
+            self._dimension = 2
+        elif self.dimension == _Strings.two_half_d or self.dimension == _Strings.three_d:
+            self._dimension = 3
+
         if _np.size(self['depth']) > 1:
             self["_bathymetry"] = _Strings.from_file
         if self["surface"] is not None:

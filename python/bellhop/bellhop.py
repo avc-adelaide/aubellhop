@@ -49,9 +49,12 @@ class BellhopSimulator:
            This function is supposed to diagnose whether this combination of environment
            and task is supported by the model."""
 
+        if env is not None:
+            dim = dim or env._dimension
+
         which_bool = shutil.which(exe or self.exe) is not None
-        task_bool = task is None or task in self.taskmap
-        dim_bool = dim is None or dim == self.dim
+        task_bool = (task is None) or (task in self.taskmap)
+        dim_bool = (dim is None) or (dim == self.dim)
 
         return (which_bool and task_bool and dim_bool)
 
@@ -270,7 +273,7 @@ class BellhopSimulator:
         # Line 4b
         if env['biological_layer_parameters'] is not None:
             self._write_env_biological(fh, env['biological_layer_parameters'])
-        
+
     def _write_env_biological(self, fh: TextIO, biol: _pd.DataFrame) -> None:
         """Writes biological layer parameters to env file."""
         self._print_env_line(fh, biol.shape[0], "N_Biol_Layers / z1 z2 w0 Q a0")
@@ -280,10 +283,10 @@ class BellhopSimulator:
     def _write_env_sound_speed(self, fh: TextIO, env: Environment) -> None:
         """Writes sound speed profile lines of env file."""
         svp = env['soundspeed']
-        
+
         comment = "[Npts - ignored]  [Sigma - ignored]  Depth_Max"
         self._print_env_line(fh,f"{env['_mesh_npts']} {env['_depth_sigma']} {env['depth_max']}",comment)
-        
+
         svp_interp = _Maps.soundspeed_interp_rev[env['soundspeed_interp']]
         if isinstance(svp, _pd.DataFrame) and len(svp.columns) == 1:
             svp = _np.hstack((_np.array([svp.index]).T, _np.asarray(svp)))

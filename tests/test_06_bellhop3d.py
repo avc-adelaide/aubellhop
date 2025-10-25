@@ -19,11 +19,11 @@ def test_model_env():
     if "bellhop3d" not in bh.models():
       bh.new_model(exe="bellhop3d.exe",dim=3,name="bellhop3d")
 
-    env2d = bh.create_env(dimension="2D")
-    env3d = bh.create_env(dimension="3D")
+    env2d = bh.create_env(dimension="2D").check()
+    env3d = bh.create_env(dimension="3D").check()
 
-#    assert env2d._dimension == 2
-#    assert env3d._dimension == 3
+    assert env2d._dimension == 2
+    assert env3d._dimension == 3
 
-#    assert bh.models(env=env2d) == ["bellhop"], "Model 2D not found"
-#    assert bh.models(env=env3d) == ["bellhop3d"], "Model 3D not found"
+    assert bh.models(env=env2d) == ["bellhop"], "Model 2D not found"
+    assert bh.models(env=env3d) == ["bellhop3d"], "Model 3D not found"
