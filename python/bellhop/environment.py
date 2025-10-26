@@ -129,12 +129,72 @@ class Environment(MutableMapping[str, Any]):
 
     comment_pad: int = Defaults.env_comment_pad
 
+    ############# SMALL METHODS ################
+
     def reset(self) -> "Environment":
         """Delete values for all user-facing parameters."""
         for k in self.keys():
             if not k.startswith("_"):
                 self[k] = None
         return self
+
+    def to_dict(self) -> Dict[str,Any]:
+        """Return a dictionary representation of the environment."""
+        return asdict(self)
+
+    def copy(self) -> "Environment":
+        """Return a shallow copy of the environment."""
+        # Copy all fields
+        data = {f.name: getattr(self, f.name) for f in fields(self)}
+        # Return a new instance
+        new_env = type(self)(**data)
+        return new_env
+
+
+    def unwrap(self, *keys: str) -> list["Environment"]:
+        """Return a list of Environment copies expanded over the given keys.
+
+        If multiple keys are provided, all combinations are produced.
+        Each unwrapped Environment gets a unique `.name` derived from the
+        parent name and the expanded field values.
+        """
+
+        # Ensure keys are valid
+        for k in keys:
+            if k not in self:
+                raise KeyError(f"Environment has no field '{k}'")
+
+        # Prepare value lists (convert scalars → singletons)
+        values: list[Any] = []
+        for k in keys:
+            v = self[k]
+            if isinstance(v, (list, tuple, _np.ndarray)):
+                values.append(v)
+            else:
+                values.append([v])
+
+        combos = product(*values)
+        envs = []
+
+        base_name = str(self.get("name", "env"))
+
+        for combo in combos:
+            env_i = self.copy()
+            name_parts = [base_name]
+            for k, v in zip(keys, combo):
+                env_i[k] = v
+                # Replace disallowed chars and truncate floats nicely
+                if isinstance(v, float):
+                    v_str = f"{v:g}"
+                else:
+                    v_str = str(v)
+                name_parts.append(f"{k}{v_str}")
+            env_i["name"] = "-".join(name_parts)
+            envs.append(env_i)
+
+        return envs
+
+    ############## CHECKING ###############
 
     def check(self) -> "Environment":
         """Finalise environment parameters and perform assertion checks."""
@@ -240,6 +300,13 @@ class Environment(MutableMapping[str, Any]):
         )
         return self
 
+    def _or_default(self, key: str, default: Any) -> Any:
+        """Return the current value if not None, otherwise return and set a default."""
+        val = getattr(self, key, None)
+        if val is None:
+            setattr(self, key, default)
+            return default
+        return val
 
     def _check_env_header(self) -> None:
         assert self["_num_media"] == 1, f"BELLHOP only supports 1 medium, found {self['_num_media']}"
@@ -312,49 +379,7 @@ class Environment(MutableMapping[str, Any]):
         if self['_single_beam'] == _Strings.single_beam:
             assert self['single_beam_index'] is not None, 'Single beam was requested with option I but no index was provided in NBeam line'
 
-
-    def unwrap(self, *keys: str) -> list["Environment"]:
-        """Return a list of Environment copies expanded over the given keys.
-
-        If multiple keys are provided, all combinations are produced.
-        Each unwrapped Environment gets a unique `.name` derived from the
-        parent name and the expanded field values.
-        """
-
-        # Ensure keys are valid
-        for k in keys:
-            if k not in self:
-                raise KeyError(f"Environment has no field '{k}'")
-
-        # Prepare value lists (convert scalars → singletons)
-        values: list[Any] = []
-        for k in keys:
-            v = self[k]
-            if isinstance(v, (list, tuple, _np.ndarray)):
-                values.append(v)
-            else:
-                values.append([v])
-
-        combos = product(*values)
-        envs = []
-
-        base_name = str(self.get("name", "env"))
-
-        for combo in combos:
-            env_i = self.copy()
-            name_parts = [base_name]
-            for k, v in zip(keys, combo):
-                env_i[k] = v
-                # Replace disallowed chars and truncate floats nicely
-                if isinstance(v, float):
-                    v_str = f"{v:g}"
-                else:
-                    v_str = str(v)
-                name_parts.append(f"{k}{v_str}")
-            env_i["name"] = "-".join(name_parts)
-            envs.append(env_i)
-
-        return envs
+    ############## WRITING ###############
 
     def write(self, taskcode: str, fh: TextIO, fname_base: str) -> None:
         """Writes a complete .env file for specifying a Bellhop simulation
@@ -555,6 +580,27 @@ class Environment(MutableMapping[str, Any]):
                 self._print(fh, f"{j} ", newline=False)
             self._print(fh, " /")
 
+    def _array2str(self, values: List[Any]) -> str:
+        """Format list into space-separated string, trimmed at first None, ending with '/'."""
+        try:
+            values = values[:values.index(None)]
+        except ValueError:
+            pass
+        return " ".join(
+            f"{v}" if isinstance(v, (int, float)) else str(v)
+            for v in values
+        ) + " /"
+
+    def _quoted_opt(self, *args: str) -> str:
+        """Concatenate N input _Strings. strip whitespace, surround with single quotes
+        """
+        combined = "".join(args).strip()
+        return f"'{combined}'"
+
+    def _float(self, x: Optional[float], scale: float = 1) -> Optional[float]:
+        """Permissive floatenator"""
+        return None if x is None else float(x) * scale
+
     def _create_bty_ati_file(self, filename: str, depth: Any, interp: _Strings) -> None:
         with open(filename, 'wt') as f:
             f.write(f"'{_Maps.depth_interp_rev[interp]}'\n")
@@ -586,26 +632,7 @@ class Environment(MutableMapping[str, Any]):
                 for j in range(svp.shape[1]):
                     f.write("%0.6f%c" % (svp.iloc[k,j], '\n' if j == svp.shape[1]-1 else ' '))
 
-    def _array2str(self, values: List[Any]) -> str:
-        """Format list into space-separated string, trimmed at first None, ending with '/'."""
-        try:
-            values = values[:values.index(None)]
-        except ValueError:
-            pass
-        return " ".join(
-            f"{v}" if isinstance(v, (int, float)) else str(v)
-            for v in values
-        ) + " /"
-
-    def _quoted_opt(self, *args: str) -> str:
-        """Concatenate N input _Strings. strip whitespace, surround with single quotes
-        """
-        combined = "".join(args).strip()
-        return f"'{combined}'"
-
-    def _float(self, x: Optional[float], scale: float = 1) -> Optional[float]:
-        """Permissive floatenator"""
-        return None if x is None else float(x) * scale
+    ############# STANDARD INTERFACES ###############
 
     def __getitem__(self, key: str) -> Any:
         if not hasattr(self, key):
@@ -643,23 +670,3 @@ class Environment(MutableMapping[str, Any]):
 
     def __repr__(self) -> str:
         return pformat(self.to_dict())
-
-    def to_dict(self) -> Dict[str,Any]:
-        """Return a dictionary representation of the environment."""
-        return asdict(self)
-
-    def copy(self) -> "Environment":
-        """Return a shallow copy of the environment."""
-        # Copy all fields
-        data = {f.name: getattr(self, f.name) for f in fields(self)}
-        # Return a new instance
-        new_env = type(self)(**data)
-        return new_env
-
-    def _or_default(self, key: str, default: Any) -> Any:
-        """Return the current value if not None, otherwise return and set a default."""
-        val = getattr(self, key, None)
-        if val is None:
-            setattr(self, key, default)
-            return default
-        return val

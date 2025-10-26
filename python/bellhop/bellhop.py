@@ -157,7 +157,6 @@ class BellhopSimulator:
                 f"\nExtract from PRT file:\n{err}"
             )
 
-
     def _check_error(self, fname_base: str) -> Optional[str]:
         """Extracts Bellhop error text from the .prt file"""
         try:
