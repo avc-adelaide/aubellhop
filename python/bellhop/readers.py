@@ -36,6 +36,18 @@ def _parse_line(line: str) -> list[str]:
     line = line.split("!", 1)[0].split('/', 1)[0].strip()
     return line.split()
 
+def _parse_line_int(line: str) -> int:
+    """Parse an integer on a line by itself"""
+    parts = _parse_line(line)
+    return int(parts[0])
+
+def _parse_vector(line: str) -> Union[NDArray[_np.float64], float]:
+    """Parse a vector of floats with unknown number of values"""
+    parts = _parse_line(line)
+    val = [float(p) for p in parts]
+    valout = _np.array(val) if len(val) > 1 else val[0]
+    return valout
+
 def _unquote_string(line: str) -> str:
     """Extract string from within single quotes, possibly with commas too."""
     return line.strip().strip(",'")
@@ -154,7 +166,8 @@ def read_env(fname: str) -> Environment:
 
     """
 
-    reader = EnvironmentReader(fname)
+    env = Environment()
+    reader = EnvironmentReader(env,fname)
     return reader.read()
 
 class EnvironmentReader:
@@ -168,14 +181,14 @@ class EnvironmentReader:
     each stage.
     """
 
-    def __init__(self, fname: str):
+    def __init__(self, env: Environment, fname: str):
         """Initialize reader with filename.
 
         Args:
             fname: Path to .env file (with or without extension)
         """
+        self.env = env
         self.fname, self.fname_base = _prepare_filename(fname, _File_Ext.env, "Environment")
-        self.env: Environment = Environment()
 
     def read(self) -> Environment:
         """Do the reading..."""
@@ -190,16 +203,9 @@ class EnvironmentReader:
 
     def _read_header(self, f: TextIO) -> None:
         """Read environment file header"""
-
-        # Line 1: Title
-        title_line = _read_next_valid_line(f)
-        self.env['name'] = _unquote_string(title_line)
-        # Line 2: Frequency
-        freq_line = _read_next_valid_line(f)
-        self.env['frequency'] = float(_parse_line(freq_line)[0])
-        # Line 3: NMedia (should be 1 for BELLHOP)
-        nmedia_line = _read_next_valid_line(f)
-        self.env["_num_media"] = int(_parse_line(nmedia_line)[0])
+        self.env['name'] = _unquote_string(_read_next_valid_line(f))
+        self.env['frequency'] = _parse_vector(_read_next_valid_line(f))
+        self.env["_num_media"] = _parse_line_int(_read_next_valid_line(f))
 
     def _read_top_boundary(self, f: TextIO) -> None:
         """Read environment file top boundary options (multiple lines)"""
@@ -325,42 +331,30 @@ class EnvironmentReader:
         nlines = len(sr_lines)
         if nlines == 6:
             self.env['_dimension'] = 2
-            self.env['source_ndepth']   = self._parse_line_int(sr_lines[0])
-            self.env['receiver_ndepth'] = self._parse_line_int(sr_lines[2])
-            self.env['receiver_nrange'] = self._parse_line_int(sr_lines[4])
-            self.env['source_depth']    = self._parse_vector(sr_lines[1])
-            self.env['receiver_depth']  = self._parse_vector(sr_lines[3])
-            self.env['receiver_range']  = self._parse_vector(sr_lines[5]) * 1000.0 # convert km to m
+            self.env['source_ndepth']   = _parse_line_int(sr_lines[0])
+            self.env['receiver_ndepth'] = _parse_line_int(sr_lines[2])
+            self.env['receiver_nrange'] = _parse_line_int(sr_lines[4])
+            self.env['source_depth']    = _parse_vector(sr_lines[1])
+            self.env['receiver_depth']  = _parse_vector(sr_lines[3])
+            self.env['receiver_range']  = _parse_vector(sr_lines[5]) * 1000.0 # convert km to m
         elif nlines == 12:
             self.env['_dimension'] = 3
-            self.env['source_nrange']      = self._parse_line_int(sr_lines[0])
-            self.env['source_ncrossrange'] = self._parse_line_int(sr_lines[2])
-            self.env['source_ndepth']      = self._parse_line_int(sr_lines[4])
-            self.env['receiver_ndepth']    = self._parse_line_int(sr_lines[6])
-            self.env['receiver_nrange']    = self._parse_line_int(sr_lines[8])
-            self.env['receiver_nbearing']  = self._parse_line_int(sr_lines[10])
-            self.env['source_range']       = self._parse_vector(sr_lines[1]) * 1000.0 # convert km to m
-            self.env['source_cross_range'] = self._parse_vector(sr_lines[3]) * 1000.0 # convert km to m
-            self.env['source_depth']       = self._parse_vector(sr_lines[5])
-            self.env['receiver_depth']     = self._parse_vector(sr_lines[7])
-            self.env['receiver_range']     = self._parse_vector(sr_lines[9]) * 1000.0 # convert km to m
-            self.env['receiver_bearing']   = self._parse_vector(sr_lines[11])
+            self.env['source_nrange']      = _parse_line_int(sr_lines[0])
+            self.env['source_ncrossrange'] = _parse_line_int(sr_lines[2])
+            self.env['source_ndepth']      = _parse_line_int(sr_lines[4])
+            self.env['receiver_ndepth']    = _parse_line_int(sr_lines[6])
+            self.env['receiver_nrange']    = _parse_line_int(sr_lines[8])
+            self.env['receiver_nbearing']  = _parse_line_int(sr_lines[10])
+            self.env['source_range']       = _parse_vector(sr_lines[1]) * 1000.0 # convert km to m
+            self.env['source_cross_range'] = _parse_vector(sr_lines[3]) * 1000.0 # convert km to m
+            self.env['source_depth']       = _parse_vector(sr_lines[5])
+            self.env['receiver_depth']     = _parse_vector(sr_lines[7])
+            self.env['receiver_range']     = _parse_vector(sr_lines[9]) * 1000.0 # convert km to m
+            self.env['receiver_bearing']   = _parse_vector(sr_lines[11])
         else:
             raise RuntimeError(
                 "The python parsing of Bellhop's so-called 'list-directed IO' is not robust."
                 f"Expected to read 6 or 12 lines (2D or 3D cases); found: {nlines}")
-
-    def _parse_line_int(self,line: str) -> int:
-        """Parse an integer on a line by itself"""
-        parts = _parse_line(line)
-        return int(parts[0])
-
-    def _parse_vector(self,line: str) -> Union[NDArray[_np.float64], float]:
-        """Parse a vector of floats with unknown number of values"""
-        parts = _parse_line(line)
-        val = [float(p) for p in parts]
-        valout = _np.array(val) if len(val) > 1 else val[0]
-        return valout
 
     def _parse_task(self, task_line: str) -> None:
         """Parse the 'task' line."""
