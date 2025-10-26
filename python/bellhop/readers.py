@@ -8,7 +8,7 @@ from numpy.typing import NDArray
 
 import numpy as _np
 import pandas as _pd
-from bellhop.constants import _Strings, _Maps, _File_Ext
+from bellhop.constants import _Strings, _Maps, _File_Ext, Defaults
 from bellhop.environment import Environment
 
 def _read_next_valid_line(f: TextIO) -> str:
