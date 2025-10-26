@@ -254,5 +254,6 @@ class Defaults:
     dimension: str = field(default=_Strings.two_d, metadata={"desc": "Dimension of simulation (2D, 2.5D, 3D)"})
     model_dim: int = field(default=2, metadata={"desc": "Number of dimensions allowed in the model (2 or 3)"})
     attenuation_units: str = field(default=_Strings.frequency_dependent, metadata={"desc": "Attenuation units to define volume attenuation"})
-
+    sound_speed: float = field(default=1500.0, metadata={"units": "m/s", "desc": "Constant speed of sound in the medium"})
+    density: float = field(default=1000.0, metadata={"units": "kg/m^3", "desc": "Constant density of the medium"})
 

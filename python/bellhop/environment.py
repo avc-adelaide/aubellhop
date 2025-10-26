@@ -36,7 +36,7 @@ class Environment(MutableMapping[str, Any]):
     _num_media: int = 1 # must always = 1 in bellhop
 
     # Sound speed parameters
-    soundspeed: Union[float, Any] = 1500.0  # m/s
+    soundspeed: Union[float, Any] = Defaults.sound_speed  # m/s
     soundspeed_interp: str = _Strings.linear
 
     # Depth parameters
@@ -54,9 +54,9 @@ class Environment(MutableMapping[str, Any]):
 
     # Bottom parameters
     bottom_interp: Optional[str] = None
-    bottom_soundspeed: float = 1600.0  # m/s
+    bottom_soundspeed: float = Defaults.sound_speed # m/s
     _bottom_soundspeed_shear: float = 0.0  # m/s (ignored)
-    bottom_density: float = 1600  # kg/m^3  # this value doesn't seem right but is copied from ARLpy
+    bottom_density: float = Defaults.density  # kg/m^3
     bottom_attenuation: Optional[float] = None  # dB/wavelength
     _bottom_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
     bottom_roughness: float = 0.0  # m (rms)
@@ -71,9 +71,9 @@ class Environment(MutableMapping[str, Any]):
     surface_boundary_condition: str = _Strings.vacuum
     surface_reflection_coefficient: Optional[Any] = None
     surface_depth: float = 0.0  # m
-    surface_soundspeed: float = 1600.0  # m/s
+    surface_soundspeed: float = Defaults.sound_speed # m/s
     _surface_soundspeed_shear: float = 0.0  # m/s (ignored)
-    surface_density: float = 1000.0  # kg/m^3
+    surface_density: float = Defaults.density  # kg/m^3
     surface_attenuation: Optional[float] = None  # dB/wavelength
     _surface_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
 

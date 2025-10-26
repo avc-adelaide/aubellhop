@@ -47,7 +47,7 @@ def _read_ssp_points(f: TextIO) -> _pd.DataFrame:
 
     ssp_depth: list[float] = []
     ssp_speed: list[float] = []
-    ssp = dict(depth=0.0, speed=1500.0, speed_shear=0.0, density=1000.0, att=0.0, att_shear=0.0)
+    ssp = dict(depth=0.0, speed=Defaults.sound_speed, speed_shear=0.0, density=Defaults.density, att=0.0, att_shear=0.0)
 
     while True:
         line = f.readline()
