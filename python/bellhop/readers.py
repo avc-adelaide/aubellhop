@@ -815,13 +815,17 @@ def read_rays(fname: str) -> _pd.DataFrame:
     """Read Bellhop rays file and parse data into a high level data structure"""
     path = _ensure_file_exists(fname)
     with path.open('rt') as f:
-        f.readline()
-        f.readline()
-        f.readline()
-        f.readline()
-        f.readline()
-        f.readline()
-        f.readline()
+        hdr = f.readline()
+        if hdr.find('BELLHOP-') >= 0:
+            _dim = 2
+        elif hdr.find('BELLHOP3D-') >= 0:
+            _dim = 3
+        f.readline() # freq
+        f.readline() # 1  1 1
+        f.readline() # 50 50
+        f.readline() # 0.0
+        f.readline() # 25.0
+        f.readline() # 'xyz'
         rays = []
         while True:
             s = f.readline()
@@ -829,9 +833,9 @@ def read_rays(fname: str) -> _pd.DataFrame:
                 break
             a = float(s)
             pts, sb, bb = _read_array(f, (int, int, int))
-            ray = _np.empty((pts, 2))
+            ray = _np.empty((pts, _dim))
             for k in range(pts):
-                ray[k,:] = _read_array(f, (float, float))
+                ray[k,:] = _read_array(f, (float,))
             rays.append(_pd.DataFrame({
                 'angle_of_departure': [a],
                 'surface_bounces': [sb],
