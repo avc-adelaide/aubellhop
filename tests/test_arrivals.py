@@ -3,7 +3,7 @@ import bellhop as bh
 
 def test_simple():
 
-    env = bh.create_env()
+    env = bh.create_env(bottom_density=1600,bottom_soundspeed=1600.0)
     # print(env)
 
     assert(env["bottom_attenuation"]  == None)
@@ -98,7 +98,7 @@ def test_variable_soundspeed():
     ]
 
     # Create environment with variable sound speed profile
-    env = bh.create_env(soundspeed=ssp, soundspeed_interp="spline", depth=30, beam_angle_min=-80, beam_angle_max=80)
+    env = bh.create_env(soundspeed=ssp, soundspeed_interp="spline", depth=30, bottom_density=1600, bottom_soundspeed=1600.0, beam_angle_min=-80, beam_angle_max=80)
     print(env)
 
     # Compute arrivals
@@ -151,7 +151,7 @@ def test_bathy():
         [1000, 20]  # 25 m water depth at 1 km
 	]
 
-    env = bh.create_env(depth=bathy,beam_angle_max=80,beam_angle_min=-80)
+    env = bh.create_env(depth=bathy,bottom_density=1600,bottom_soundspeed=1600.0,beam_angle_max=80,beam_angle_min=-80)
 
     arrivals = bh.compute_arrivals(env)
     arrival_times = arrivals["time_of_arrival"]
