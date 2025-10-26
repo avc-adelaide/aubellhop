@@ -23,6 +23,7 @@ assert isinstance(env, Environment)
 The `Environment` class provide the following user-facing methods:
 
 * `.check()` --- finalise and validate parameters (semi-automatic, see below)
+* `.write()` --- write environment configuration to file(s) in original Bellhop `.env` text format (with additional `.ssp`, `.bty` files if needed)
 * `.copy()` --- shallow copy the instance
 * `.reset()` — set all user-facing values from the instance to `None`
 * `.to_dict()` --- convert parameters to a standard `dict`
