@@ -65,10 +65,10 @@ def new_model(name: str, **kwargs: Any) -> BellhopSimulator:
     Examples
     --------
     >>> bh.models() # there is always a default model
-    ['bellhop']
+    ['bellhop', 'bellhop3d']
     >>> bh.new_model(name="bellhop-at", exe="bellhop_at.exe")
     >>> bh.models()
-    ['bellhop', 'bellhop-at']
+    ['bellhop', 'bellhop3d', 'bellhop-at']
     """
     for m in _models:
         if name == m.name:
@@ -77,7 +77,8 @@ def new_model(name: str, **kwargs: Any) -> BellhopSimulator:
     _models.append(model)
     return model
 
-new_model(name=Defaults.model_name)
+new_model(name=Defaults.model_name_2d, exe=Defaults.model_exe_2d, dim=2)
+new_model(name=Defaults.model_name_3d, exe=Defaults.model_exe_3d, dim=3)
 
 def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: Optional[int] = None) -> List[str]:
     """List available models.

@@ -45,6 +45,7 @@ class Environment(MutableMapping[str, Any]):
     _mesh_npts: int = 0 # ignored by bellhop
     _depth_sigma: float = 0.0 # ignored by bellhop
     depth_max: Optional[float] = None  # m
+    range_max: Optional[float] = None  # m -- not used in the environment file
 
     # Flags to read/write from separate files
     _bathymetry: str = _Strings.flat  # set to "from-file" if multiple bottom depths
@@ -78,8 +79,8 @@ class Environment(MutableMapping[str, Any]):
 
     # Source parameters
     source_type: str = 'default'
-    source_range: Union[float, Any] = None
-    source_cross_range: Union[float, Any] = None
+    source_range: Union[float, Any] = 0.0
+    source_cross_range: Union[float, Any] = 0.0
     source_depth: Union[float, Any] = 5.0  # m - Any allows for np.ndarray
     source_ndepth: Optional[int] = None
     source_nrange: Optional[int] = None
@@ -211,9 +212,29 @@ class Environment(MutableMapping[str, Any]):
             else:
                 self['beam_angle_max'] = Defaults.beam_angle_halfspace
 
-        self['box_depth'] = self['box_depth'] or 1.01 * self['depth_max']
-        self['box_range'] = self['box_range'] or 1.01 * (_np.max(self['receiver_range']) - min(0,_np.min(self['receiver_range'])))
+        # Identical logic for bearing angles
+        if _np.min(self['receiver_range']) < 0:
+            angle_min = -Defaults.beam_bearing_fullspace
+            angle_max = +Defaults.beam_bearing_fullspace
+        else:
+            angle_min = -Defaults.beam_bearing_halfspace
+            angle_max = +Defaults.beam_bearing_halfspace
 
+        self._or_default('beam_bearing_min', angle_min)
+        self._or_default('beam_bearing_max', angle_max)
+
+        bearing_max = _np.max([
+            abs(self['beam_bearing_max']),
+            abs(self['beam_bearing_min'])
+        ])
+
+        self._or_default('box_depth', 1.01 * self['depth_max'])
+        self._or_default('box_range',
+            1.01 * (_np.max(self['receiver_range']) - min(0, _np.min(self['receiver_range'])))
+        )
+        self._or_default('box_cross_range',
+            1.01 * _np.max(self['receiver_range']) * _np.sin(_np.deg2rad(bearing_max))
+        )
         return self
 
 
@@ -380,3 +401,11 @@ class Environment(MutableMapping[str, Any]):
         # Return a new instance
         new_env = type(self)(**data)
         return new_env
+
+    def _or_default(self, key: str, default: Any) -> Any:
+        """Return the current value if not None, otherwise return and set a default."""
+        val = getattr(self, key, None)
+        if val is None:
+            setattr(self, key, default)
+            return default
+        return val

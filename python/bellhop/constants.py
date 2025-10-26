@@ -241,10 +241,14 @@ class _Maps:
 @dataclass(frozen=True)
 class Defaults:
     """Dataclass of hard-coded defaults used throughout the Bellhop interface."""
-    model_name: str = field(default="bellhop", metadata={"desc": "Name of the class instance for the model"})
-    exe: str = field(default="bellhop.exe", metadata={"desc": "Executable name"})
+    model_name_2d: str = field(default="bellhop", metadata={"desc": "Name of the class instance for the 2D model"})
+    model_exe_2d: str = field(default="bellhop.exe", metadata={"desc": "Executable filename for the 2D model"})
+    model_name_3d: str = field(default="bellhop3d", metadata={"desc": "Name of the class instance for the 3D model"})
+    model_exe_3d: str = field(default="bellhop3d.exe", metadata={"desc": "Executable filename for the 3D model"})
     beam_angle_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_angle_fullspace: float = field(default=180.0, metadata={"units": "deg"})
+    beam_bearing_halfspace: float = field(default=90.0, metadata={"units": "deg"})
+    beam_bearing_fullspace: float = field(default=180.0, metadata={"units": "deg"})
     env_comment_pad: int = field(default=50, metadata={"desc": "Number of characters used before the comment in the constructed .env files."})
     interference_mode: str = field(default=_Strings.coherent, metadata={"desc": "Mode of interference when calculating transmission loss"})
     dimension: str = field(default=_Strings.two_d, metadata={"desc": "Dimension of simulation (2D, 2.5D, 3D)"})

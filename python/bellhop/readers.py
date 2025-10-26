@@ -334,7 +334,7 @@ class EnvironmentReader:
         elif nlines == 12:
             self.env['_dimension'] = 3
             self.env['source_nrange']      = self._parse_line_int(sr_lines[0])
-            self.env['source_ncrossraneg'] = self._parse_line_int(sr_lines[2])
+            self.env['source_ncrossrange'] = self._parse_line_int(sr_lines[2])
             self.env['source_ndepth']      = self._parse_line_int(sr_lines[4])
             self.env['receiver_ndepth']    = self._parse_line_int(sr_lines[6])
             self.env['receiver_nrange']    = self._parse_line_int(sr_lines[8])

@@ -29,8 +29,8 @@ class BellhopSimulator:
         Filename of Bellhop executable
     """
 
-    def __init__(self, name: str = Defaults.model_name,
-                       exe: str = Defaults.exe,
+    def __init__(self, name: str = Defaults.model_name_2d,
+                       exe: str = Defaults.model_exe_2d,
                        dim: int = Defaults.model_dim,
                        env_comment_pad: int = Defaults.env_comment_pad,
                 ) -> None:
@@ -321,9 +321,17 @@ class BellhopSimulator:
 
     def _write_env_source_receiver(self, fh: TextIO, env: Environment) -> None:
         """Writes source and receiver lines of env file."""
-        self._print_array(fh, env['source_depth'], nn=env['source_ndepth'], label="Source depth (m)")
-        self._print_array(fh, env['receiver_depth'], nn=env['receiver_ndepth'], label="Receiver depth (m)")
-        self._print_array(fh, env['receiver_range']/1000, nn=env['receiver_nrange'], label="Receiver range (km)")
+        if env._dimension == 2:
+            self._print_array(fh, env['source_depth'], nn=env['source_ndepth'], label="Source depth (m)")
+            self._print_array(fh, env['receiver_depth'], nn=env['receiver_ndepth'], label="Receiver depth (m)")
+            self._print_array(fh, env['receiver_range']/1000, nn=env['receiver_nrange'], label="Receiver range (km)")
+        elif env._dimension == 3:
+            self._print_array(fh, env['source_range']/1000, nn=env['source_nrange'], label="Source range (km)")
+            self._print_array(fh, env['source_cross_range']/1000, nn=env['source_ncrossrange'], label="Source cross range (km)")
+            self._print_array(fh, env['source_depth'], nn=env['source_ndepth'], label="Source depth (m)")
+            self._print_array(fh, env['receiver_depth'], nn=env['receiver_ndepth'], label="Receiver depth (m)")
+            self._print_array(fh, env['receiver_range']/1000, nn=env['receiver_nrange'], label="Receiver range (km)")
+            self._print_array(fh, env['receiver_bearing'], nn=env['receiver_nbearing'], label="Receiver bearing (°)")
 
     def _write_env_task(self, fh: TextIO, env: Environment, taskcode: str) -> None:
         """Writes task lines of env file."""
@@ -336,9 +344,15 @@ class BellhopSimulator:
 
     def _write_env_beam_footer(self, fh: TextIO, env: Environment) -> None:
         """Writes beam and footer lines of env file."""
-        self._print_env_line(fh,self._array2str([env['beam_num'], env['single_beam_index']]),"Num_Beams [ Single_Beam_Index ]")
-        self._print_env_line(fh,f"{env['beam_angle_min']} {env['beam_angle_max']} /","ALPHA1,2 (degrees)")
-        self._print_env_line(fh,f"{env['step_size']} {env['box_depth']} {env['box_range'] / 1000}","Step_Size (m), ZBOX (m), RBOX (km)")
+        self._print_env_line(fh,self._array2str([env['beam_num'], env['single_beam_index']]),"Num_Beams_Inclination [ Single_Beam_Index ]")
+        self._print_env_line(fh,f"{env['beam_angle_min']} {env['beam_angle_max']} /","Inclination angle min/max (°)")
+        if env._dimension == 3:
+            self._print_env_line(fh,f"{env['beam_bearing_num']}","Num_Beams_Bearing")
+            self._print_env_line(fh,f"{env['beam_bearing_min']} {env['beam_bearing_max']} /","Bearing angle min/max (°)")
+        if env._dimension == 2:
+            self._print_env_line(fh,f"{env['step_size']} {env['box_depth']} {env['box_range'] / 1000}","Step_Size (m), ZBOX (m), RBOX (km)")
+        elif env._dimension == 3:
+            self._print_env_line(fh,f"{env['step_size']} {env['box_range'] / 1000} {env['box_cross_range'] / 1000} {env['box_depth']}","Step_Size (m), BoxRange (x) (km), BoxCrossRange (y) (km), BoxDepth (z) (m)")
 
     def _print(self, fh: TextIO, s: str, newline: bool = True) -> None:
         """Write a line of text with or w/o a newline char to the output file"""

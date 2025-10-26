@@ -1,0 +1,37 @@
+---
+title: "Bellhop.py 3D models"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+The Python Bellhop wrapper supports multiple models, which can be automatically detected depending on the environment parameters and task being computed.
+The main feature this enables is to provide seamless access to Bellhop3D.
+
+## Bellhop3D environment definition
+
+Bellhop3D differs from Bellhop (2D) in roughly four ways:
+* Sources and receivers are now defined in 3D:
+    * The source location can be shifted to any $(x,y,z)$ coordinate
+    * The receiver locations can vary in their bearing angle $\theta$, with positions defined in cylindical coordinates $(r,\theta,z)$
+* Altimetry, bathymetry, speed of sound profiles, etc., are defined in 3D.
+* The beam fan is defined in both spherical directions (elevation, bearing).
+* The simulation can be set to either 2.5D or full 3D:
+    * 3D allows refraction horizontally due to lateral changes in sound speed;
+    * 2.5D traces beams along 3D directions but every beam is restricted to travel along a vertically-oriented plane (i.e., a straight line when viewed from above).
+
+## Bellhop3D rays
+
+Load Bellhop and check the standard models available out of the box:
+```{python}
+import bellhop as bh
+print(bh.models())
+
+env = bh.create_env(name="Example Bellhop3D",dimension="3D").check()
+assert env.dimension == "3D"
+assert env._dimension == 3
+
+results = bh.compute_rays(env)
+print(results)
+```
