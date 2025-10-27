@@ -402,12 +402,12 @@ class EnvironmentReader:
         limits_parts = _parse_line(limits_line)
         self.env['step_size'] = float(limits_parts[0])
         if self.env['_dimension'] == 2:
-            self.env['box_depth'] = float(limits_parts[1])
-            self.env['box_range'] = float(limits_parts[2]) * 1000.0  # convert km to m
+            self.env['simulation_depth'] = float(limits_parts[1])
+            self.env['simulation_range'] = float(limits_parts[2]) * 1000.0  # convert km to m
         else:
-            self.env['box_range'] = float(limits_parts[1]) * 1000.0  # convert km to m
-            self.env['box_cross_range'] = float(limits_parts[2]) * 1000.0  # convert km to m
-            self.env['box_depth'] = float(limits_parts[3])
+            self.env['simulation_range'] = float(limits_parts[1]) * 1000.0  # convert km to m
+            self.env['simulation_cross_range'] = float(limits_parts[2]) * 1000.0  # convert km to m
+            self.env['simulation_depth'] = float(limits_parts[3])
 
 def read_ssp(fname: str,
              depths: Optional[Union[

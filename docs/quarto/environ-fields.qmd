@@ -1,0 +1,36 @@
+---
+title: "Bellhop.py environment configuration options"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+Each Bellhop simulation is driven by its so-called environment configuration file.
+This is created by `bellhop.py` based on the setup of the respective `Environment` class.
+This page details each of the fields/options that can be set in the class.
+
+See the [environment configuration page](environ.qmd) for general methods of setting up the class.
+
+## Simulation extent
+
+```
+    simulation_depth: float
+    simulation_range: float
+    simulation_cross_range: float
+```
+These parameters set the absolute value of the boundaries of the Bellhop simulation.
+They default to 1% larger than the maximum relevant dimension:
+* `simulation_depth` is based on the bathymetry
+* `simulation_range` is based on the furthest receiver range
+* `simulation_cross_range` is based on the component of the largest bearing angle and the furthest receiver range
+
+Where a ray might travel into 'negative' ranges, the `simulation_range` and `simulation_cross_range` define
+both positive and negative greatest extent. For instance, if a receiver is located 1 km away,
+rays will travel up to 1.01 km in the negative range direction before terminating
+in the boundary.
+
+For complex bathymetry and altimetry profiles, it is certainly possible that an eigenray might
+travel significantly past a receiver and then bounce back.
+In these cases, `simulation_range` cannot be estimated in advance and the user should manually set
+it to a sufficiently (but not overly) large value.

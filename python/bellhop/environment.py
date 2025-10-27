@@ -109,9 +109,9 @@ class Environment(MutableMapping[str, Any]):
 
     # Solution parameters
     step_size: Optional[float] = 0.0 # (0 = auto)
-    box_depth: Optional[float] = None
-    box_range: Optional[float] = None
-    box_cross_range: Optional[float] = None
+    simulation_depth: Optional[float] = None
+    simulation_range: Optional[float] = None
+    simulation_cross_range: Optional[float] = None
     grid_type: str = 'default'
     task: Optional[str] = None
     interference_mode: Optional[str] = None # subset of `task` for providing TL interface
@@ -296,9 +296,9 @@ class Environment(MutableMapping[str, Any]):
         bearing_absmax = _np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()
         cross_range_max = 1.01 * self.range_max * _np.sin(_np.deg2rad(bearing_absmax))
 
-        self._or_default('box_depth', 1.01 * self['depth_max'])
-        self._or_default('box_range', 1.01 * self.range_max)
-        self._or_default('box_cross_range', _np.max([1.0, cross_range_max])) # maybe overkill but avoid negligible slices
+        self._or_default('simulation_depth', 1.01 * self['depth_max'])
+        self._or_default('simulation_range', 1.01 * self.range_max)
+        self._or_default('simulation_cross_range', _np.max([1.0, cross_range_max])) # maybe overkill but avoid negligible slices
 
         return self
 
@@ -552,9 +552,9 @@ class Environment(MutableMapping[str, Any]):
             self._print_env_line(fh,f"{self['beam_bearing_num']}","Num_Beams_Bearing")
             self._print_env_line(fh,f"{self['beam_bearing_min']} {self['beam_bearing_max']} /","Bearing angle min/max (°)")
         if self._dimension == 2:
-            self._print_env_line(fh,f"{self['step_size']} {self['box_depth']} {self['box_range'] / 1000}","Step_Size (m), ZBOX (m), RBOX (km)")
+            self._print_env_line(fh,f"{self['step_size']} {self['simulation_depth']} {self['simulation_range'] / 1000}","Step_Size (m), ZBOX (m), RBOX (km)")
         elif self._dimension == 3:
-            self._print_env_line(fh,f"{self['step_size']} {self['box_range'] / 1000} {self['box_cross_range'] / 1000} {self['box_depth']}","Step_Size (m), BoxRange (x) (km), BoxCrossRange (y) (km), BoxDepth (z) (m)")
+            self._print_env_line(fh,f"{self['step_size']} {self['simulation_range'] / 1000} {self['simulation_cross_range'] / 1000} {self['simulation_depth']}","Step_Size (m), BoxRange (x) (km), BoxCrossRange (y) (km), BoxDepth (z) (m)")
 
     def _print(self, fh: TextIO, s: str, newline: bool = True) -> None:
         """Write a line of text with or w/o a newline char to the output file"""

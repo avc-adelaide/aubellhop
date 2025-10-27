@@ -9,6 +9,9 @@ jupyter: python3
 Each Bellhop simulation is driven by its so-called environment configuration file.
 This is created by `bellhop.py` based on the setup of the respective `Environment` class.
 
+This page outlines how to create, edit, and manage instances of the `Environment` class.
+The [environment parameters](environ-fields.qmd) page details each of the options available.
+
 ## Creating new environments
 
 The Python front-end to Bellhop provides a "default" environment to allow quick setup for demonstration purposes:

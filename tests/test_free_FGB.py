@@ -39,8 +39,8 @@ def test_FGB():
     assert env['volume_attenuation'] == 'francois-garrison',  "SSPOPT = 'NAWF' => F == Francois-Garrison"
 
     assert env['step_size'] ==      0.0, "0.000000 10000.500000 10.050000"
-    assert env['box_depth'] ==  10000.5, "0.000000 10000.500000 10.050000"
-    assert env['box_range'] ==  10050.0, "0.000000 10000.500000 10.050000"
+    assert env['simulation_depth'] ==  10000.5, "0.000000 10000.500000 10.050000"
+    assert env['simulation_range'] ==  10050.0, "0.000000 10000.500000 10.050000"
 
     assert env['task'] == 'coherent'
 

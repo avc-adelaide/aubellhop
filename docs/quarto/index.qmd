@@ -13,7 +13,9 @@ jupyter: python3
 - [Computation options](compute.qmd)
     - using the more general interface to define different ways of executing computations
 - [Environment configuration](environ.qmd)
-    - a comprehensive survey of how to set up the simulation environment
+    - describes how to set up the simulation environment
+- [Environment parameters](environ-fields.qmd)
+    - comprehensive survey of environment parameters
 - [Sound speed profiles](ssp.qmd)
     - defining depth-dependent SSPs and setting interpolation options
     - example using NOAA data to define a 2D sound speed profile that varies with range and depth

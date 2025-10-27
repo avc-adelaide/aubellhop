@@ -35,8 +35,8 @@ def test_DickensB():
     assert env['depth'].shape == (5,2), "BTY file should contain 30 data points"
 
     assert env['step_size'] ==      0.0, "0.0  3100.0  101.0		! STEP (m), ZBOX (m), RBOX (km)"
-    assert env['box_depth'] ==   3100.0, "0.0  3100.0  101.0		! STEP (m), ZBOX (m), RBOX (km)"
-    assert env['box_range'] == 101000.0, "0.0  3100.0  101.0		! STEP (m), ZBOX (m), RBOX (km)"
+    assert env['simulation_depth'] ==   3100.0, "0.0  3100.0  101.0		! STEP (m), ZBOX (m), RBOX (km)"
+    assert env['simulation_range'] == 101000.0, "0.0  3100.0  101.0		! STEP (m), ZBOX (m), RBOX (km)"
 
     env.check()
     # print(env)
