@@ -7,7 +7,7 @@ replacing manual option checking with field validators.
 """
 
 from collections.abc import MutableMapping
-from dataclasses import dataclass, asdict, fields
+from dataclasses import dataclass, fields
 from typing import Optional, Union, Any, Dict, Iterator, List, TextIO, Self
 
 from pprint import pformat
@@ -129,6 +129,14 @@ class Environment(MutableMapping[str, Any]):
 
     comment_pad: int = Defaults.env_comment_pad
 
+    ############# CLASS METHODS ################
+
+    @classmethod
+    def from_file(cls, fname: str) -> Self:
+        """Create an Environment from an .env file."""
+        from bellhop.readers import EnvironmentReader
+        return EnvironmentReader(cls(), fname).read()
+
     ############# SMALL METHODS ################
 
     def reset(self) -> Self:
@@ -140,6 +148,7 @@ class Environment(MutableMapping[str, Any]):
 
     def to_dict(self) -> Dict[str,Any]:
         """Return a dictionary representation of the environment."""
+        from dataclasses import asdict
         return asdict(self)
 
     def copy(self) -> Self:
@@ -149,13 +158,6 @@ class Environment(MutableMapping[str, Any]):
         # Return a new instance
         new_env = type(self)(**data)
         return new_env
-
-    def read(self, fname: str) -> Self:
-        """Read from .env file"""
-        from bellhop.readers import EnvironmentReader
-        reader = EnvironmentReader(self,fname)
-        reader.read()
-        return self
 
     def unwrap(self, *keys: str) -> list["Environment"]:
         """Return a list of Environment copies expanded over the given keys.
