@@ -210,7 +210,7 @@ class Environment(MutableMapping[str, Any]):
             self._check_env_surface()
             self._check_env_depth()
             self._check_env_ssp()
-            self._check_env_sbp()
+            self._check_env_source()
             self._check_env_beam()
             return self
         except AssertionError as e:
@@ -372,7 +372,10 @@ class Environment(MutableMapping[str, Any]):
                     print("ATTEMPTING TO FIX")
             # TODO: check soundspeed range limits
 
-    def _check_env_sbp(self) -> None:
+    def _check_env_source(self) -> None:
+        if self._dimension == 2:
+            assert self.source_range == 0.0, "Bellhop2D does not support non-zero source range."
+            assert self.source_cross_range == 0.0, "Bellhop2D does not support non-zero source cross range."
         if self['source_directionality'] is not None:
             assert _np.size(self['source_directionality']) > 1, 'source_directionality must be an Nx2 array'
             assert self['source_directionality'].ndim == 2, 'source_directionality must be an Nx2 array'
