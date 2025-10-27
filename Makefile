@@ -240,12 +240,12 @@ gitclean:
 	    true; \
 	else \
 		if [ -f "._GIT_CLEAN_CHECK" ]; then \
-			git clean -fx; \
+			git clean -fdx; \
 		else \
-			git clean -nx; \
+			git clean -ndx; \
 			echo "" > ._GIT_CLEAN_CHECK; \
 			echo "Git repository not clean. Re-run this command to automatically execute:"; \
-			echo "    git clean -fx"; \
+			echo "    git clean -fdx"; \
 			false; \
 		fi \
 	fi
