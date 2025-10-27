@@ -11,7 +11,8 @@ def test_read_env_basic():
     """Test reading a basic ENV file."""
     # Test with Munk profile
     env_file = 'examples/Munk/MunkB_ray.env'
-    env = bh.read_env(env_file)
+    env = bh.Environment()
+    env.read(env_file)
 
     # Verify basic properties
     assert env['name'] == 'Munk profile'

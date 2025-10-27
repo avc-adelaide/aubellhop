@@ -8,7 +8,7 @@ replacing manual option checking with field validators.
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, asdict, fields
-from typing import Optional, Union, Any, Dict, Iterator, List, TextIO
+from typing import Optional, Union, Any, Dict, Iterator, List, TextIO, Self
 
 from pprint import pformat
 import warnings
@@ -131,7 +131,7 @@ class Environment(MutableMapping[str, Any]):
 
     ############# SMALL METHODS ################
 
-    def reset(self) -> "Environment":
+    def reset(self) -> Self:
         """Delete values for all user-facing parameters."""
         for k in self.keys():
             if not k.startswith("_"):
@@ -142,7 +142,7 @@ class Environment(MutableMapping[str, Any]):
         """Return a dictionary representation of the environment."""
         return asdict(self)
 
-    def copy(self) -> "Environment":
+    def copy(self) -> Self:
         """Return a shallow copy of the environment."""
         # Copy all fields
         data = {f.name: getattr(self, f.name) for f in fields(self)}
@@ -150,6 +150,12 @@ class Environment(MutableMapping[str, Any]):
         new_env = type(self)(**data)
         return new_env
 
+    def read(self, fname: str) -> Self:
+        """Read from .env file"""
+        from bellhop.readers import EnvironmentReader
+        reader = EnvironmentReader(self,fname)
+        reader.read()
+        return self
 
     def unwrap(self, *keys: str) -> list["Environment"]:
         """Return a list of Environment copies expanded over the given keys.
@@ -196,7 +202,7 @@ class Environment(MutableMapping[str, Any]):
 
     ############## CHECKING ###############
 
-    def check(self) -> "Environment":
+    def check(self) -> Self:
         """Finalise environment parameters and perform assertion checks."""
         self._finalise()
         try:
@@ -210,7 +216,7 @@ class Environment(MutableMapping[str, Any]):
         except AssertionError as e:
             raise ValueError(f"Env check error: {str(e)}") from None
 
-    def _finalise(self) -> "Environment":
+    def _finalise(self) -> Self:
         """Reviews the data within an environment and updates settings for consistency.
 
         This function is run as the first step of `.check()`.
