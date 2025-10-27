@@ -132,7 +132,7 @@ class Environment(MutableMapping[str, Any]):
     ############# CLASS METHODS ################
 
     @classmethod
-    def from_file(cls, fname: str) -> Self:
+    def from_file(cls, fname: str) -> "Environment":
         """Create an Environment from an .env file."""
         from bellhop.readers import EnvironmentReader
         return EnvironmentReader(cls(), fname).read()
@@ -389,7 +389,7 @@ class Environment(MutableMapping[str, Any]):
 
     ############## WRITING ###############
 
-    def write(self, taskcode: str, fh: TextIO, fname_base: str) -> None:
+    def to_file(self, taskcode: str, fh: TextIO, fname_base: str) -> None:
         """Writes a complete .env file for specifying a Bellhop simulation
 
         Parameters
