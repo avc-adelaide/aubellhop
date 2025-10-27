@@ -112,68 +112,6 @@ def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: O
     return rv
 
 
-def create_env(**kv: Any) -> Environment:
-    """Create a new underwater environment.
-
-    Parameters
-    ----------
-    **kv : dict
-        Keyword arguments for environment configuration.
-
-    Returns
-    -------
-    env : dict
-        A new underwater environment dictionary.
-
-    Raises
-    ------
-    ValueError
-        If any parameter value is invalid according to BELLHOP constraints.
-
-    Example
-    -------
-
-    To see all the parameters available and their default values:
-
-    >>> import bellhop as bh
-    >>> env = bh.Environment()
-    >>> print(env)
-
-    The environment parameters may be changed by passing keyword arguments
-    or modified later using dictionary notation:
-
-    >>> import bellhop as bh
-    >>> env = bh.Environment(depth=40, soundspeed=1540)
-    >>> print(env)
-    >>> env['depth'] = 25
-    >>> env['bottom_soundspeed'] = 1800
-    >>> print(env)
-
-    The default environment has a constant sound speed.
-    A depth dependent sound speed profile be provided as a Nx2 array of (depth, sound speed):
-
-    >>> import bellhop as bh
-    >>> env = bh.Environment(depth=20,
-    >>>.        soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
-
-    A range-and-depth dependent sound speed profile can be provided as a Pandas frame:
-
-    >>> import bellhop as bh
-    >>> import pandas as pd
-    >>> ssp2 = pd.DataFrame({
-              0: [1540, 1530, 1532, 1533],     # profile at 0 m range
-            100: [1540, 1535, 1530, 1533],     # profile at 100 m range
-            200: [1530, 1520, 1522, 1525] },   # profile at 200 m range
-            index=[0, 10, 20, 30])             # depths of the profile entries in m
-    >>> env = bh.Environment(depth=20, soundspeed=ssp2)
-
-    The default environment has a constant water depth. A range dependent bathymetry
-    can be provided as a Nx2 array of (range, water depth):
-
-    >>> import bellhop as bh
-    >>> env = bh.Environment(depth=[[0,20], [300,10], [500,18], [1000,15]])
-    """
-    return Environment(**kv)
 
 
 

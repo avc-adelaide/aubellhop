@@ -433,7 +433,7 @@ def read_ssp(fname: str,
         nranges = int(_read_next_valid_line(f))
         range_line = _read_next_valid_line(f)
         ranges = _np.array([float(x) for x in _parse_line(range_line)])
-        ranges_m = ranges * 1000 # Convert ranges from km to meters (as expected by create_env)
+        ranges_m = ranges * 1000 # Convert ranges from km to meters (as expected by Environment())
 
         if len(ranges) != nranges:
             raise ValueError(f"Expected {nranges} ranges, but found {len(ranges)}")
