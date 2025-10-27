@@ -33,7 +33,7 @@ def test_read_ssp_multi_range():
     assert np.all(ssp.values <= 1700), "Sound speeds should be <= 1700 m/s"
 
     # Should work with create_env for range-dependent modeling
-    env = bh.create_env()
+    env = bh.Environment()
     env['soundspeed'] = ssp
     assert isinstance(env['soundspeed'], pd.DataFrame), "Should be compatible with create_env"
 
@@ -125,7 +125,7 @@ def test_integration_with_env():
     bty,interp_bty = bh.read_bty(bty_file)
 
     # Create environment
-    env = bh.create_env()
+    env = bh.Environment()
 
     # Assign loaded data (this should not raise errors)
     env["soundspeed"] = ssp

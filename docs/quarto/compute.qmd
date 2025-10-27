@@ -18,7 +18,7 @@ env = read_env('myenv.env')
 print(f"Running task {env['task']}")
 results = compute(env)
 ```
-should return identical results to 
+should return identical results to
 ```
 > bellhop.exe myenv
 ```
@@ -40,17 +40,17 @@ a feature to re-use data from prior runs (which would seem like it should).
 | `"incoherent"`       | (incoherent superposition)           |
 | `"semicoherent"`     | (semicoherent superposition)            |
 
-: Values allowed for the `task=` option for `bellhop.compute`  
+: Values allowed for the `task=` option for `bellhop.compute`
   (can be a string or list of strings). {#tbl-tasks}
-  
-  
+
+
 When more than one task is provided, the output data is returned as a list of dictionaries:
 
 ```{python}
-import bellhop as bh 
+import bellhop as bh
 import bellhop.plot as bhp
 
-env = bh.create_env()
+env = bh.Environment()
 output, _ = bh.compute(env,task=["eigenrays","arrivals"])
 
 bhp.plot_rays(output[0]['results'])
@@ -71,10 +71,10 @@ When undertaking sensitivity studies it is very common to run multiple Bellhop s
 The `compute()` function allows multiple environments to be passsed directly to do this automatically:
 
 ```{python}
-import bellhop as bh 
+import bellhop as bh
 import bellhop.plot as bhp
 
-env1 = bh.create_env()
+env1 = bh.Environment()
 env2 = env1.copy()
 env2['receiver_depth'] = 2 * env1['receiver_depth']
 output, _ = bh.compute(env=[env1, env2],task="arrivals")
@@ -92,13 +92,13 @@ For researchers developing new Bellhop variants (for instance, [`bellhopcuda`](h
 This style of execution is harder to demonstrate in a minimal example, but would be constructed with an approach such as:
 
 ```{python}
-import bellhop as bh 
+import bellhop as bh
 import pandas.testing as pdt
 
 if "bellhopcuda" not in bh.models():
     bh.new_model(name="bellhopcuda",exe="bellhop.exe") # in reality you would of course have a separate binary
 
-env = bh.create_env()
+env = bh.Environment()
 output, _ = bh.compute(env,task="arrivals",model=["bellhop", "bellhopcuda"])
 
 pdt.assert_frame_equal(output[0]['results'], output[1]['results'])
@@ -115,7 +115,7 @@ also returns a DataFrame of result indices:
 ```{python}
 import bellhop as bh
 import bellhop.plot as bhp
-env = bh.create_env()
+env = bh.Environment()
 output, ind_df = bh.compute(env,task=["arrivals", "eigenrays"])
 print(ind_df)
 

@@ -5,8 +5,8 @@ import bellhop as bh
 def test_settings():
     """Test settings."""
 
-    env1 = bh.create_env()
-    env2 = bh.create_env(beam_angle_min=-45,frequency=100)
+    env1 = bh.Environment()
+    env2 = bh.Environment(beam_angle_min=-45,frequency=100)
 
     env1.check()
     env2.check()
@@ -18,7 +18,7 @@ def test_settings():
 
 def test_syntax():
 
-    env = bh.create_env()
+    env = bh.Environment()
     env.frequency = 555
     assert env['frequency'] == 555, "Settings should just work"
 
@@ -27,10 +27,10 @@ def test_syntax():
 
 def test_errors():
 
-    env = bh.create_env()
+    env = bh.Environment()
     with pytest.raises(KeyError, match="Unknown environment configuration parameter: 'quefrency'"):
         env.quefrency = 500
 
-    env = bh.create_env()
+    env = bh.Environment()
     with pytest.raises(ValueError, match="Invalid value for 'soundspeed_interp'"):
         env.soundspeed_interp = "plines"

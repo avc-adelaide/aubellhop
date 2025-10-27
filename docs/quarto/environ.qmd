@@ -17,7 +17,7 @@ The [environment parameters](environ-fields.qmd) page details each of the option
 The Python front-end to Bellhop provides a "default" environment to allow quick setup for demonstration purposes:
 ```
 import bellhop as bh
-env = bh.create_env()
+env = bh.Environment()
 assert isinstance(env, Environment)
 ```
 
@@ -39,7 +39,7 @@ The `Environment` class provide the following user-facing instance methods:
 To scan over the full list of user-facing fields, the standard `print()` function will return
 something sensible:
 ```
-> env = bh.create_env()
+> env = bh.Environment()
 > print(env)
 >
     ...
@@ -55,7 +55,7 @@ something sensible:
 
 The parameters of the environment can be set via arguments to this initialisation function:
 ```
-env = bh.create_env(frequency=500) # Hz
+env = bh.Environment(frequency=500) # Hz
 ```
 These parameters can also be changed using both class- and dict-based setting approaches:
 ```
@@ -65,7 +65,7 @@ env['frequency'] = 500 # also okay
 Parameters can be queried in the same way:
 ```{python}
 import bellhop as bh
-env = bh.create_env()
+env = bh.Environment()
 
 env.frequency = 600
 print(f"{env.frequency =}")
@@ -102,7 +102,7 @@ where various parameters are set and then the environment needs to be copied or 
 it would be good practice (or sometimes necessary) to run it directly.
 For instance:
 ```
-env1 = bh.create_env()
+env1 = bh.Environment()
 range_vec = np.linspace(0,5000) # 5km simulation
 depth_vec = np.linspace(1000,2000) # ramp seabed
 env1.depth = np.column_stack([range_vec,depth_vec])
@@ -156,19 +156,19 @@ source position, and so on. The `.unwrap` method allows such parameters to be de
 as lists, and then create a list of environments. An example will explain more clearly.
 These two definitions are equivalent:
 ```
-env = bh.create_env()
+env = bh.Environment()
 env.frequency = [100, 200]
 envs = env.unwrap('frequency')
 
-env1 = bh.create_env()
-env2 = bh.create_env()
+env1 = bh.Environment()
+env2 = bh.Environment()
 env1.frequency = 100
 env2.frequency = 200
 envs = [env1, env2]
 ```
 Moreover, multiple fields can be unwrapped at once to result in every combination of defined parameters:
 ```
-env = bh.create_env()
+env = bh.Environment()
 env.frequency = [100, 200, 300]
 env.source_depth = [5, 10]
 envs = env.unwrap('frequency','source_depth')

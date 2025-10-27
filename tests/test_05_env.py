@@ -7,13 +7,13 @@ def test_env():
     """Just check that there are no execution errors.
     """
 
-    env = bh.create_env()
+    env = bh.Environment()
     print(env)
 
 
 def test_copy():
 
-    env1 = bh.create_env()
+    env1 = bh.Environment()
     range_vec = np.linspace(0,5000) # 5km simulation
     depth_vec = np.linspace(1000,2000) # ramp seabed
     env1.depth = np.column_stack([range_vec,depth_vec])
@@ -26,7 +26,7 @@ def test_copy():
 
 def test_unwrap():
 
-    env1 = bh.create_env()
+    env1 = bh.Environment()
     env1.frequency = [100, 200]
     env2 = env1.unwrap('frequency')
     assert len(env2) == 2, "Two frequencies"
@@ -37,7 +37,7 @@ def test_unwrap():
 
 def test_unwrap_twice():
 
-    env1 = bh.create_env()
+    env1 = bh.Environment()
     env1.frequency = [100, 200]
     env1.source_depth = [5, 10]
     env2 = env1.unwrap('frequency','source_depth')
@@ -59,7 +59,7 @@ def test_unwrap_twice():
 
 def test_unwrap_once():
 
-    env1 = bh.create_env()
+    env1 = bh.Environment()
     env1.frequency = [100, 200]
     env2 = env1.unwrap('frequency','source_depth')
     assert len(env2) == 2, "Two frequencies"

@@ -14,8 +14,8 @@ def test_model_env():
     """Check we can switch between bellhop 2d & 3d easily.
     """
 
-    env2d = bh.create_env(dimension="2D").check()
-    env3d = bh.create_env(dimension="3D").check()
+    env2d = bh.Environment(dimension="2D").check()
+    env3d = bh.Environment(dimension="3D").check()
 
     assert env2d._dimension == 2
     assert env3d._dimension == 3

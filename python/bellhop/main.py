@@ -100,7 +100,7 @@ def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: O
     >>> import bellhop as bh
     >>> bh.models()
     ['bellhop']
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> bh.models(env, task="coherent")
     ['bellhop']
     """
@@ -137,14 +137,14 @@ def create_env(**kv: Any) -> Environment:
     To see all the parameters available and their default values:
 
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> print(env)
 
     The environment parameters may be changed by passing keyword arguments
     or modified later using dictionary notation:
 
     >>> import bellhop as bh
-    >>> env = bh.create_env(depth=40, soundspeed=1540)
+    >>> env = bh.Environment(depth=40, soundspeed=1540)
     >>> print(env)
     >>> env['depth'] = 25
     >>> env['bottom_soundspeed'] = 1800
@@ -154,7 +154,7 @@ def create_env(**kv: Any) -> Environment:
     A depth dependent sound speed profile be provided as a Nx2 array of (depth, sound speed):
 
     >>> import bellhop as bh
-    >>> env = bh.create_env(depth=20,
+    >>> env = bh.Environment(depth=20,
     >>>.        soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
 
     A range-and-depth dependent sound speed profile can be provided as a Pandas frame:
@@ -166,13 +166,13 @@ def create_env(**kv: Any) -> Environment:
             100: [1540, 1535, 1530, 1533],     # profile at 100 m range
             200: [1530, 1520, 1522, 1525] },   # profile at 200 m range
             index=[0, 10, 20, 30])             # depths of the profile entries in m
-    >>> env = bh.create_env(depth=20, soundspeed=ssp2)
+    >>> env = bh.Environment(depth=20, soundspeed=ssp2)
 
     The default environment has a constant water depth. A range dependent bathymetry
     can be provided as a Nx2 array of (range, water depth):
 
     >>> import bellhop as bh
-    >>> env = bh.create_env(depth=[[0,20], [300,10], [500,18], [1000,15]])
+    >>> env = bh.Environment(depth=[[0,20], [300,10], [500,18], [1000,15]])
     """
     return Environment(**kv)
 
@@ -229,7 +229,7 @@ def compute(
 
     Multiple tasks:
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> output, ind_df = bh.compute(env,task=["arrivals", "eigenrays"])
     >>> bh.plot_arrivals(output[0]['results'])
     """
@@ -337,7 +337,7 @@ def compute_arrivals(env: Environment, model: Optional[Any] = None, debug: bool 
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> arrivals = bh.compute_arrivals(env)
     >>> bh.plot_arrivals(arrivals)
     """
@@ -373,7 +373,7 @@ def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_dept
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> rays = bh.compute_eigenrays(env)
     >>> bh.plot_rays(rays, width=1000)
     """
@@ -413,7 +413,7 @@ def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Optional[An
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> rays = bh.compute_rays(env)
     >>> bh.plot_rays(rays, width=1000)
     """
@@ -451,7 +451,7 @@ def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode:
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> tloss = bh.compute_transmission_loss(env, mode=bh.incoherent)
     >>> bh.plot_transmission_loss(tloss, width=1000)
     """
@@ -491,7 +491,7 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> arrivals = bh.compute_arrivals(env)
     >>> ir = bh.arrivals_to_impulse_response(arrivals, fs=192000)
     """

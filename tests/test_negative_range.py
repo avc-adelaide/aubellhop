@@ -6,7 +6,7 @@ from bellhop.constants import Defaults
 def test_negative_receiver_ranges():
     """Test that BELLHOP produces arrivals for negative receiver ranges."""
 
-    env = bh.create_env(name="Test negative ranges")
+    env = bh.Environment(name="Test negative ranges")
 
     # Set up environment with negative and positive receiver ranges
     dp = env["depth"]
@@ -33,7 +33,7 @@ def test_negative_receiver_ranges():
 def test_positive_receiver_ranges_unchanged():
     """Test that positive-only receiver ranges don't trigger angle extension."""
 
-    env = bh.create_env(name="Test positive ranges only")
+    env = bh.Environment(name="Test positive ranges only")
 
     # Set up environment with only positive receiver ranges
     env["receiver_range"] = np.array([1, 500, 1000])
@@ -57,7 +57,7 @@ def test_positive_receiver_ranges_unchanged():
 def test_manual_angle_override():
     """Test that manually set angles are not overridden."""
 
-    env = bh.create_env(name="Test manual angle override")
+    env = bh.Environment(name="Test manual angle override")
 
     # Set up environment with negative ranges AND manual angles
     env["receiver_range"] = np.array([-500, 500])

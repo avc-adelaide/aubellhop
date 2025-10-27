@@ -133,7 +133,7 @@ class TestDataclassIntegration:
 
     def test_create_env_with_validation(self):
         """Test that create_env works with valid options and validation."""
-        env = bh.create_env(
+        env = bh.Environment(
             depth=40,
             soundspeed=1540,
             soundspeed_interp='linear'
@@ -146,12 +146,12 @@ class TestDataclassIntegration:
     def test_create_env_with_invalid_options(self):
         """Test that create_env fails with invalid options."""
         with pytest.raises(ValueError, match="Invalid value for 'soundspeed_interp'"):
-            bh.create_env(soundspeed_interp='invalid_option')
+            bh.Environment(soundspeed_interp='invalid_option')
 
     def test_backward_compatibility_preserved(self):
         """Test that existing dictionary-based interface still works."""
         # This should work exactly as before
-        env = bh.create_env(depth=40, soundspeed=1540)
+        env = bh.Environment(depth=40, soundspeed=1540)
         env.check()
         assert env['depth'] == 40
         assert env['soundspeed'].iloc[0,0] == 1540

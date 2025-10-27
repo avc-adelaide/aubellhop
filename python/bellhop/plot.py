@@ -63,7 +63,7 @@ def plot_env(env: Environment,
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env(depth=[[0, 40], [100, 30], [500, 35], [700, 20], [1000,45]])
+    >>> env = bh.Environment(depth=[[0, 40], [100, 30], [500, 35], [700, 20], [1000,45]])
     >>> bh.plot_env(env)
     """
 
@@ -144,7 +144,7 @@ def plot_ssp(env: Environment, **kwargs: Any) -> None:
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env(soundspeed=[[ 0, 1540], [10, 1530], [20, 1532], [25, 1533], [30, 1535]])
+    >>> env = bh.Environment(soundspeed=[[ 0, 1540], [10, 1530], [20, 1532], [25, 1533], [30, 1535]])
     >>> bh.plot_ssp(env)
     """
 
@@ -183,7 +183,7 @@ def plot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwargs
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> arrivals = bh.compute_arrivals(env)
     >>> bh.plot_arrivals(arrivals)
     """
@@ -228,7 +228,7 @@ def plot_rays(rays: Any, env: Optional[Environment] = None, invert_colors: bool 
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> rays = bh.compute_eigenrays(env)
     >>> bh.plot_rays(rays, width=1000)
     """
@@ -280,7 +280,7 @@ def plot_transmission_loss(tloss: Any, env: Optional[Environment] = None, **kwar
     --------
     >>> import bellhop as bh
     >>> import numpy as np
-    >>> env = bh.create_env(
+    >>> env = bh.Environment(
             receiver_depth=np.arange(0, 25),
             receiver_range=np.arange(0, 1000),
             beam_angle_min=-45,

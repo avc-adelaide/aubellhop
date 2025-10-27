@@ -47,7 +47,7 @@ def test_read_env_free_space():
 def test_read_env_round_trip():
     """Test creating an environment, writing it to ENV file, then reading it back."""
     # Create a test environment
-    env_orig = bh.create_env(
+    env_orig = bh.Environment(
         name="Round trip test",
         frequency=100.0,
         depth=30.0,
@@ -150,10 +150,10 @@ def test_read_env_vector_parsing():
 
 def test_read_env2e_dataframe():
 
-    env1 = bh.create_env(soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
+    env1 = bh.Environment(soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
 
     ssp2 = bh.read_ssp("tests/MunkB_geo_rot/MunkB_geo_rot.ssp")  # Returns DataFrame
-    env2 = bh.create_env(soundspeed=ssp2)
+    env2 = bh.Environment(soundspeed=ssp2)
 
     assert isinstance(env1['soundspeed'],np.ndarray), "Expect plain array => Numpy array"
     assert isinstance(env2['soundspeed'],pd.DataFrame), "Expect DataFrame => preserved"

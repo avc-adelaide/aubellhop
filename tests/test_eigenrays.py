@@ -5,7 +5,7 @@ import bellhop as bh
 
 def test_rays_many_source():
 
-    env = bh.create_env()
+    env = bh.Environment()
     env.check()
     i1 =  5.0
     i2 = 10.0
@@ -23,7 +23,7 @@ def test_rays_many_source():
 
 def test_eigenrays_many_source():
 
-    env = bh.create_env()
+    env = bh.Environment()
     env.check()
     i1 =  5.0
     i2 = 10.0
@@ -41,7 +41,7 @@ def test_eigenrays_many_source():
 
 def test_eigenrays_many_receiver_depth():
 
-    env = bh.create_env()
+    env = bh.Environment()
     env.check()
     i1 =  5.0
     i2 = 10.0
@@ -62,7 +62,7 @@ def test_eigenrays_many_receiver_depth():
 
 def test_eigenrays_many_receiver_ranges():
 
-    env = bh.create_env()
+    env = bh.Environment()
     env.check()
     i1 = 1000.0
     i2 = 900.0

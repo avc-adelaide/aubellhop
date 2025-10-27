@@ -159,7 +159,7 @@ def read_env(fname: str) -> Environment:
     >>> rays = bh.compute_rays(env)
 
     >>> # Round-trip compatibility
-    >>> env_orig = bh.create_env(name="test", frequency=100)
+    >>> env_orig = bh.Environment(name="test", frequency=100)
     >>> # ... write to file via BELLHOP ...
     >>> env_read = bh.Environment.from_file("test.env")
     >>> assert env_read['frequency'] == env_orig['frequency']
@@ -459,12 +459,12 @@ def read_ssp(fname: str,
     >>> import bellhop as bh
     >>> # Single-profile file
     >>> ssp1 = bh.read_ssp("single_profile.ssp")  # Returns numpy array
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> env["soundspeed"] = ssp1
     >>>
     >>> # Multi-profile file
     >>> ssp2 = bh.read_ssp("tests/MunkB_geo_rot/MunkB_geo_rot.ssp")  # Returns DataFrame
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> env["soundspeed"] = ssp2  # Range-dependent sound speed
 
     **File format example:**
@@ -551,7 +551,7 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[_np.float64], str]:
 
     >>> import bellhop as bh
     >>> bty,bty_interp = bh.read_bty("tests/MunkB_geo_rot/MunkB_geo_rot.bty")
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> env["depth"] = bty
     >>> env["depth_interp"] = bty_interp
     >>> arrivals = bh.calculate_arrivals(env)
@@ -684,7 +684,7 @@ def read_refl_coeff(fname: str) -> NDArray[_np.float64]:
     --------
     >>> import bellhop as bh
     >>> brc = bh.read_refl_coeff("tests/MunkB_geo_rot/MunkB_geo_rot.brc")
-    >>> env = bh.create_env()
+    >>> env = bh.Environment()
     >>> env["bottom_reflection_coefficient"] = brc
     >>> arrivals = bh.calculate_arrivals(env)
 

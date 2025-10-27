@@ -4,7 +4,7 @@ import numpy as np
 
 def test_sqrt_bug():
 
-    env = bh.create_env(name="Test sqrt bug")
+    env = bh.Environment(name="Test sqrt bug")
 
     dp = env["depth"]
     env["depth"] = np.array([[-2000,dp],[2000,dp]])
