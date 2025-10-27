@@ -380,7 +380,7 @@ class Environment(MutableMapping[str, Any]):
             assert _np.all(self['source_directionality'][:,0] >= -180) and _np.all(self['source_directionality'][:,0] <= 180), 'source_directionality angles must be in (-180, 180]'
 
     def _check_env_beam(self) -> None:
-        assert self._dimension == 2 or (self._dimension == 3 and self.source_type == _Strings.point), "Can only have point source in 3D (line or point in 2D)"
+        assert (self._dimension == 2) or (self._dimension == 3 and self.source_type in (_Strings.point, _Strings.default)), "Can only have point source in 3D (line or point in 2D)"
         assert self['beam_angle_min'] >= -180 and self['beam_angle_min'] <= 180, 'beam_angle_min must be in range [-180, 180]'
         assert self['beam_angle_max'] >= -180 and self['beam_angle_max'] <= 180, 'beam_angle_max must be in range [-180, 180]'
         if self['_single_beam'] == _Strings.single_beam:
