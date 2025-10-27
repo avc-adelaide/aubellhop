@@ -120,55 +120,6 @@ def _prepare_filename(fname: str, ext: str, name: str) -> Tuple[str,str]:
 
     return fname, fname_base
 
-def read_env(fname: str) -> Environment:
-    """Read a 2D underwater environment from a BELLHOP .env file.
-
-    This function parses a BELLHOP .env file and returns a Python data structure
-    that is compatible with create_env(). This enables round-trip testing and
-    compatibility between file-based and programmatic environment definitions.
-
-    Parameters
-    ----------
-    fname : str
-        Path to .env file (with or without .env extension)
-
-    Returns
-    -------
-    dict
-        Environment dictionary compatible with create_env()
-
-    Notes
-    -----
-    **Unit conversions performed:**
-
-    - Receiver ranges: km → m
-    - Bottom density: g/cm³ → kg/m³
-    - All other units preserved as in ENV file
-
-    Examples
-    --------
-    >>> import bellhop as bh
-    >>> env = bh.Environment.from_file('examples/Munk/MunkB_ray.env')
-    >>> print(env['name'])
-    'Munk profile'
-    >>> print(env['frequency'])
-    50.0
-
-    >>> # Use with existing functions
-    >>> checked_env.check()
-    >>> rays = bh.compute_rays(env)
-
-    >>> # Round-trip compatibility
-    >>> env_orig = bh.Environment(name="test", frequency=100)
-    >>> # ... write to file via BELLHOP ...
-    >>> env_read = bh.Environment.from_file("test.env")
-    >>> assert env_read['frequency'] == env_orig['frequency']
-
-    """
-
-    env = Environment()
-    reader = EnvironmentReader(env,fname)
-    return reader.read()
 
 class EnvironmentReader:
     """Read and parse Bellhop environment files.
@@ -439,7 +390,7 @@ def read_ssp(fname: str,
     **Return format:**
 
     - **Single-profile files (1 range)**: Returns a 2D numpy array with [depth, soundspeed] pairs,
-      compatible with create_env() soundspeed parameter.
+      compatible with the `Environment()` soundspeed parameter.
 
     - **Multi-profile files (>1 ranges)**: Returns a pandas DataFrame where:
 
@@ -447,7 +398,7 @@ def read_ssp(fname: str,
       - **Index**: Depth indices (0, 1, 2, ... for each depth level in the file)
       - **Values**: Sound speeds (m/s)
 
-      This DataFrame can be directly assigned to create_env() soundspeed parameter
+      This DataFrame can be directly assigned to the `Environment()` soundspeed parameter
       for range-dependent acoustic modeling.
 
     **Note on depths**: For multi-profile files, depth indices are used (0, 1, 2, ...)
@@ -541,7 +492,7 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[_np.float64], str]:
     Returns
     -------
     numpy.ndarray
-        Numpy array with [range, depth] pairs compatible with create_env()
+        Numpy array with [range, depth] pairs compatible with Environment()
 
     Notes
     -----
@@ -674,7 +625,7 @@ def read_refl_coeff(fname: str) -> NDArray[_np.float64]:
     Returns
     -------
     numpy.ndarray
-        Numpy array with [theta, rmag, rphase] triplets compatible with create_env()
+        Numpy array with [theta, rmag, rphase] triplets compatible with Environment()
 
     Notes
     -----

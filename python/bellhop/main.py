@@ -23,7 +23,6 @@ import pandas as _pd
 from bellhop.constants import _Strings, Defaults
 
 # this format to explicitly mark the functions as public:
-from bellhop.readers import read_env as read_env
 from bellhop.readers import read_ssp as read_ssp
 from bellhop.readers import read_ati as read_ati
 from bellhop.readers import read_bty as read_bty
