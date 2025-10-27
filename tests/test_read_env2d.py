@@ -73,7 +73,7 @@ def test_read_env_round_trip():
         model = BellhopSimulator()
         fh_fd, fname_base = model._prepare_env_file(fname_base)
         with os.fdopen(fh_fd, "w") as fh:
-            env_orig.write('R', fh, fname_base)
+            env_orig.to_file('R', fh, fname_base)
         env_file = fname_base + '.env'
 
         # Read it back

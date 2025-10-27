@@ -27,7 +27,7 @@ The `Environment` class provide the following user-facing methods:
 
 * `.check()` --- finalise and validate parameters (semi-automatic, see below)
 * `.read(fname)` --- read environment configuration in original Bellhop `.env` text format (also reading in additional `.ssp`, `.bty` files if needed)
-* `.write(fname)` --- write environment configuration to file(s) in original Bellhop `.env` text format (also writing additional `.ssp`, `.bty` files if needed)
+* `.to_file(fname)` --- write environment configuration to file(s) in original Bellhop `.env` text format (also writing additional `.ssp`, `.bty` files if needed)
 * `.copy()` --- shallow copy the instance
 * `.reset()` — set all user-facing values from the instance to `None`
 * `.to_dict()` --- convert parameters to a standard `dict`
@@ -108,7 +108,7 @@ env2 = env1.copy()
 assert env2.depth_max == 2000
 ```
 
-## Reading and writing --- `.read()` & `.write()`
+## Reading and writing --- `.read()` & `.to_file()`
 
 The traditional Bellhop interface used ASCII `fname.env` files for environment configuration,
 with additional files to define complex soundspeed profiles, bathymetry, altimetry, etc.
@@ -123,7 +123,7 @@ After setting up an environment, you may wish to write it to a file for debuggin
 or to pass it along to another of the Acoustic Toolbox programs (such as KRAKEN).
 ```
 env = bh.Enviroment(...)
-env.write('kraken.env')
+env.to_file('kraken.env')
 ```
 The step is performed automatically, writing the file(s) to a temporary location, when
 performing a [`.compute()`](compute.qmd) step to execute the simulation.
