@@ -292,18 +292,14 @@ class Environment(MutableMapping[str, Any]):
         self._or_default('beam_bearing_min', angle_min)
         self._or_default('beam_bearing_max', angle_max)
 
-        bearing_max = _np.max([
-            abs(self['beam_bearing_max']),
-            abs(self['beam_bearing_min'])
-        ])
+        self.range_max = _np.abs(self['receiver_range']).max()
+        bearing_absmax = _np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()
+        cross_range_max = 1.01 * self.range_max * _np.sin(_np.deg2rad(bearing_absmax))
 
         self._or_default('box_depth', 1.01 * self['depth_max'])
-        self._or_default('box_range',
-            1.01 * (_np.max(self['receiver_range']) - min(0, _np.min(self['receiver_range'])))
-        )
-        self._or_default('box_cross_range',
-            1.01 * _np.max(self['receiver_range']) * _np.sin(_np.deg2rad(bearing_max))
-        )
+        self._or_default('box_range', 1.01 * self.range_max)
+        self._or_default('box_cross_range', _np.max([1.0, cross_range_max])) # maybe overkill but avoid negligible slices
+
         return self
 
     def _or_default(self, key: str, default: Any) -> Any:
