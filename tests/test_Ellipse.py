@@ -10,7 +10,7 @@ skip_if_coverage = pytest.mark.skipif(
     reason="Skipped during coverage run"
 )
 
-env = bh.read_env("tests/Ellipse/Ellipse.env")
+env = bh.Environment.from_file("tests/Ellipse/Ellipse.env")
 
 print(env["soundspeed"])
 print(env["depth"])

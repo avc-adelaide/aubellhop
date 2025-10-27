@@ -10,7 +10,7 @@ skip_if_coverage = pytest.mark.skipif(
     reason="Skipped during coverage run"
 )
 
-env = bh.read_env("tests/VolAtt/free_FGB.env")
+env = bh.Environment.from_file("tests/VolAtt/free_FGB.env")
 
 tl = bh.compute_transmission_loss(env,mode='coherent',fname_base="tests/VolAtt/FGB_output",debug=True)
 tl_exp = bh.read_shd("tests/VolAtt/free_FGB.shd")

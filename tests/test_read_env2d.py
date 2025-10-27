@@ -30,7 +30,7 @@ def test_read_env_basic():
 def test_read_env_free_space():
     """Test reading a free space ENV file with different format."""
     env_file = 'examples/free/freePointB.env'
-    env = bh.read_env(env_file)
+    env = bh.Environment.from_file(env_file)
 
     # Verify basic properties
     assert env['name'] == 'Free space, point source, Hat beam'
@@ -76,7 +76,7 @@ def test_read_env_round_trip():
         env_file = fname_base + '.env'
 
         # Read it back
-        env_read = bh.read_env(env_file)
+        env_read = bh.Environment.from_file(env_file)
 
         # Compare key values (allowing for expected transformations)
         assert env_read['name'] == env_orig['name']
@@ -99,15 +99,15 @@ def test_read_env_round_trip():
 def test_read_env_missing_file():
     """Test that missing file raises appropriate error."""
     with pytest.raises(FileNotFoundError):
-        bh.read_env('nonexistent_file.env')
+        bh.Environment.from_file('nonexistent_file.env')
 
 
 def test_read_env_add_extension():
     """Test that .env extension is added automatically."""
     # Test without extension
-    env1 = bh.read_env('examples/Munk/MunkB_ray')
+    env1 = bh.Environment.from_file('examples/Munk/MunkB_ray')
     # Test with extension
-    env2 = bh.read_env('examples/Munk/MunkB_ray.env')
+    env2 = bh.Environment.from_file('examples/Munk/MunkB_ray.env')
 
     # Should be the same
     assert env1['name'] == env2['name']
@@ -117,7 +117,7 @@ def test_read_env_add_extension():
 def test_read_env_vector_parsing():
     """Test various vector formats are parsed correctly."""
     env_file = 'examples/Munk/MunkB_ray.env'
-    env = bh.read_env(env_file)
+    env = bh.Environment.from_file(env_file)
 
     # Check that compressed vector notation works (should have generated linearly spaced values)
     assert len(env['receiver_depth']) == 2  # From "51" and "0.0 5000.0 /"
@@ -134,7 +134,7 @@ def test_read_env_vector_parsing():
 def test_read_env_vector_parsing():
     """Test various vector formats are parsed correctly."""
     env_file = 'examples/Munk/MunkB_ray.env'
-    env = bh.read_env(env_file)
+    env = bh.Environment.from_file(env_file)
 
     # Check that compressed vector notation works (should have generated linearly spaced values)
     assert len(env['receiver_depth']) == 2  # From "51" and "0.0 5000.0 /"

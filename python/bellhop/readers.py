@@ -148,7 +148,7 @@ def read_env(fname: str) -> Environment:
     Examples
     --------
     >>> import bellhop as bh
-    >>> env = bh.read_env('examples/Munk/MunkB_ray.env')
+    >>> env = bh.Environment.from_file('examples/Munk/MunkB_ray.env')
     >>> print(env['name'])
     'Munk profile'
     >>> print(env['frequency'])
@@ -161,7 +161,7 @@ def read_env(fname: str) -> Environment:
     >>> # Round-trip compatibility
     >>> env_orig = bh.create_env(name="test", frequency=100)
     >>> # ... write to file via BELLHOP ...
-    >>> env_read = bh.read_env("test.env")
+    >>> env_read = bh.Environment.from_file("test.env")
     >>> assert env_read['frequency'] == env_orig['frequency']
 
     """
