@@ -31,7 +31,7 @@ The `Environment` class provide the following user-facing methods:
 * `.copy()` --- shallow copy the instance
 * `.reset()` — set all user-facing values from the instance to `None`
 * `.to_dict()` --- convert parameters to a standard `dict`
-* `.unwrap()` --- converts a field list into a list of envs with single values
+* `.unwrap(fields)` --- converts a field list into a list of envs with single values
 
 To scan over the full list of user-facing fields, the standard `print()` function will return
 something sensible:
@@ -83,7 +83,7 @@ And again unrecognised options result in an error:
 env.soundspeed_interp = "plines"  # ERROR
 ```
 
-## Parameter checking
+## Parameter checking --- `.check()`
 
 Before standard functions for running Bellhop computations, or otherwise working with
 the environment configuration data, the method `.check()` will be called on the
@@ -108,7 +108,46 @@ env2 = env1.copy()
 assert env2.depth_max == 2000
 ```
 
-## Unwrapping list-based parameters
+## Reading and writing --- `.read()` & `.write()`
+
+The traditional Bellhop interface used ASCII `fname.env` files for environment configuration,
+with additional files to define complex soundspeed profiles, bathymetry, altimetry, etc.
+The Python interface can read a `seamount.env` file by initialising an empty environment
+and using the `.read()` function:
+```
+env = bh.Environment()
+env.read('seamount.env')
+```
+
+After setting up an environment, you may wish to write it to a file for debugging purposes,
+or to pass it along to another of the Acoustic Toolbox programs (such as KRAKEN).
+```
+env = bh.Enviroment(...)
+env.write('kraken.env')
+```
+The step is performed automatically, writing the file(s) to a temporary location, when
+performing a [`.compute()`](compute.qmd) step to execute the simulation.
+
+The read/write chain should allow round-trip compatibility, although there may be some differences:
+
+* Floating point or fixed digit calculations may be quantised differently
+* Certain Bellhop option flags may be implicit in one representation and explicit in another
+* The comments will be different
+* There may be bugs `:)`
+
+## Copying and clearing --- `.copy()` & `.reset()`
+
+Shallow copying of one environment to another can be achieved with:
+```
+env1 = bh.Environment(...)
+env2 = env1.copy()
+```
+
+All fields from an environment can be completely cleared using `.reset()`.
+This is unlikely to be useful except when loading settings from another source and wanting
+to ensure there are all parameters need to be explicitly set.
+
+## Unwrapping list-based parameters --- `.unwrap()`
 
 Bellhop often can only handle single values at a time for parameters such as frequency,
 source position, and so on. The `.unwrap` method allows such parameters to be defined
