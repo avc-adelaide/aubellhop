@@ -355,31 +355,31 @@ class Environment(MutableMapping[str, Any]):
             angle_min = -Defaults.beam_bearing_halfspace
             angle_max = +Defaults.beam_bearing_halfspace
 
-        self._or_default('beam_bearing_min', angle_min)
-        self._or_default('beam_bearing_max', angle_max)
+        self.beam_bearing_min = self._float_or_default('beam_bearing_min', angle_min)
+        self.beam_bearing_max = self._float_or_default('beam_bearing_max', angle_max)
 
-        self._or_default('simulation_range_scale', 1.1)
-        self._or_default('simulation_cross_range_scale', 2.0)
-        self._or_default('simulation_cross_range_min', 1.0)
+        self.simulation_range_scale = self._float_or_default('simulation_range_scale', Defaults.simulation_range_scale)
+        self.simulation_cross_range_scale = self._float_or_default('simulation_cross_range_scale', Defaults.simulation_cross_range_scale)
+        self.simulation_cross_range_min = self._float_or_default('simulation_cross_range_min', Defaults.simulation_cross_range_min)
 
         self._range_max = _np.abs(self['receiver_range']).max()
         bearing_absmax = _np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()
         cross_range_max = self._range_max * _np.sin(_np.deg2rad(bearing_absmax))
 
-        self._or_default('simulation_depth', 1.01 * self['depth_max'])
-        self._or_default('simulation_range', self.simulation_range_scale * self._range_max)
-        self._or_default('simulation_cross_range', 
+        self.simulation_depth = self._float_or_default('simulation_depth', 1.01 * self['depth_max'])
+        self.simulation_range = self._float_or_default('simulation_range', self.simulation_range_scale * self._range_max)
+        self.simulation_cross_range = self._float_or_default('simulation_cross_range',
             _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max]))
         # maybe overkill but avoid negligible slices
 
         return self
 
-    def _or_default(self, key: str, default: Any) -> Any:
+    def _float_or_default(self, key: str, default: float) -> float:
         """Return the current value if not None, otherwise return and set a default."""
         val = getattr(self, key, None)
         if val is None:
             setattr(self, key, default)
-            return default
+            val = default
         return val
 
     def _check_env_header(self) -> None:
