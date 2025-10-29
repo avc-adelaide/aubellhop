@@ -201,6 +201,19 @@ class Environment(MutableMapping[str, Any]):
         from bellhop.readers import EnvironmentReader
         return EnvironmentReader(cls(), fname).read()
 
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'Environment':
+        """Create Environment from dictionary.
+        
+        Unlike `Environment(**data)`, unknown fields are ignored (with a warning message)."""
+        valid_fields = {f.name for f in fields(cls)}
+        invalid = set(data.keys()) - valid_fields
+        if invalid:
+            warnings.warn(f"{cls.__name__}.from_dict: ignoring unknown fields: {invalid}")
+        filtered_data = {k: v for k, v in data.items() if k in valid_fields}
+        return cls(**filtered_data)
+
     ############# SMALL METHODS ################
 
     def reset(self) -> Self:

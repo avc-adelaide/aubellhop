@@ -26,6 +26,7 @@ assert isinstance(env, Environment)
 The `Environment` class provide the following user-facing class methods:
 
 * `Environment.from_file(fname)` --- read environment configuration in original Bellhop `.env` text format (also reading in additional `.ssp`, `.bty` files if needed)
+* `Environment.from_dict(env_dict)` --- read environment configuration from dictionary of fields (see: `to_dict()` below)
 
 The `Environment` class provide the following user-facing instance methods:
 
@@ -136,6 +137,25 @@ The read/write chain should allow round-trip compatibility, although there may b
 * Certain Bellhop option flags may be implicit in one representation and explicit in another
 * The comments will be different
 * There may be bugs `:)`
+
+## Storing and loading --- `.from_dict()` & `.to_dict()`
+
+For Python-only workflows, using dictionaries as an intermediate format
+is likely more natural that text files. Passing dictionaries of
+environment fields is likely to be most useful when defining standard 
+environments for later reuse, or when constructing complex environments
+based on external data.
+```
+env1 = bh.Environment(...)
+dict1 = env1.to_dict()
+# manipulate dict1
+env2 = bh.Environment.from_dict(dict1)
+```
+A monte carlo analysis might generate thousands 
+of environments, in which case this interface could
+be used to serialise to disk each environment via a dictionary
+to allow the simulations to be repeated or reproduced.
+
 
 ## Copying and clearing --- `.copy()` & `.reset()`
 
