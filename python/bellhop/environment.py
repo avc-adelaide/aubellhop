@@ -166,11 +166,16 @@ class Environment(MutableMapping[str, Any]):
     single_beam_index: Optional[int] = None
     _single_beam: str = _Strings.default # value inferred from `single_beam_index`
 
-    # Solution parameters
-    step_size: Optional[float] = 0.0 # (0 = auto)
+    # Simulation extent
     simulation_depth: Optional[float] = None
     simulation_range: Optional[float] = None
     simulation_cross_range: Optional[float] = None
+    simulation_range_scale: Optional[float] = None
+    simulation_cross_range_scale: Optional[float] = None
+    simulation_cross_range_min: Optional[float] = None
+
+    # Solution parameters
+    step_size: Optional[float] = 0.0 # (0 = auto)
     grid_type: str = 'default'
     task: Optional[str] = None
     interference_mode: Optional[str] = None # subset of `task` for providing TL interface
@@ -363,7 +368,9 @@ class Environment(MutableMapping[str, Any]):
 
         self._or_default('simulation_depth', 1.01 * self['depth_max'])
         self._or_default('simulation_range', self.simulation_range_scale * self._range_max)
-        self._or_default('simulation_cross_range', _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max])) # maybe overkill but avoid negligible slices
+        self._or_default('simulation_cross_range', 
+            _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max]))
+        # maybe overkill but avoid negligible slices
 
         return self
 
