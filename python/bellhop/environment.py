@@ -105,7 +105,7 @@ class Environment(MutableMapping[str, Any]):
     _mesh_npts: int = 0 # ignored by bellhop
     _depth_sigma: float = 0.0 # ignored by bellhop
     depth_max: Optional[float] = None  # m
-    range_max: Optional[float] = None  # m -- not used in the environment file
+    _range_max: Optional[float] = None  # m -- not used in the environment file
 
     # Flags to read/write from separate files
     _bathymetry: str = _Strings.flat  # set to "from-file" if multiple bottom depths
@@ -353,13 +353,17 @@ class Environment(MutableMapping[str, Any]):
         self._or_default('beam_bearing_min', angle_min)
         self._or_default('beam_bearing_max', angle_max)
 
-        self.range_max = _np.abs(self['receiver_range']).max()
+        self._or_default('simulation_range_scale', 1.1)
+        self._or_default('simulation_cross_range_scale', 2.0)
+        self._or_default('simulation_cross_range_min', 1.0)
+
+        self._range_max = _np.abs(self['receiver_range']).max()
         bearing_absmax = _np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()
-        cross_range_max = 1.01 * self.range_max * _np.sin(_np.deg2rad(bearing_absmax))
+        cross_range_max = self._range_max * _np.sin(_np.deg2rad(bearing_absmax))
 
         self._or_default('simulation_depth', 1.01 * self['depth_max'])
-        self._or_default('simulation_range', 1.01 * self.range_max)
-        self._or_default('simulation_cross_range', _np.max([1.0, cross_range_max])) # maybe overkill but avoid negligible slices
+        self._or_default('simulation_range', self.simulation_range_scale * self._range_max)
+        self._or_default('simulation_cross_range', _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max])) # maybe overkill but avoid negligible slices
 
         return self
 
