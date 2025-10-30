@@ -92,11 +92,10 @@ class _Strings(str, Enum):
     rays = "rays"
     eigenrays = "eigenrays"
     arrivals = "arrivals"
+    arrivals_b = "arrivals-binary"
     coherent = "coherent"
     incoherent = "incoherent"
     semicoherent = "semicoherent"
-    amplitude = "amplitude"
-    amplitude_b = "amplitude-binary"
 
 
 
@@ -206,8 +205,8 @@ class _Maps:
     task = {
         "R": _Strings.rays,
         "E": _Strings.eigenrays,
-        "A": _Strings.amplitude,
-        "a": _Strings.amplitude_b,
+        "A": _Strings.arrivals,
+        "a": _Strings.arrivals_b,
         "C": _Strings.coherent,
         "I": _Strings.incoherent,
         "S": _Strings.semicoherent,
