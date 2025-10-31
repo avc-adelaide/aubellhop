@@ -255,7 +255,8 @@ class Defaults:
     volume_attenuation: str = field(default=_Strings.none, metadata={"desc": "Type of volume attenuation to apply"})
     sound_speed: float = field(default=1500.0, metadata={"units": "m/s", "desc": "Constant speed of sound in the medium"})
     density: float = field(default=1000.0, metadata={"units": "kg/m^3", "desc": "Constant density of the medium"})
+    simulation_depth_scale: float = field(default=1.01,metadata={'desc': 'Scaling factor on the maximum depth of the bathymetry to calculate the maximum simulation depth extent.'})
     simulation_range_scale: float = field(default=1.1,metadata={'desc': 'Scaling factor on the maximum range of the receivers to calculate the maximum simulation range extent.'})
     simulation_cross_range_scale: float = field(default=2.0,metadata={'desc': 'Scaling factor on the maximum cross range of the receivers (based on maximum bearing angle) to calculate the maximum simulation cross range extent.'})
-    simulation_cross_range_min: float = field(default=1.0,metadata={'desc': 'For very small bearing angles there may be numerical issues with a cross range size approaching zero. This parameter specifies the minimum cross range size of the simulation extent.',"units": "m"})
+    simulation_cross_range_min: float = field(default=10.0,metadata={'desc': 'For very small bearing angles there may be numerical issues with a cross range size approaching zero. This parameter specifies the minimum cross range size of the simulation extent.',"units": "m"})
 

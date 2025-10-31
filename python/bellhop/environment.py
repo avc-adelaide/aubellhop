@@ -170,6 +170,7 @@ class Environment(MutableMapping[str, Any]):
     simulation_depth: Optional[float] = None
     simulation_range: Optional[float] = None
     simulation_cross_range: Optional[float] = None
+    simulation_depth_scale: Optional[float] = None
     simulation_range_scale: Optional[float] = None
     simulation_cross_range_scale: Optional[float] = None
     simulation_cross_range_min: Optional[float] = None
@@ -371,6 +372,7 @@ class Environment(MutableMapping[str, Any]):
         self.beam_bearing_min = self._float_or_default('beam_bearing_min', angle_min)
         self.beam_bearing_max = self._float_or_default('beam_bearing_max', angle_max)
 
+        self.simulation_depth_scale = self._float_or_default('simulation_depth_scale', Defaults.simulation_depth_scale)
         self.simulation_range_scale = self._float_or_default('simulation_range_scale', Defaults.simulation_range_scale)
         self.simulation_cross_range_scale = self._float_or_default('simulation_cross_range_scale', Defaults.simulation_cross_range_scale)
         self.simulation_cross_range_min = self._float_or_default('simulation_cross_range_min', Defaults.simulation_cross_range_min)
@@ -379,7 +381,7 @@ class Environment(MutableMapping[str, Any]):
         bearing_absmax = _np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()
         cross_range_max = self._range_max * _np.sin(_np.deg2rad(bearing_absmax))
 
-        self.simulation_depth = self._float_or_default('simulation_depth', 1.01 * self['depth_max'])
+        self.simulation_depth = self._float_or_default('simulation_depth', self.simulation_depth_scale * self.depth_max)
         self.simulation_range = self._float_or_default('simulation_range', self.simulation_range_scale * self._range_max)
         self.simulation_cross_range = self._float_or_default('simulation_cross_range',
             _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max]))

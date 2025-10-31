@@ -20,17 +20,36 @@ See the [environment configuration page](environ.qmd) for general methods of set
     simulation_cross_range: float
 ```
 These parameters set the absolute value of the boundaries of the Bellhop simulation.
-They default to 1% larger than the maximum relevant dimension:
+They default to a scaling factor of the maximum relevant dimension:
+
 * `simulation_depth` is based on the bathymetry
 * `simulation_range` is based on the furthest receiver range
 * `simulation_cross_range` is based on the component of the largest bearing angle and the furthest receiver range
 
 Where a ray might travel into 'negative' ranges, the `simulation_range` and `simulation_cross_range` define
 both positive and negative greatest extent. For instance, if a receiver is located 1 km away,
-rays will travel up to 1.01 km in the negative range direction before terminating
+and the scaling factor is `1.1`,
+rays will travel up to 1.1 km in the negative range direction before terminating
 in the boundary.
 
 For complex bathymetry and altimetry profiles, it is certainly possible that an eigenray might
 travel significantly past a receiver and then bounce back.
 In these cases, `simulation_range` cannot be estimated in advance and the user should manually set
 it to a sufficiently (but not overly) large value.
+
+```
+    simulation_depth_scale: float
+    simulation_range_scale: float
+    simulation_cross_range_scale: float
+```
+These scaling factors default to `1.01` in the depth direction, `1.1` in the range direction
+and `2.0` in the cross range direction.
+
+```
+    simulation_cross_range_min: float
+```
+For "degenerate" cases with bearing angle approaching zero
+and maximum cross range approaching zero, beams may 
+exit the simulation boundary due to numerical issues.
+The value calculated for the cross range extent may 
+capped at a minimum. By default this is 10 m.
