@@ -385,7 +385,6 @@ class Environment(MutableMapping[str, Any]):
         self.simulation_range = self._float_or_default('simulation_range', self.simulation_range_scale * self._range_max)
         self.simulation_cross_range = self._float_or_default('simulation_cross_range',
             _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max]))
-        # maybe overkill but avoid negligible slices
 
         return self
 
@@ -550,7 +549,7 @@ class Environment(MutableMapping[str, Any]):
         if self['surface_boundary_condition'] == _Strings.acousto_elastic:
             comment = "DEPTH_Top (m)  TOP_SoundSpeed (m/s)  TOP_SoundSpeed_Shear (m/s)  TOP_Density (g/cm^3)  [ TOP_Absorp [ TOP_Absorp_Shear ] ]"
             array_str = self._array2str([
-              self['depth_max'],
+              0.0, # hardcoded top surface always = 0 by definition (i think)
               self['surface_soundspeed'],
               self['_surface_soundspeed_shear'],
               self._float(self['surface_density'],scale=1/1000),
