@@ -90,9 +90,9 @@ class Environment(MutableMapping[str, Any]):
 
     # Basic environment properties
     name: str = 'bellhop/python default'
-    dimension: str = _Strings.two_d
+    dimension: str = Defaults.dimension
     _dimension: int = 2
-    frequency: float = 25000.0  # Hz
+    frequency: float = Defaults.frequency
     _num_media: int = 1 # must always = 1 in bellhop
 
     # Sound speed parameters
@@ -181,7 +181,7 @@ class Environment(MutableMapping[str, Any]):
     interference_mode: Optional[str] = None # subset of `task` for providing TL interface
 
     # Attenuation parameters
-    volume_attenuation: str = 'none'
+    volume_attenuation: str = Defaults.volume_attenuation
     attenuation_units: str = Defaults.attenuation_units
     biological_layer_parameters: Optional[Any] = None
 
