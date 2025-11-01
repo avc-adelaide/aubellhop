@@ -76,8 +76,8 @@ def new_model(name: str, **kwargs: Any) -> BellhopSimulator:
     _models.append(model)
     return model
 
-new_model(name=Defaults.model_name_2d, exe=Defaults.model_exe_2d, dim=2)
-new_model(name=Defaults.model_name_3d, exe=Defaults.model_exe_3d, dim=3)
+new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=2)
+new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=3)
 
 def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: Optional[int] = None) -> List[str]:
     """List available models.

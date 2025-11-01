@@ -26,9 +26,9 @@ class BellhopSimulator:
         Filename of Bellhop executable
     """
 
-    def __init__(self, name: str = Defaults.model_name_2d,
-                       exe: str = Defaults.model_exe_2d,
-                       dim: int = Defaults.model_dim,
+    def __init__(self, name: str = ModelDefaults.name_2d,
+                       exe: str = ModelDefaults.exe_2d,
+                       dim: int = ModelDefaults.dim,
                 ) -> None:
         self.name: str = name
         self.exe: str = exe

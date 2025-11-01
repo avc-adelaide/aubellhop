@@ -195,7 +195,7 @@ class Environment(MutableMapping[str, Any]):
     fg_pH: Optional[float] = None
     fg_depth: Optional[float] = None
 
-    comment_pad: int = Defaults.env_comment_pad
+    comment_pad: int = Defaults.comment_pad
 
     ############# CLASS METHODS ################
 
