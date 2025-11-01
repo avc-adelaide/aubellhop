@@ -7,7 +7,7 @@ from typing import Any, Optional, Tuple, Union, TextIO, List, cast, IO
 from numpy.typing import NDArray
 
 import numpy as np
-import pandas as _pd
+import pandas as pd
 from bellhop.constants import _Strings, _Maps, _File_Ext, Defaults
 from bellhop.environment import Environment
 
@@ -52,7 +52,7 @@ def _unquote_string(line: str) -> str:
     """Extract string from within single quotes, possibly with commas too."""
     return line.strip().strip(",'")
 
-def _read_ssp_points(f: TextIO) -> _pd.DataFrame:
+def _read_ssp_points(f: TextIO) -> pd.DataFrame:
     """Read sound speed profile points until we find the bottom boundary line
 
        Default values are according to 'EnvironmentalFile.htm'."""
@@ -88,7 +88,7 @@ def _read_ssp_points(f: TextIO) -> _pd.DataFrame:
     elif len(ssp_speed) == 1:
         raise ValueError("Only one SSP point found but at least two required (top and bottom)")
 
-    df = _pd.DataFrame(ssp_speed,index=ssp_depth,columns=["speed"])
+    df = pd.DataFrame(ssp_speed,index=ssp_depth,columns=["speed"])
     df.index.name = "depth"
     return df
 
@@ -196,7 +196,7 @@ class EnvironmentReader:
         if self.env["volume_attenuation"] == _Strings.biological:
             self.env['biological_layer_parameters'] = self._read_biological_layers(f)
 
-    def _read_biological_layers(self, f: TextIO) -> _pd.DataFrame:
+    def _read_biological_layers(self, f: TextIO) -> pd.DataFrame:
         """Read biological layer parameters for attenuation due to fish."""
         next_line = _read_next_valid_line(f)
         print(next_line)
@@ -217,7 +217,7 @@ class EnvironmentReader:
                 a0.append(float(parts[4]))
         if len(z1) != npoints:
             raise ValueError(f"Expected {npoints} points, but found {len(z1)}")
-        return _pd.DataFrame({"z1": z1, "z2": z2, "f0": f0, "Q": QQ, "a0": a0})
+        return pd.DataFrame({"z1": z1, "z2": z2, "f0": f0, "Q": QQ, "a0": a0})
 
     def _read_sound_speed_profile(self, f: TextIO) -> None:
         """Read environment file sound speed profile"""
@@ -364,8 +364,8 @@ def read_ssp(fname: str,
              depths: Optional[Union[
                         List[float],
                         NDArray[np.float64],
-                        _pd.DataFrame]] = None
-            ) -> Union[NDArray[np.float64], _pd.DataFrame]:
+                        pd.DataFrame]] = None
+            ) -> Union[NDArray[np.float64], pd.DataFrame]:
     """Read a 2D sound speed profile (.ssp) file used by BELLHOP.
 
     This function reads BELLHOP's .ssp files which contain range-dependent
@@ -461,7 +461,7 @@ def read_ssp(fname: str,
             raise ValueError("Wrong number of depths found in sound speed data file"
                              f" (expected {ndepths}, found {ssp_array.shape[0]})")
 
-        df = _pd.DataFrame(ssp_array, index=depths, columns=ranges_m)
+        df = pd.DataFrame(ssp_array, index=depths, columns=ranges_m)
         df.index.name = "depth"
         return df
 
@@ -677,7 +677,7 @@ def read_refl_coeff(fname: str) -> NDArray[np.float64]:
         return np.column_stack([theta, rmagn, rphas])
 
 
-def read_arrivals(fname: str) -> _pd.DataFrame:
+def read_arrivals(fname: str) -> pd.DataFrame:
     """Read Bellhop arrivals file and parse data into a high level data structure"""
     path = _ensure_file_exists(fname)
     with path.open('rt') as f:
@@ -701,7 +701,7 @@ def read_arrivals(fname: str) -> _pd.DataFrame:
 #                 source_depth = _read_array(f, (float,)*source_depth_count)
 #                 receiver_depth = _read_array(f, (float,)*receiver_depth_count)
 #                 receiver_range = _read_array(f, (float,)*receiver_range_count)
-        arrivals: List[_pd.DataFrame] = []
+        arrivals: List[pd.DataFrame] = []
         for j in range(source_depth_count):
             f.readline()
             for k in range(receiver_depth_count):
@@ -709,7 +709,7 @@ def read_arrivals(fname: str) -> _pd.DataFrame:
                     count = int(f.readline())
                     for n in range(count):
                         data = _read_array(f, (float, float, float, float, float, float, int, int))
-                        arrivals.append(_pd.DataFrame({
+                        arrivals.append(pd.DataFrame({
                             'source_depth_ndx': [j],
                             'receiver_depth_ndx': [k],
                             'receiver_range_ndx': [m],
@@ -726,10 +726,10 @@ def read_arrivals(fname: str) -> _pd.DataFrame:
                             'surface_bounces': [data[6]],
                             'bottom_bounces': [data[7]]
                         }, index=[len(arrivals)+1]))
-    return _pd.concat(arrivals)
+    return pd.concat(arrivals)
 
 
-def read_shd(fname: str) -> _pd.DataFrame:
+def read_shd(fname: str) -> pd.DataFrame:
     """Read Bellhop shd file and parse data into a high level data structure"""
     path = _ensure_file_exists(fname)
     with path.open('rb') as f:
@@ -753,10 +753,10 @@ def read_shd(fname: str) -> _pd.DataFrame:
             f.seek(recnum*4*recl, 0)
             temp = np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
             pressure[ird,:] = temp[::2] + 1j*temp[1::2]
-    return _pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
+    return pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
 
 
-def read_rays(fname: str) -> _pd.DataFrame:
+def read_rays(fname: str) -> pd.DataFrame:
     """Read Bellhop rays file and parse data into a high level data structure"""
     path = _ensure_file_exists(fname)
     with path.open('rt') as f:
@@ -781,13 +781,13 @@ def read_rays(fname: str) -> _pd.DataFrame:
             ray = np.empty((pts, _dim))
             for k in range(pts):
                 ray[k,:] = _read_array(f, (float,))
-            rays.append(_pd.DataFrame({
+            rays.append(pd.DataFrame({
                 'angle_of_departure': [a],
                 'surface_bounces': [sb],
                 'bottom_bounces': [bb],
                 'ray': [ray]
             }))
-    return _pd.concat(rays)
+    return pd.concat(rays)
 
 def _ensure_file_exists(fname: str) -> Path:
     path = Path(fname)

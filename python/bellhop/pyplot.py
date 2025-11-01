@@ -16,7 +16,7 @@ from sys import float_info as _fi
 
 import numpy as np
 import scipy.interpolate as _interp
-import pandas as _pd
+import pandas as pd
 
 import matplotlib.pyplot as _pyplt
 import matplotlib.colors as _mplc
@@ -136,7 +136,7 @@ def pyplot_ssp(env: Environment, **kwargs: Any) -> None:
 
     env.check()
     svp = env['soundspeed']
-    if isinstance(svp, _pd.DataFrame):
+    if isinstance(svp, pd.DataFrame):
         svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
     if np.size(svp) == 1:
         if np.size(env['depth']) > 1:

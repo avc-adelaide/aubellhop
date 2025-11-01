@@ -18,7 +18,7 @@ and `bellhop.exe` should be in your PATH.
 from typing import Any, List, Optional, Union, Tuple
 
 import numpy as np
-import pandas as _pd
+import pandas as pd
 
 from bellhop.constants import _Strings, Defaults
 
@@ -124,7 +124,7 @@ def compute(
             fname_base: Optional[str] = None
            ) -> Union[  Any,
                         Environment,
-                        Tuple[List[Environment], _pd.DataFrame]
+                        Tuple[List[Environment], pd.DataFrame]
                      ]:
     """Compute Bellhop task(s) for given model(s) and environment(s).
 
@@ -192,7 +192,7 @@ def compute(
                        "results": model_fn.run(this_env, this_task, debug, fname_base),
                       })
     assert len(results) > 0, "No results generated"
-    index_df = _pd.DataFrame([
+    index_df = pd.DataFrame([
         {
             "i": i,
             "name": r["name"],

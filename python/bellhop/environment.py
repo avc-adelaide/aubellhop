@@ -16,7 +16,7 @@ from itertools import product
 
 import numpy as np
 from numpy.typing import NDArray
-import pandas as _pd
+import pandas as pd
 
 from .constants import _Strings, _Maps, Defaults
 
@@ -336,22 +336,22 @@ class Environment(MutableMapping[str, Any]):
         self._depth_max = _extremum(self.depth_max, self['depth'], np.max)
         self._surface_min = _extremum(self.surface_min, self['surface'], np.min)
 
-        if not isinstance(self['soundspeed'], _pd.DataFrame):
+        if not isinstance(self['soundspeed'], pd.DataFrame):
             if np.size(self['soundspeed']) == 1:
                 speed = [float(self["soundspeed"]), float(self["soundspeed"])]
                 depth = [0, self._depth_max]
-                self["soundspeed"] = _pd.DataFrame(speed, columns=["speed"], index=depth)
+                self["soundspeed"] = pd.DataFrame(speed, columns=["speed"], index=depth)
                 self["soundspeed"].index.name = "depth"
             elif self['soundspeed'].shape[0] == 1 and self['soundspeed'].shape[1] == 2:
                 speed = [float(self["soundspeed"][0,1]), float(self["soundspeed"][0,1])]
                 d1 = float(min([0.0, self["soundspeed"][0,0]]))
                 d2 = float(max([self["soundspeed"][0,0], self['_depth_max']]))
-                self["soundspeed"] = _pd.DataFrame(speed, columns=["speed"], index=[d1, d2])
+                self["soundspeed"] = pd.DataFrame(speed, columns=["speed"], index=[d1, d2])
                 self["soundspeed"].index.name = "depth"
             elif self['soundspeed'].ndim == 2 and self['soundspeed'].shape[1] == 2:
                 depth = self['soundspeed'][:,0]
                 speed = self['soundspeed'][:,1]
-                self["soundspeed"] = _pd.DataFrame(speed, columns=["speed"], index=depth)
+                self["soundspeed"] = pd.DataFrame(speed, columns=["speed"], index=depth)
                 self["soundspeed"].index.name = "depth"
             else:
                 raise TypeError("For an NDArray, soundspeed must be defined as a Nx2 array of [depth,soundspeed].  Use a DataFrame with 'depth' index for a 2D soundspeed profile.")
@@ -437,7 +437,7 @@ class Environment(MutableMapping[str, Any]):
         assert np.max(self['receiver_depth']) <= self['_depth_max'], f'receiver_depth {self.receiver_depth} cannot exceed water depth: {str(self._depth_max)}'
 
     def _check_env_ssp(self) -> None:
-        assert isinstance(self['soundspeed'], _pd.DataFrame), 'Soundspeed should always be a DataFrame by this point'
+        assert isinstance(self['soundspeed'], pd.DataFrame), 'Soundspeed should always be a DataFrame by this point'
         assert self['soundspeed'].size > 1, "Soundspeed DataFrame should have been constructed internally to be two elements"
         if self['soundspeed'].size > 1:
             if len(self['soundspeed'].columns) > 1:
@@ -456,8 +456,8 @@ class Environment(MutableMapping[str, Any]):
                     indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
                     prev_ind = self['soundspeed'].index[:indlarger].tolist()
                     insert_ss_val = np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,0])
-                    new_row = _pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
-                    self['soundspeed'] = _pd.concat([
+                    new_row = pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
+                    self['soundspeed'] = pd.concat([
                             self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
                             new_row,                             # new row
                         ], ignore_index=True)
@@ -574,7 +574,7 @@ class Environment(MutableMapping[str, Any]):
         if self['biological_layer_parameters'] is not None:
             self._write_env_biological(fh, self['biological_layer_parameters'])
 
-    def _write_env_biological(self, fh: TextIO, biol: _pd.DataFrame) -> None:
+    def _write_env_biological(self, fh: TextIO, biol: pd.DataFrame) -> None:
         """Writes biological layer parameters to env file."""
         self._print_env_line(fh, biol.shape[0], "N_Biol_Layers / z1 z2 w0 Q a0")
         for j, row in enumerate(biol.values):
@@ -588,7 +588,7 @@ class Environment(MutableMapping[str, Any]):
         self._print_env_line(fh,f"{self['_mesh_npts']} {self['_depth_sigma']} {self['_depth_max']}",comment)
 
         svp_interp = _Maps.soundspeed_interp_rev[self['soundspeed_interp']]
-        if isinstance(svp, _pd.DataFrame) and len(svp.columns) == 1:
+        if isinstance(svp, pd.DataFrame) and len(svp.columns) == 1:
             svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
         if svp.size == 1:
             self._print_env_line(fh,self._array2str([0.0, svp]),"Min_Depth SSP_Const")
@@ -726,7 +726,7 @@ class Environment(MutableMapping[str, Any]):
             for j in range(rc.shape[0]):
                 f.write(f"{rc[j,0]}  {rc[j,1]}  {rc[j,2]}\n")
 
-    def _create_ssp_quad_file(self, filename: str, svp: _pd.DataFrame) -> None:
+    def _create_ssp_quad_file(self, filename: str, svp: pd.DataFrame) -> None:
         """Write 2D SSP data to file"""
         with open(filename, 'wt') as f:
             f.write(str(svp.shape[1])+"\n") # number of SSP points
@@ -756,7 +756,7 @@ class Environment(MutableMapping[str, Any]):
         # coerce types
         if not (
             value is None or
-            isinstance(value,_pd.DataFrame) or
+            isinstance(value,pd.DataFrame) or
             np.isscalar(value)
                ):
             if not isinstance(value[0],str):

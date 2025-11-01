@@ -16,7 +16,7 @@ from sys import float_info as _fi
 
 import numpy as np
 import scipy.interpolate as _interp
-import pandas as _pd
+import pandas as pd
 
 import matplotlib.pyplot as _pyplt
 import matplotlib.colors as _mplc
@@ -150,7 +150,7 @@ def plot_ssp(env: Environment, **kwargs: Any) -> None:
 
     oh = _plt.hold()
     svp = env['soundspeed']
-    if isinstance(svp, _pd.DataFrame):
+    if isinstance(svp, pd.DataFrame):
         svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
     if env['soundspeed_interp'] == _Strings.spline:
         ynew = np.linspace(np.min(svp[:,0]), np.max(svp[:,0]), 100)
