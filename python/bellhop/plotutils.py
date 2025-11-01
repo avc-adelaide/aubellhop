@@ -10,7 +10,7 @@
 
 """Easy-to-use plotting utilities based on `Bokeh <http://bokeh.pydata.org>`_."""
 
-from typing import Any, Optional, List, Tuple, Union
+from typing import Any, List, Tuple, Union
 import numpy as np
 import os as _os
 import warnings as _warnings
@@ -47,7 +47,7 @@ try:
 except (ImportError, AttributeError):
     _notebook = False
 
-def _new_figure(title: Optional[str], width: Optional[int], height: Optional[int], xlabel: Optional[str], ylabel: Optional[str], xlim: Optional[Tuple[float, float]], ylim: Optional[Tuple[float, float]], xtype: Optional[str], ytype: Optional[str], interactive: Optional[bool]) -> Any:
+def _new_figure(title: str | None, width: int | None, height: int | None, xlabel: str | None, ylabel: str | None, xlim: Tuple[float, float | None], ylim: Tuple[float, float | None], xtype: str | None, ytype: str | None, interactive: bool | None) -> Any:
     global _color, _figure
 
     width = width or _figsize[0]
@@ -244,7 +244,7 @@ def use_static_images(b: bool = True) -> None:
     _interactive = False
     _static_images = True
 
-def hold(enable: bool = True) -> Optional[bool]:
+def hold(enable: bool = True) -> bool | None:
     """Combine multiple plots into one.
 
     Parameters
@@ -351,9 +351,9 @@ class many_figures:
     >>>     arlpy.plot.plot([0,10], [0,10])
     """
 
-    def __init__(self, figsize: Optional[Tuple[int, int]] = None):
+    def __init__(self, figsize: Tuple[int, int | None] = None):
         self.figsize = figsize
-        self.old_figsize: Optional[Tuple[int, int]] = None
+        self.old_figsize: Tuple[int, int | None] = None
 
     def __enter__(self) -> None:
         global _figures, _figsize
@@ -400,27 +400,27 @@ def gcf() -> Any:
 
 def plot(x: Any,
          y: Any = None,
-         fs: Optional[float] = None,
+         fs: float | None = None,
          maxpts: int = 10000,
-         pooling: Optional[str] = None,
-         color: Optional[str] = None,
+         pooling: str | None = None,
+         color: str | None = None,
          style: str = 'solid',
          thickness: int = 1,
-         marker: Optional[str] = None,
+         marker: str | None = None,
          filled: bool = False,
          size: int = 6,
          mskip: int = 0,
-         title: Optional[str] = None,
-         xlabel: Optional[str] = None,
-         ylabel: Optional[str] = None,
-         xlim: Optional[Tuple[float, float]] = None,
-         ylim: Optional[Tuple[float, float]] = None,
+         title: str | None = None,
+         xlabel: str | None = None,
+         ylabel: str | None = None,
+         xlim: Tuple[float, float | None] = None,
+         ylim: Tuple[float, float | None] = None,
          xtype: str = 'auto',
          ytype: str = 'auto',
-         width: Optional[int] = None,
-         height: Optional[int] = None,
-         legend: Optional[str] = None,
-         interactive: Optional[bool] = None,
+         width: int | None = None,
+         height: int | None = None,
+         legend: str | None = None,
+         interactive: bool | None = None,
          hold: bool = False,
         ) -> None:
     """Plot a line graph or time series.
@@ -524,7 +524,7 @@ def plot(x: Any,
         _show(_figure)
         _figure = None
 
-def scatter(x: Any, y: Any, marker: str = '.', filled: bool = False, size: int = 6, color: Optional[str] = None, title: Optional[str] = None, xlabel: Optional[str] = None, ylabel: Optional[str] = None, xlim: Optional[Tuple[float, float]] = None, ylim: Optional[Tuple[float, float]] = None, xtype: str = 'auto', ytype: str = 'auto', width: Optional[int] = None, height: Optional[int] = None, legend: Optional[str] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
+def scatter(x: Any, y: Any, marker: str = '.', filled: bool = False, size: int = 6, color: str | None = None, title: str | None = None, xlabel: str | None = None, ylabel: str | None = None, xlim: Tuple[float, float | None] = None, ylim: Tuple[float, float | None] = None, xtype: str = 'auto', ytype: str = 'auto', width: int | None = None, height: int | None = None, legend: str | None = None, hold: bool = False, interactive: bool | None = None) -> None:
     """Plot a scatter plot.
 
     :param x: x data
@@ -590,7 +590,7 @@ def scatter(x: Any, y: Any, marker: str = '.', filled: bool = False, size: int =
         _show(_figure)
         _figure = None
 
-def image(img: Any, x: Optional[Any] = None, y: Optional[Any] = None, colormap: str = 'Plasma256', clim: Optional[Tuple[float, float]] = None, clabel: Optional[str] = None, title: Optional[str] = None, xlabel: Optional[str] = None, ylabel: Optional[str] = None, xlim: Optional[Tuple[float, float]] = None, ylim: Optional[Tuple[float, float]] = None, xtype: str = 'auto', ytype: str = 'auto', width: Optional[int] = None, height: Optional[int] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
+def image(img: Any, x: Any | None = None, y: Any | None = None, colormap: str = 'Plasma256', clim: Tuple[float, float | None] = None, clabel: str | None = None, title: str | None = None, xlabel: str | None = None, ylabel: str | None = None, xlim: Tuple[float, float | None] = None, ylim: Tuple[float, float | None] = None, xtype: str = 'auto', ytype: str = 'auto', width: int | None = None, height: int | None = None, hold: bool = False, interactive: bool | None = None) -> None:
     """Plot a heatmap of 2D scalar data.
 
     :param img: 2D image data
@@ -705,7 +705,7 @@ def text(x: float, y: float, s: str, color: str = 'gray', size: str = '8pt', hol
         _show(_figure)
         _figure = None
 
-def box(left: Optional[float] = None, right: Optional[float] = None, top: Optional[float] = None, bottom: Optional[float] = None, color: str = 'yellow', alpha: float = 0.1, hold: bool = False) -> None:
+def box(left: float | None = None, right: float | None = None, top: float | None = None, bottom: float | None = None, color: str = 'yellow', alpha: float = 0.1, hold: bool = False) -> None:
     """Add a highlight box to a plot.
 
     :param left: x location of left of box
@@ -751,7 +751,7 @@ def set_colors(c: List[str]) -> None:
     global _colors
     _colors = c
 
-def specgram(x: Any, fs: float = 2, nfft: Optional[int] = None, noverlap: Optional[int] = None, colormap: str = 'Plasma256', clim: Optional[Tuple[float, float]] = None, clabel: str = 'dB', title: Optional[str] = None, xlabel: str = 'Time (s)', ylabel: str = 'Frequency (Hz)', xlim: Optional[Tuple[float, float]] = None, ylim: Optional[Tuple[float, float]] = None, width: Optional[int] = None, height: Optional[int] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
+def specgram(x: Any, fs: float = 2, nfft: int | None = None, noverlap: int | None = None, colormap: str = 'Plasma256', clim: Tuple[float, float | None] = None, clabel: str = 'dB', title: str | None = None, xlabel: str = 'Time (s)', ylabel: str = 'Frequency (Hz)', xlim: Tuple[float, float | None] = None, ylim: Tuple[float, float | None] = None, width: int | None = None, height: int | None = None, hold: bool = False, interactive: bool | None = None) -> None:
     """Plot spectrogram of a given time series signal.
 
     :param x: time series signal
@@ -787,7 +787,7 @@ def specgram(x: Any, fs: float = 2, nfft: Optional[int] = None, noverlap: Option
           clim=clim, clabel=clabel, xlabel=xlabel, ylabel=ylabel, xlim=xlim,
           ylim=ylim, width=width, height=height, hold=hold, interactive=interactive)
 
-def psd(x: Any, fs: float = 2, nfft: int = 512, noverlap: Optional[int] = None, window: str = 'hann', color: Optional[str] = None, style: str = 'solid', thickness: int = 1, marker: Optional[str] = None, filled: bool = False, size: int = 6, title: Optional[str] = None, xlabel: str = 'Frequency (Hz)', ylabel: str = 'Power spectral density (dB/Hz)', xlim: Optional[Tuple[float, float]] = None, ylim: Optional[Tuple[float, float]] = None, width: Optional[int] = None, height: Optional[int] = None, legend: Optional[str] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
+def psd(x: Any, fs: float = 2, nfft: int = 512, noverlap: int | None = None, window: str = 'hann', color: str | None = None, style: str = 'solid', thickness: int = 1, marker: str | None = None, filled: bool = False, size: int = 6, title: str | None = None, xlabel: str = 'Frequency (Hz)', ylabel: str = 'Power spectral density (dB/Hz)', xlim: Tuple[float, float | None] = None, ylim: Tuple[float, float | None] = None, width: int | None = None, height: int | None = None, legend: str | None = None, hold: bool = False, interactive: bool | None = None) -> None:
     """Plot power spectral density of a given time series signal.
 
     :param x: time series signal
@@ -830,7 +830,7 @@ def psd(x: Any, fs: float = 2, nfft: int = 512, noverlap: Optional[int] = None, 
          xlim=xlim, ylim=ylim, maxpts=len(f), width=width, height=height,
          hold=hold, legend=legend, interactive=interactive)
 
-def iqplot(data: Any, marker: str = '.', color: Optional[str] = None, labels: Optional[Any] = None, filled: bool = False, size: Optional[int] = None, title: Optional[str] = None, xlabel: Optional[str] = None, ylabel: Optional[str] = None, xlim: List[float] = [-2, 2], ylim: List[float] = [-2, 2], width: Optional[int] = None, height: Optional[int] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
+def iqplot(data: Any, marker: str = '.', color: str | None = None, labels: Any | None = None, filled: bool = False, size: int | None = None, title: str | None = None, xlabel: str | None = None, ylabel: str | None = None, xlim: List[float] = [-2, 2], ylim: List[float] = [-2, 2], width: int | None = None, height: int | None = None, hold: bool = False, interactive: bool | None = None) -> None:
     """Plot signal points.
 
     :param data: complex baseband signal points
@@ -871,7 +871,7 @@ def iqplot(data: Any, marker: str = '.', color: Optional[str] = None, labels: Op
         for i in range(len(data)):
             text(data[i].real, data[i].imag, str(labels[i]), color=color, size=size, hold=True if i < len(data)-1 else hold)
 
-def freqz(b: Any, a: Any = 1, fs: float = 2.0, worN: Optional[int] = None, whole: bool = False, degrees: bool = True, style: str = 'solid', thickness: int = 1, title: Optional[str] = None, xlabel: str = 'Frequency (Hz)', xlim: Optional[Tuple[float, float]] = None, ylim: Optional[Tuple[float, float]] = None, width: Optional[int] = None, height: Optional[int] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
+def freqz(b: Any, a: Any = 1, fs: float = 2.0, worN: int | None = None, whole: bool = False, degrees: bool = True, style: str = 'solid', thickness: int = 1, title: str | None = None, xlabel: str = 'Frequency (Hz)', xlim: Tuple[float, float | None] = None, ylim: Tuple[float, float | None] = None, width: int | None = None, height: int | None = None, hold: bool = False, interactive: bool | None = None) -> None:
     """Plot frequency response of a filter.
 
     This is a convenience function to plot frequency response, and internally uses

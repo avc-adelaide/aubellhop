@@ -8,7 +8,7 @@ replacing manual option checking with field validators.
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
-from typing import Optional, Union, Any, Dict, Iterator, List, TextIO, Self, Callable
+from typing import Union, Any, Dict, Iterator, List, TextIO, Self, Callable
 
 from pprint import pformat
 import warnings
@@ -115,28 +115,28 @@ class Environment(MutableMapping[str, Any]):
     _sbp_file: str = _Strings.default # set to "from-file" if source_directionality defined
 
     # Bottom parameters
-    bottom_interp: Optional[str] = None
+    bottom_interp: str | None = None
     bottom_soundspeed: float = EnvDefaults.sound_speed # m/s
     _bottom_soundspeed_shear: float = 0.0  # m/s (ignored)
     bottom_density: float = EnvDefaults.density  # kg/m^3
-    bottom_attenuation: Optional[float] = None  # dB/wavelength
-    _bottom_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
+    bottom_attenuation: float | None = None  # dB/wavelength
+    _bottom_attenuation_shear: float | None = None  # dB/wavelength (ignored)
     bottom_roughness: float = 0.0  # m (rms)
-    bottom_beta: Optional[float] = None
-    bottom_transition_freq: Optional[float] = None  # Hz
+    bottom_beta: float | None = None
+    bottom_transition_freq: float | None = None  # Hz
     bottom_boundary_condition: str = _Strings.acousto_elastic
-    bottom_reflection_coefficient: Optional[Any] = None
+    bottom_reflection_coefficient: Any | None = None
 
     # Surface parameters
-    surface: Optional[Any] = None  # surface profile
+    surface: Any | None = None  # surface profile
     surface_interp: str = _Strings.linear  # curvilinear/linear
     surface_boundary_condition: str = _Strings.vacuum
-    surface_reflection_coefficient: Optional[Any] = None
+    surface_reflection_coefficient: Any | None = None
     surface_soundspeed: float = EnvDefaults.sound_speed # m/s
     _surface_soundspeed_shear: float = 0.0  # m/s (ignored)
     surface_density: float = EnvDefaults.density  # kg/m^3
-    surface_attenuation: Optional[float] = None  # dB/wavelength
-    _surface_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
+    surface_attenuation: float | None = None  # dB/wavelength
+    _surface_attenuation_shear: float | None = None  # dB/wavelength (ignored)
     _surface_min: float | None = None
     surface_min: float | None = None
 
@@ -145,55 +145,55 @@ class Environment(MutableMapping[str, Any]):
     source_range: Union[float, Any] = 0.0
     source_cross_range: Union[float, Any] = 0.0
     source_depth: Union[float, Any] = 5.0  # m - Any allows for np.ndarray
-    source_ndepth: Optional[int] = None
-    source_nrange: Optional[int] = None
-    source_ncrossrange: Optional[int] = None
-    source_directionality: Optional[Any] = None  # [(deg, dB)...]
+    source_ndepth: int | None = None
+    source_nrange: int | None = None
+    source_ncrossrange: int | None = None
+    source_directionality: Any | None = None  # [(deg, dB)...]
 
     # Receiver parameters
     receiver_depth: Union[float, Any] = 10.0  # m - Any allows for np.ndarray
     receiver_range: Union[float, Any] = 1000.0  # m - Any allows for np.ndarray
     receiver_bearing: Union[float, Any] = 0.0  # deg - Any allows for np.ndarray
-    receiver_ndepth: Optional[int] = None
-    receiver_nrange: Optional[int] = None
-    receiver_nbearing: Optional[int] = None
+    receiver_ndepth: int | None = None
+    receiver_nrange: int | None = None
+    receiver_nbearing: int | None = None
 
     # Beam settings
     beam_type: str = _Strings.default
-    beam_angle_min: Optional[float] = None  # deg
-    beam_angle_max: Optional[float] = None  # deg
-    beam_bearing_min: Optional[float] = None  # deg
-    beam_bearing_max: Optional[float] = None  # deg
+    beam_angle_min: float | None = None  # deg
+    beam_angle_max: float | None = None  # deg
+    beam_bearing_min: float | None = None  # deg
+    beam_bearing_max: float | None = None  # deg
     beam_num: int = 0  # (0 = auto)
     beam_bearing_num: int = 0
-    single_beam_index: Optional[int] = None
+    single_beam_index: int | None = None
     _single_beam: str = _Strings.default # value inferred from `single_beam_index`
 
     # Simulation extent
-    simulation_depth: Optional[float] = None
-    simulation_range: Optional[float] = None
-    simulation_cross_range: Optional[float] = None
-    simulation_depth_scale: Optional[float] = None
-    simulation_range_scale: Optional[float] = None
-    simulation_cross_range_scale: Optional[float] = None
-    simulation_cross_range_min: Optional[float] = None
+    simulation_depth: float | None = None
+    simulation_range: float | None = None
+    simulation_cross_range: float | None = None
+    simulation_depth_scale: float | None = None
+    simulation_range_scale: float | None = None
+    simulation_cross_range_scale: float | None = None
+    simulation_cross_range_min: float | None = None
 
     # Solution parameters
-    step_size: Optional[float] = 0.0 # (0 = auto)
+    step_size: float | None = 0.0 # (0 = auto)
     grid_type: str = 'default'
-    task: Optional[str] = None
-    interference_mode: Optional[str] = None # subset of `task` for providing TL interface
+    task: str | None = None
+    interference_mode: str | None = None # subset of `task` for providing TL interface
 
     # Attenuation parameters
     volume_attenuation: str = EnvDefaults.volume_attenuation
     attenuation_units: str = EnvDefaults.attenuation_units
-    biological_layer_parameters: Optional[Any] = None
+    biological_layer_parameters: Any | None = None
 
     # Francois-Garrison volume attenuation parameters
-    fg_salinity: Optional[float] = None
-    fg_temperature: Optional[float] = None
-    fg_pH: Optional[float] = None
-    fg_depth: Optional[float] = None
+    fg_salinity: float | None = None
+    fg_temperature: float | None = None
+    fg_pH: float | None = None
+    fg_depth: float | None = None
 
     comment_pad: int = EnvDefaults.comment_pad
 
@@ -670,7 +670,7 @@ class Environment(MutableMapping[str, Any]):
             line_str = line_str + " ! " + comment_str
         self._print(fh,line_str)
 
-    def _print_array(self, fh: TextIO, a: Any, label: str = "", nn: Optional[int] = None) -> None:
+    def _print_array(self, fh: TextIO, a: Any, label: str = "", nn: int | None = None) -> None:
         """Print a 1D array to the .env file, prefixed by a count of the array length"""
         na = np.size(a)
         if nn is None:
@@ -701,7 +701,7 @@ class Environment(MutableMapping[str, Any]):
         combined = "".join(args).strip()
         return f"'{combined}'"
 
-    def _float(self, x: Optional[float], scale: float = 1) -> Optional[float]:
+    def _float(self, x: float | None, scale: float = 1) -> float | None:
         """Permissive floatenator"""
         return None if x is None else float(x) * scale
 

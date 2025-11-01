@@ -3,7 +3,7 @@ import os
 
 from struct import unpack as _unpack
 from pathlib import Path
-from typing import Any, Optional, Tuple, Union, TextIO, List, cast, IO
+from typing import Any, Tuple, Union, TextIO, List, cast, IO
 from numpy.typing import NDArray
 
 import numpy as np
@@ -92,17 +92,17 @@ def _read_ssp_points(f: TextIO) -> pd.DataFrame:
     df.index.name = "depth"
     return df
 
-def _opt_lookup(name: str, opt: str, _map: dict[str, _Strings]) -> Optional[str]:
+def _opt_lookup(name: str, opt: str, _map: dict[str, _Strings]) -> str | None:
     opt_str = _map.get(opt)
     if opt_str is None:
         raise ValueError(f"{name} option {opt!r} not available")
     return opt_str
 
-def _float(x: Any, scale: float = 1) -> Optional[float]:
+def _float(x: Any, scale: float = 1) -> float | None:
     """Permissive float-enator with unit scaling"""
     return None if x is None else float(x) * scale
 
-def _int(x: Any) -> Optional[int]:
+def _int(x: Any) -> int | None:
     """Permissive int-enator"""
     return None if x is None else int(x)
 
@@ -361,10 +361,10 @@ class EnvironmentReader:
             self.env['simulation_depth'] = float(limits_parts[3])
 
 def read_ssp(fname: str,
-             depths: Optional[Union[
+             depths: Union[
                         List[float],
                         NDArray[np.float64],
-                        pd.DataFrame]] = None
+                        pd.DataFrame] | None = None
             ) -> Union[NDArray[np.float64], pd.DataFrame]:
     """Read a 2D sound speed profile (.ssp) file used by BELLHOP.
 

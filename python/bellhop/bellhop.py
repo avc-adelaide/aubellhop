@@ -4,7 +4,7 @@ import subprocess as _proc
 import shutil
 
 from tempfile import mkstemp as _mkstemp
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from .constants import ModelDefaults, _Strings, _File_Ext
 from .environment import Environment
@@ -34,10 +34,10 @@ class BellhopSimulator:
         self.exe: str = exe
         self.dim: int = dim
 
-    def supports(self, env: Optional[Environment] = None,
-                       task: Optional[str] = None,
-                       exe: Optional[str] = None,
-                       dim: Optional[int] = None,
+    def supports(self, env: Environment | None = None,
+                       task: str | None = None,
+                       exe: str | None = None,
+                       dim: int | None = None,
                 ) -> bool:
         """Check whether the model supports the task.
 
@@ -56,7 +56,7 @@ class BellhopSimulator:
     def run(self, env: Environment,
                   task: str,
                   debug: bool = False,
-                  fname_base: Optional[str] = None,
+                  fname_base: str | None = None,
            ) -> Any:
         """
         High-level interface function which runs the model.
@@ -97,7 +97,7 @@ class BellhopSimulator:
             _Strings.semicoherent: ['S', read_shd,      _File_Ext.shd],
         }
 
-    def _prepare_env_file(self, fname_base: Optional[str]) -> Tuple[int, str]:
+    def _prepare_env_file(self, fname_base: str | None) -> Tuple[int, str]:
         """Opens a file for writing the .env file, in a temp location if necessary, and delete other files with same basename.
 
         Parameters
@@ -132,7 +132,7 @@ class BellhopSimulator:
     def _run_exe(self, fname_base: str,
                        args: str = "",
                        debug: bool = False,
-                       exe: Optional[str] = None,
+                       exe: str | None = None,
                 ) -> None:
         """Run the executable and raise exceptions if there are errors."""
 
@@ -157,7 +157,7 @@ class BellhopSimulator:
                 f"\nExtract from PRT file:\n{err}"
             )
 
-    def _check_error(self, fname_base: str) -> Optional[str]:
+    def _check_error(self, fname_base: str) -> str | None:
         """Extracts Bellhop error text from the .prt file"""
         try:
             err = ""

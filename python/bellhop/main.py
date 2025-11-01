@@ -15,7 +15,7 @@ to work, the complete bellhop.py package must be built and installed
 and `bellhop.exe` should be in your PATH.
 """
 
-from typing import Any, List, Optional, Union, Tuple
+from typing import Any, List, Union, Tuple
 
 import numpy as np
 import pandas as pd
@@ -79,7 +79,7 @@ def new_model(name: str, **kwargs: Any) -> BellhopSimulator:
 new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
 new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
 
-def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: Optional[int] = None) -> List[str]:
+def models(env: Environment | None = None, task: str | None = None, dim: int | None = None) -> List[str]:
     """List available models.
 
     Parameters
@@ -118,10 +118,10 @@ def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: O
 
 def compute(
             env: Union[Environment,List[Environment]],
-            model: Optional[Any] = None,
-            task: Optional[Any] = None,
+            model: Any | None = None,
+            task: Any | None = None,
             debug: bool = False,
-            fname_base: Optional[str] = None
+            fname_base: str | None = None
            ) -> Union[  Any,
                         Environment,
                         Tuple[List[Environment], pd.DataFrame]
@@ -209,7 +209,7 @@ def compute(
 
 def _select_model(env: Environment,
                   task: str,
-                  model: Optional[str] = None,
+                  model: str | None = None,
                   debug: bool = False,
                  ) -> Any:
     """Finds a model to use, or if a model is requested validate it.
@@ -252,7 +252,7 @@ def _select_model(env: Environment,
             return mm
     raise ValueError('No suitable propagation model available')
 
-def compute_arrivals(env: Environment, model: Optional[Any] = None, debug: bool = False, fname_base: Optional[str] = None) -> Any:
+def compute_arrivals(env: Environment, model: Any | None = None, debug: bool = False, fname_base: str | None = None) -> Any:
     """Compute arrivals between each transmitter and receiver.
 
     Parameters
@@ -282,7 +282,7 @@ def compute_arrivals(env: Environment, model: Optional[Any] = None, debug: bool 
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 
-def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_depth_ndx: int = 0, receiver_range_ndx: int = 0, model: Optional[Any] = None, debug: bool = False, fname_base: Optional[str] = None) -> Any:
+def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_depth_ndx: int = 0, receiver_range_ndx: int = 0, model: Any | None = None, debug: bool = False, fname_base: str | None = None) -> Any:
     """Compute eigenrays between a given transmitter and receiver.
 
     Parameters
@@ -326,7 +326,7 @@ def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_dept
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 
-def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Optional[Any] = None, debug: bool = False, fname_base: Optional[str] = None) -> Any:
+def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Any | None = None, debug: bool = False, fname_base: str | None = None) -> Any:
     """Compute rays from a given transmitter.
 
     Parameters
@@ -362,7 +362,7 @@ def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Optional[An
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 
-def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode: Optional[str] = None, model: Optional[Any] = None, debug: bool = False, fname_base: Optional[str] = None) -> Any:
+def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode: str | None = None, model: Any | None = None, debug: bool = False, fname_base: str | None = None) -> Any:
     """Compute transmission loss from a given transmitter to all receviers.
 
     Parameters

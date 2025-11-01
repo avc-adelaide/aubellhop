@@ -11,7 +11,7 @@
 """Plotting functions for the underwater acoustic propagation modeling toolbox.
 """
 
-from typing import Any, Optional
+from typing import Any
 from sys import float_info as _fi
 
 import numpy as np
@@ -32,7 +32,7 @@ def plot_env(env: Environment,
              bottom_color: str = 'peru',
              source_color: str = 'orangered',
              receiver_color: str = 'midnightblue',
-             receiver_plot: Optional[bool] = None,
+             receiver_plot: bool | None = None,
              **kwargs: Any
             ) -> None:
     """Plots a visual representation of the environment.
@@ -203,7 +203,7 @@ def plot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwargs
         _plt.plot([t, t], [min_y, y], color=color, **kwargs)
     _plt.hold(oh if oh is not None else False)
 
-def plot_rays(rays: Any, env: Optional[Environment] = None, invert_colors: bool = False, **kwargs: Any) -> None:
+def plot_rays(rays: Any, env: Environment | None = None, invert_colors: bool = False, **kwargs: Any) -> None:
     """Plots ray paths.
 
     Parameters
@@ -256,7 +256,7 @@ def plot_rays(rays: Any, env: Optional[Environment] = None, invert_colors: bool 
         plot_env(env,title=None)
     _plt.hold(oh if oh is not None else False)
 
-def plot_transmission_loss(tloss: Any, env: Optional[Environment] = None, **kwargs: Any) -> None:
+def plot_transmission_loss(tloss: Any, env: Environment | None = None, **kwargs: Any) -> None:
     """Plots transmission loss.
 
     Parameters
