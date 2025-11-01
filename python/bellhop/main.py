@@ -20,7 +20,7 @@ from typing import Any, List, Optional, Union, Tuple
 import numpy as np
 import pandas as pd
 
-from bellhop.constants import _Strings, EnvDefaults
+from bellhop.constants import _Strings, EnvDefaults, ModelDefaults
 
 # this format to explicitly mark the functions as public:
 from bellhop.readers import read_ssp as read_ssp
@@ -76,8 +76,8 @@ def new_model(name: str, **kwargs: Any) -> BellhopSimulator:
     _models.append(model)
     return model
 
-new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=2)
-new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=3)
+new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
+new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
 
 def models(env: Optional[Environment] = None, task: Optional[str] = None, dim: Optional[int] = None) -> List[str]:
     """List available models.

@@ -240,13 +240,14 @@ class ModelDefaults:
     """Dataclass of hard-coded defaults used throughout the Bellhop interface."""
     name_2d: str = field(default="bellhop", metadata={"desc": "Name of the class instance for the 2D model"})
     exe_2d: str = field(default="bellhop.exe", metadata={"desc": "Executable filename for the 2D model"})
+    dim_2d: int = field(default=2, metadata={"desc": "Number of dimensions in the 2D model"})
     name_3d: str = field(default="bellhop3d", metadata={"desc": "Name of the class instance for the 3D model"})
     exe_3d: str = field(default="bellhop3d.exe", metadata={"desc": "Executable filename for the 3D model"})
+    dim_3d: int = field(default=3, metadata={"desc": "Number of dimensions in the 3D model"})
 
 @dataclass
-class EnvEnvDefaults:
+class EnvDefaults:
     """Dataclass of hard-coded defaults used throughout the Bellhop interface."""
-    beam_angle_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_angle_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_angle_fullspace: float = field(default=180.0, metadata={"units": "deg"})
     beam_bearing_halfspace: float = field(default=90.0, metadata={"units": "deg"})

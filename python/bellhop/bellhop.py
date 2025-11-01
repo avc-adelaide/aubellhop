@@ -6,7 +6,7 @@ import shutil
 from tempfile import mkstemp as _mkstemp
 from typing import Any, Dict, List, Optional, Tuple
 
-from .constants import EnvDefaults, _Strings, _File_Ext
+from .constants import ModelDefaults, _Strings, _File_Ext
 from .environment import Environment
 from .readers import read_shd, read_arrivals, read_rays
 
@@ -27,8 +27,8 @@ class BellhopSimulator:
     """
 
     def __init__(self, name: str = ModelDefaults.name_2d,
-                       exe: str = ModelDefaults.exe_2d,
-                       dim: int = ModelDefaults.dim,
+                       exe:  str = ModelDefaults.exe_2d,
+                       dim:  int = ModelDefaults.dim_2d,
                 ) -> None:
         self.name: str = name
         self.exe: str = exe
