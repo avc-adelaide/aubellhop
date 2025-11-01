@@ -40,14 +40,14 @@ from bellhop.bellhop import BellhopSimulator
 class ModelRegistry:
     """Registry for Bellhop simulator models."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self._models: List[BellhopSimulator] = []
         self._initialize_defaults()
     
-    def _initialize_defaults(self):
+    def _initialize_defaults(self) -> None:
         """Create default models."""
-        self.new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
-        self.new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
+        self.new(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
+        self.new(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
     
     def new(self, name: str, **kwargs: Any) -> BellhopSimulator:
         """Instantiate a new Bellhop model and add it to the registry."""
@@ -75,7 +75,7 @@ class ModelRegistry:
                 return m
         raise KeyError(f"Unknown model: '{name}'")
     
-    def reset(self):
+    def reset(self) -> None:
         """Clear all models and reinitialize defaults (useful for testing)."""
         self._models.clear()
         self._initialize_defaults()
@@ -85,7 +85,7 @@ class ModelRegistry:
                 task: str,
                model: str | None = None,
                debug: bool = False,
-              ) -> Any:
+              ) -> BellhopSimulator:
         """Finds a model to use, or if a model is requested validate it.
     
         Parameters
