@@ -18,7 +18,7 @@ import numpy as np
 from numpy.typing import NDArray
 import pandas as pd
 
-from .constants import _Strings, _Maps, EnvDefaults
+from .constants import BHStrings, _Maps, EnvDefaults
 
 @dataclass
 class Environment(MutableMapping[str, Any]):
@@ -98,11 +98,11 @@ class Environment(MutableMapping[str, Any]):
 
     # Sound speed parameters
     soundspeed: float | Any = EnvDefaults.sound_speed  # m/s
-    soundspeed_interp: str = _Strings.linear
+    soundspeed_interp: str = BHStrings.linear
 
     # Depth parameters
     depth: float | Any = 25.0  # m
-    depth_interp: str = _Strings.linear
+    depth_interp: str = BHStrings.linear
     _mesh_npts: int = 0 # ignored by bellhop
     _depth_sigma: float = 0.0 # ignored by bellhop
     depth_max: float | None = None  # m
@@ -110,9 +110,9 @@ class Environment(MutableMapping[str, Any]):
     _range_max: float | None = None  # m -- not used in the environment file
 
     # Flags to read/write from separate files
-    _bathymetry: str = _Strings.flat  # set to "from-file" if multiple bottom depths
-    _altimetry: str = _Strings.flat  # set to "from-file" if multiple surface heights
-    _sbp_file: str = _Strings.default # set to "from-file" if source_directionality defined
+    _bathymetry: str = BHStrings.flat  # set to "from-file" if multiple bottom depths
+    _altimetry: str = BHStrings.flat  # set to "from-file" if multiple surface heights
+    _sbp_file: str = BHStrings.default # set to "from-file" if source_directionality defined
 
     # Bottom parameters
     bottom_interp: str | None = None
@@ -124,13 +124,13 @@ class Environment(MutableMapping[str, Any]):
     bottom_roughness: float = 0.0  # m (rms)
     bottom_beta: float | None = None
     bottom_transition_freq: float | None = None  # Hz
-    bottom_boundary_condition: str = _Strings.acousto_elastic
+    bottom_boundary_condition: str = BHStrings.acousto_elastic
     bottom_reflection_coefficient: Any | None = None
 
     # Surface parameters
     surface: Any | None = None  # surface profile
-    surface_interp: str = _Strings.linear  # curvilinear/linear
-    surface_boundary_condition: str = _Strings.vacuum
+    surface_interp: str = BHStrings.linear  # curvilinear/linear
+    surface_boundary_condition: str = BHStrings.vacuum
     surface_reflection_coefficient: Any | None = None
     surface_soundspeed: float = EnvDefaults.sound_speed # m/s
     _surface_soundspeed_shear: float = 0.0  # m/s (ignored)
@@ -159,7 +159,7 @@ class Environment(MutableMapping[str, Any]):
     receiver_nbearing: int | None = None
 
     # Beam settings
-    beam_type: str = _Strings.default
+    beam_type: str = BHStrings.default
     beam_angle_min: float | None = None  # deg
     beam_angle_max: float | None = None  # deg
     beam_bearing_min: float | None = None  # deg
@@ -167,7 +167,7 @@ class Environment(MutableMapping[str, Any]):
     beam_num: int = 0  # (0 = auto)
     beam_bearing_num: int = 0
     single_beam_index: int | None = None
-    _single_beam: str = _Strings.default # value inferred from `single_beam_index`
+    _single_beam: str = BHStrings.default # value inferred from `single_beam_index`
 
     # Simulation extent
     simulation_depth: float | None = None
@@ -305,19 +305,19 @@ class Environment(MutableMapping[str, Any]):
         This function is run as the first step of `.check()`.
         """
 
-        if self.dimension == _Strings.two_d:
+        if self.dimension == BHStrings.two_d:
             self._dimension = 2
-        elif self.dimension == _Strings.two_half_d or self.dimension == _Strings.three_d:
+        elif self.dimension == BHStrings.two_half_d or self.dimension == BHStrings.three_d:
             self._dimension = 3
 
         if np.size(self['depth']) > 1:
-            self["_bathymetry"] = _Strings.from_file
+            self["_bathymetry"] = BHStrings.from_file
         if self["surface"] is not None and np.size(self['surface']) > 1:
-            self["_altimetry"] = _Strings.from_file
+            self["_altimetry"] = BHStrings.from_file
         if self["bottom_reflection_coefficient"] is not None:
-            self["bottom_boundary_condition"] = _Strings.from_file
+            self["bottom_boundary_condition"] = BHStrings.from_file
         if self["surface_reflection_coefficient"] is not None:
-            self["surface_boundary_condition"] = _Strings.from_file
+            self["surface_boundary_condition"] = BHStrings.from_file
 
         self.surface = self.surface if self.surface is not None else EnvDefaults.surface
         def _extremum(
@@ -360,7 +360,7 @@ class Environment(MutableMapping[str, Any]):
             self["soundspeed"] = self["soundspeed"].set_index("depth")
 
         if len(self['soundspeed'].columns) > 1:
-            self['soundspeed_interp'] == _Strings.quadrilateral
+            self['soundspeed_interp'] == BHStrings.quadrilateral
 
         # Beam angle ranges default to half-space if source is left-most, otherwise full-space:
         if self['beam_angle_min'] is None:
@@ -421,7 +421,7 @@ class Environment(MutableMapping[str, Any]):
             assert self['surface'][-1,0] >= self._range_max, 'Last range in surface array must be beyond maximum range: '+str(self._range_max)+' m'
             assert np.all(np.diff(self['surface'][:,0]) > 0), 'surface array must be strictly monotonic in range'
         if self["surface_reflection_coefficient"] is not None:
-            assert self["surface_boundary_condition"] == _Strings.from_file, "TRC values need to be read from file"
+            assert self["surface_boundary_condition"] == BHStrings.from_file, "TRC values need to be read from file"
 
     def _check_env_depth(self) -> None:
         assert self['depth'] is not None, 'depth must be defined or initialised'
@@ -430,9 +430,9 @@ class Environment(MutableMapping[str, Any]):
             assert self['depth'].shape[1] == 2, 'depth must be a scalar or an Nx2 array [ranges, depths]'
             assert self['depth'][-1,0] >= self._range_max, 'Last range in depth array must be beyond maximum range: '+str(self._range_max)+' m'
             assert np.all(np.diff(self['depth'][:,0]) > 0), 'Depth array must be strictly monotonic in range'
-            assert self["_bathymetry"] == _Strings.from_file, 'len(depth)>1 requires BTY file'
+            assert self["_bathymetry"] == BHStrings.from_file, 'len(depth)>1 requires BTY file'
         if self["bottom_reflection_coefficient"] is not None:
-            assert self["bottom_boundary_condition"] == _Strings.from_file, "BRC values need to be read from file"
+            assert self["bottom_boundary_condition"] == BHStrings.from_file, "BRC values need to be read from file"
         assert np.max(self['source_depth']) <= self['_depth_max'], f'source_depth {self.source_depth} cannot exceed water depth: {str(self._depth_max)}'
         assert np.max(self['receiver_depth']) <= self['_depth_max'], f'receiver_depth {self.receiver_depth} cannot exceed water depth: {str(self._depth_max)}'
 
@@ -441,8 +441,8 @@ class Environment(MutableMapping[str, Any]):
         assert self['soundspeed'].size > 1, "Soundspeed DataFrame should have been constructed internally to be two elements"
         if self['soundspeed'].size > 1:
             if len(self['soundspeed'].columns) > 1:
-                assert self['soundspeed_interp'] == _Strings.quadrilateral, "SVP DataFrame with multiple columns implies quadrilateral interpolation."
-            if self['soundspeed_interp'] == _Strings.spline:
+                assert self['soundspeed_interp'] == BHStrings.quadrilateral, "SVP DataFrame with multiple columns implies quadrilateral interpolation."
+            if self['soundspeed_interp'] == BHStrings.spline:
                 assert self['soundspeed'].shape[0] > 3, 'soundspeed profile must have at least 4 points for spline interpolation'
             else:
                 assert self['soundspeed'].shape[0] > 1, 'soundspeed profile must have at least 2 points'
@@ -477,10 +477,10 @@ class Environment(MutableMapping[str, Any]):
             assert np.all(self['source_directionality'][:,0] >= -180) and np.all(self['source_directionality'][:,0] <= 180), 'source_directionality angles must be in (-180, 180]'
 
     def _check_env_beam(self) -> None:
-        assert (self._dimension == 2) or (self._dimension == 3 and self.source_type in (_Strings.point, _Strings.default)), "Can only have point source in 3D (line or point in 2D)"
+        assert (self._dimension == 2) or (self._dimension == 3 and self.source_type in (BHStrings.point, BHStrings.default)), "Can only have point source in 3D (line or point in 2D)"
         assert self['beam_angle_min'] >= -180 and self['beam_angle_min'] <= 180, 'beam_angle_min must be in range [-180, 180]'
         assert self['beam_angle_max'] >= -180 and self['beam_angle_max'] <= 180, 'beam_angle_max must be in range [-180, 180]'
-        if self['_single_beam'] == _Strings.single_beam:
+        if self['_single_beam'] == BHStrings.single_beam:
             assert self['single_beam_index'] is not None, 'Single beam was requested with option I but no index was provided in NBeam line'
 
     ############## WRITING ###############
@@ -519,15 +519,15 @@ class Environment(MutableMapping[str, Any]):
         self._write_env_beam_footer(fh)
         self._print_env_line(fh,"","End of Bellhop environment file")
 
-        if self['surface_boundary_condition'] == _Strings.from_file:
+        if self['surface_boundary_condition'] == BHStrings.from_file:
             self._create_refl_coeff_file(fname_base+".trc", self['surface_reflection_coefficient'])
         if np.size(self["surface"]) > 1:
             self._create_bty_ati_file(fname_base+'.ati', self['surface'], self['surface_interp'])
-        if self['soundspeed_interp'] == _Strings.quadrilateral:
+        if self['soundspeed_interp'] == BHStrings.quadrilateral:
             self._create_ssp_quad_file(fname_base+'.ssp', self['soundspeed'])
         if np.size(self.depth) > 1:
             self._create_bty_ati_file(fname_base+'.bty', self['depth'], self['depth_interp'])
-        if self['bottom_boundary_condition'] == _Strings.from_file:
+        if self['bottom_boundary_condition'] == BHStrings.from_file:
             self._create_refl_coeff_file(fname_base+".brc", self['bottom_reflection_coefficient'])
         if self['source_directionality'] is not None:
             self._create_sbp_file(fname_base+'.sbp', self['source_directionality'])
@@ -553,12 +553,12 @@ class Environment(MutableMapping[str, Any]):
         topopt = self._quoted_opt(svp_interp, svp_boundcond, svp_attenuation_units, svp_volume_attenuation, svp_alti, svp_singlebeam)
         self._print_env_line(fh,f"{topopt}",comment)
 
-        if self['volume_attenuation'] == _Strings.francois_garrison:
+        if self['volume_attenuation'] == BHStrings.francois_garrison:
             comment = "Francois-Garrison volume attenuation parameters (sal, temp, pH, depth)"
             self._print_env_line(fh,f"{self['fg_salinity']} {self['fg_temperature']} {self['fg_pH']} {self['fg_depth']}",comment)
 
         # Line 4a
-        if self['surface_boundary_condition'] == _Strings.acousto_elastic:
+        if self['surface_boundary_condition'] == BHStrings.acousto_elastic:
             comment = "DEPTH_Top (m)  TOP_SoundSpeed (m/s)  TOP_SoundSpeed_Shear (m/s)  TOP_Density (g/cm^3)  [ TOP_Absorp [ TOP_Absorp_Shear ] ]"
             array_str = self._array2str([
               self['_surface_min'],
@@ -696,7 +696,7 @@ class Environment(MutableMapping[str, Any]):
         ) + " /"
 
     def _quoted_opt(self, *args: str) -> str:
-        """Concatenate N input _Strings. strip whitespace, surround with single quotes
+        """Concatenate N input BHStrings. strip whitespace, surround with single quotes
         """
         combined = "".join(args).strip()
         return f"'{combined}'"
@@ -705,7 +705,7 @@ class Environment(MutableMapping[str, Any]):
         """Permissive floatenator"""
         return None if x is None else float(x) * scale
 
-    def _create_bty_ati_file(self, filename: str, depth: Any, interp: _Strings) -> None:
+    def _create_bty_ati_file(self, filename: str, depth: Any, interp: BHStrings) -> None:
         with open(filename, 'wt') as f:
             f.write(f"'{_Maps.depth_interp_rev[interp]}'\n")
             f.write(str(depth.shape[0])+"\n")

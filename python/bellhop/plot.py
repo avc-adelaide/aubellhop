@@ -22,7 +22,7 @@ import matplotlib.pyplot as _pyplt
 import matplotlib.colors as _mplc
 
 from .environment import Environment
-from .constants import _Strings
+from .constants import BHStrings
 from .plotutils import figure as figure
 
 import bellhop.plotutils as _plt
@@ -152,7 +152,7 @@ def plot_ssp(env: Environment, **kwargs: Any) -> None:
     svp = env['soundspeed']
     if isinstance(svp, pd.DataFrame):
         svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
-    if env['soundspeed_interp'] == _Strings.spline:
+    if env['soundspeed_interp'] == BHStrings.spline:
         ynew = np.linspace(np.min(svp[:,0]), np.max(svp[:,0]), 100)
         tck = _interp.splrep(svp[:,0], svp[:,1], s=0)
         xnew = _interp.splev(ynew, tck, der=0)

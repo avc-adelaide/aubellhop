@@ -21,7 +21,7 @@ import pandas as pd
 import matplotlib.pyplot as _pyplt
 import matplotlib.colors as _mplc
 
-from .constants import _Strings
+from .constants import BHStrings
 from .environment import Environment
 
 def pyplot_env(env: Environment, surface_color: str = 'dodgerblue', bottom_color: str = 'peru', source_color: str = 'orangered', receiver_color: str = 'midnightblue',
@@ -146,7 +146,7 @@ def pyplot_ssp(env: Environment, **kwargs: Any) -> None:
         _pyplt.plot([svp, svp], [0, -max_y], **kwargs)
         _pyplt.xlabel('Soundspeed (m/s)')
         _pyplt.ylabel('Depth (m)')
-    elif env['soundspeed_interp'] == _Strings.spline:
+    elif env['soundspeed_interp'] == BHStrings.spline:
         ynew = np.linspace(np.min(svp[:, 0]), np.max(svp[:, 0]), 100)
         tck = _interp.splrep(svp[:, 0], svp[:, 1], s=0)
         xnew = _interp.splev(ynew, tck, der=0)

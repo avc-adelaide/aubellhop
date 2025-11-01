@@ -20,7 +20,7 @@ from typing import Any, List, Tuple
 import numpy as np
 import pandas as pd
 
-from bellhop.constants import _Strings, EnvDefaults, ModelDefaults
+from bellhop.constants import BHStrings, EnvDefaults, ModelDefaults
 
 # this format to explicitly mark the functions as public:
 from bellhop.readers import read_ssp as read_ssp
@@ -275,7 +275,7 @@ def compute_arrivals(env: Environment, model: Any | None = None, debug: bool = F
     >>> arrivals = bh.compute_arrivals(env)
     >>> bh.plot_arrivals(arrivals)
     """
-    output = compute(env, model, _Strings.arrivals, debug, fname_base)
+    output = compute(env, model, BHStrings.arrivals, debug, fname_base)
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 
@@ -319,7 +319,7 @@ def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_dept
         env['receiver_depth'] = env['receiver_depth'][receiver_depth_ndx]
     if np.size(env['receiver_range']) > 1:
         env['receiver_range'] = env['receiver_range'][receiver_range_ndx]
-    output = compute(env, model, _Strings.eigenrays, debug, fname_base)
+    output = compute(env, model, BHStrings.eigenrays, debug, fname_base)
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 
@@ -355,7 +355,7 @@ def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Any | None 
     if np.size(env['source_depth']) > 1:
         env = env.copy()
         env['source_depth'] = env['source_depth'][source_depth_ndx]
-    output = compute(env, model, _Strings.rays, debug, fname_base)
+    output = compute(env, model, BHStrings.rays, debug, fname_base)
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 

@@ -45,7 +45,7 @@ def test_missing_output_triggers_warning(capsys):
     bellhop = bh.bellhop.BellhopSimulator()
     env = bh.Environment()
     env.check()
-    task = bh.bellhop._Strings.arrivals
+    task = bh.bellhop.BHStrings.arrivals
 
     with pytest.raises(RuntimeError, match="Bellhop did not generate expected output file"):
         # Patch the Enum member temporarily to a bogus extension

@@ -134,8 +134,8 @@ def test_read_ssp_points_value_error_recovery():
         assert len(env['soundspeed']) == 2  # Two SSP points before 'A' line
 
         # The 'A' line should have been put back and processed as bottom boundary
-        from bellhop.constants import _Strings
-        assert env['bottom_boundary_condition'] == _Strings.acousto_elastic  # 'A' maps to acousto_elastic
+        from bellhop.constants import BHStrings
+        assert env['bottom_boundary_condition'] == BHStrings.acousto_elastic  # 'A' maps to acousto_elastic
     finally:
         os.unlink(fname)
 

@@ -25,7 +25,7 @@ class _File_Ext:
     trc = ".trc"
 
 
-class _Strings(str, Enum):
+class BHStrings(str, Enum):
     """String definitions to avoid hard-coding magic strings in the source code
 
     This helps prevent typos and permits autocomplete (if your editor is smart enough).
@@ -113,108 +113,108 @@ class _Maps:
     """
 
     soundspeed_interp = {
-        "S": _Strings.spline,
-        "C": _Strings.linear,
-        "Q": _Strings.quadrilateral, # TODO: add test
-        "P": _Strings.pchip,
-        "H": _Strings.hexahedral, # TODO: add test
-        "N": _Strings.nlinear,
-        " ": _Strings.default,
+        "S": BHStrings.spline,
+        "C": BHStrings.linear,
+        "Q": BHStrings.quadrilateral, # TODO: add test
+        "P": BHStrings.pchip,
+        "H": BHStrings.hexahedral, # TODO: add test
+        "N": BHStrings.nlinear,
+        " ": BHStrings.default,
     }
     depth_interp = {
-        "L": _Strings.linear,
-        "C": _Strings.curvilinear,
+        "L": BHStrings.linear,
+        "C": BHStrings.curvilinear,
     }
     surface_interp = {
-        "L": _Strings.linear,
-        "C": _Strings.curvilinear,
+        "L": BHStrings.linear,
+        "C": BHStrings.curvilinear,
     }
     bottom_boundary_condition = {
-        "V": _Strings.vacuum,
-        "A": _Strings.acousto_elastic,
-        "R": _Strings.rigid,
-        "F": _Strings.from_file,
-        " ": _Strings.default,
+        "V": BHStrings.vacuum,
+        "A": BHStrings.acousto_elastic,
+        "R": BHStrings.rigid,
+        "F": BHStrings.from_file,
+        " ": BHStrings.default,
     }
     surface_boundary_condition = {
-        "V": _Strings.vacuum,
-        "A": _Strings.acousto_elastic,
-        "R": _Strings.rigid,
-        "F": _Strings.from_file,
-        " ": _Strings.default,
+        "V": BHStrings.vacuum,
+        "A": BHStrings.acousto_elastic,
+        "R": BHStrings.rigid,
+        "F": BHStrings.from_file,
+        " ": BHStrings.default,
     }
     attenuation_units = {
-        "N": _Strings.nepers_per_meter,
-        "F": _Strings.frequency_dependent,
-        "M": _Strings.db_per_meter,
-        "W": _Strings.db_per_wavelength,
-        "Q": _Strings.quality_factor,
-        "L": _Strings.loss_parameter,
-        " ": _Strings.default,
+        "N": BHStrings.nepers_per_meter,
+        "F": BHStrings.frequency_dependent,
+        "M": BHStrings.db_per_meter,
+        "W": BHStrings.db_per_wavelength,
+        "Q": BHStrings.quality_factor,
+        "L": BHStrings.loss_parameter,
+        " ": BHStrings.default,
     }
     volume_attenuation = {
-        "T": _Strings.thorp,
-        "F": _Strings.francois_garrison,
-        "B": _Strings.biological,
-        " ": _Strings.none,
+        "T": BHStrings.thorp,
+        "F": BHStrings.francois_garrison,
+        "B": BHStrings.biological,
+        " ": BHStrings.none,
     }
     _bathymetry = {
-        "_": _Strings.flat,
-        "~": _Strings.from_file,
-        "*": _Strings.from_file,
-        " ": _Strings.default,
+        "_": BHStrings.flat,
+        "~": BHStrings.from_file,
+        "*": BHStrings.from_file,
+        " ": BHStrings.default,
     }
     _altimetry = {
-        "_": _Strings.flat,
-        "~": _Strings.from_file,
-        "*": _Strings.from_file,
-        " ": _Strings.default,
+        "_": BHStrings.flat,
+        "~": BHStrings.from_file,
+        "*": BHStrings.from_file,
+        " ": BHStrings.default,
     }
     source_type = {
-        "R": _Strings.point,
-        "X": _Strings.line,
-        " ": _Strings.default,
+        "R": BHStrings.point,
+        "X": BHStrings.line,
+        " ": BHStrings.default,
     }
     _sbp_file = {
-        "*": _Strings.from_file,
-        "O": _Strings.omnidirectional,
-        " ": _Strings.default,
+        "*": BHStrings.from_file,
+        "O": BHStrings.omnidirectional,
+        " ": BHStrings.default,
     }
     grid_type = {
-        "R": _Strings.rectilinear,
-        "I": _Strings.irregular,
-        " ": _Strings.default,
+        "R": BHStrings.rectilinear,
+        "I": BHStrings.irregular,
+        " ": BHStrings.default,
     }
     beam_type = {
-        "G": _Strings.hat_cartesian,
-        "^": _Strings.hat_cartesian,
-        "g": _Strings.hat_ray,
-        "B": _Strings.gaussian_cartesian,
-        "b": _Strings.gaussian_ray,
-        " ": _Strings.default,
+        "G": BHStrings.hat_cartesian,
+        "^": BHStrings.hat_cartesian,
+        "g": BHStrings.hat_ray,
+        "B": BHStrings.gaussian_cartesian,
+        "b": BHStrings.gaussian_ray,
+        " ": BHStrings.default,
     }
     dimension = {
-        " ": _Strings.two_d,
-        "2": _Strings.two_half_d,
-        "3": _Strings.three_d,
+        " ": BHStrings.two_d,
+        "2": BHStrings.two_half_d,
+        "3": BHStrings.three_d,
     }
     _single_beam = {
-        "I": _Strings.single_beam,
-        " ": _Strings.default,
+        "I": BHStrings.single_beam,
+        " ": BHStrings.default,
     }
     task = {
-        "R": _Strings.rays,
-        "E": _Strings.eigenrays,
-        "A": _Strings.arrivals,
-        "a": _Strings.arrivals_b,
-        "C": _Strings.coherent,
-        "I": _Strings.incoherent,
-        "S": _Strings.semicoherent,
+        "R": BHStrings.rays,
+        "E": BHStrings.eigenrays,
+        "A": BHStrings.arrivals,
+        "a": BHStrings.arrivals_b,
+        "C": BHStrings.coherent,
+        "I": BHStrings.incoherent,
+        "S": BHStrings.semicoherent,
     }
     mode = {
-        "C": _Strings.coherent,
-        "I": _Strings.incoherent,
-        "S": _Strings.semicoherent,
+        "C": BHStrings.coherent,
+        "I": BHStrings.incoherent,
+        "S": BHStrings.semicoherent,
     }
 
     # reverse maps
@@ -253,11 +253,11 @@ class EnvDefaults:
     beam_bearing_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_bearing_fullspace: float = field(default=180.0, metadata={"units": "deg"})
     comment_pad: int = field(default=50, metadata={"desc": "Number of characters used before the comment in the constructed .env files."})
-    interference_mode: str = field(default=_Strings.coherent, metadata={"desc": "Mode of interference when calculating transmission loss"})
+    interference_mode: str = field(default=BHStrings.coherent, metadata={"desc": "Mode of interference when calculating transmission loss"})
     frequency: float = field(default=25000.0, metadata={"desc": "Frequency of sound propagation", "units": "Hz"})
-    dimension: str = field(default=_Strings.two_d, metadata={"desc": "Dimension of simulation (2D, 2.5D, 3D)"})
-    attenuation_units: str = field(default=_Strings.frequency_dependent, metadata={"desc": "Attenuation units to define volume attenuation"})
-    volume_attenuation: str = field(default=_Strings.none, metadata={"desc": "Type of volume attenuation to apply"})
+    dimension: str = field(default=BHStrings.two_d, metadata={"desc": "Dimension of simulation (2D, 2.5D, 3D)"})
+    attenuation_units: str = field(default=BHStrings.frequency_dependent, metadata={"desc": "Attenuation units to define volume attenuation"})
+    volume_attenuation: str = field(default=BHStrings.none, metadata={"desc": "Type of volume attenuation to apply"})
     sound_speed: float = field(default=1500.0, metadata={"units": "m/s", "desc": "Constant speed of sound in the medium"})
     surface: float = field(default=0.0, metadata={"units": "m", "desc": "Depth of the surface. Should always be `0.0` for flat altimetry."})
     density: float = field(default=1000.0, metadata={"units": "kg/m^3", "desc": "Constant density of the medium"})

@@ -6,7 +6,7 @@ import shutil
 from tempfile import mkstemp as _mkstemp
 from typing import Any, Dict, List, Tuple
 
-from .constants import ModelDefaults, _Strings, _File_Ext
+from .constants import ModelDefaults, BHStrings, _File_Ext
 from .environment import Environment
 from .readers import read_shd, read_arrivals, read_rays
 
@@ -89,12 +89,12 @@ class BellhopSimulator:
     def taskmap(self) -> Dict[Any, List[Any]]:
         """Dictionary which maps tasks to execution functions and their parameters"""
         return {
-            _Strings.arrivals:     ['A', read_arrivals, _File_Ext.arr],
-            _Strings.eigenrays:    ['E', read_rays,     _File_Ext.ray],
-            _Strings.rays:         ['R', read_rays,     _File_Ext.ray],
-            _Strings.coherent:     ['C', read_shd,      _File_Ext.shd],
-            _Strings.incoherent:   ['I', read_shd,      _File_Ext.shd],
-            _Strings.semicoherent: ['S', read_shd,      _File_Ext.shd],
+            BHStrings.arrivals:     ['A', read_arrivals, _File_Ext.arr],
+            BHStrings.eigenrays:    ['E', read_rays,     _File_Ext.ray],
+            BHStrings.rays:         ['R', read_rays,     _File_Ext.ray],
+            BHStrings.coherent:     ['C', read_shd,      _File_Ext.shd],
+            BHStrings.incoherent:   ['I', read_shd,      _File_Ext.shd],
+            BHStrings.semicoherent: ['S', read_shd,      _File_Ext.shd],
         }
 
     def _prepare_env_file(self, fname_base: str | None) -> Tuple[int, str]:

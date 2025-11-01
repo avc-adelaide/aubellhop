@@ -10,7 +10,7 @@ import pytest
 import numpy as np
 import bellhop as bh
 from bellhop.environment import Environment
-from bellhop.constants import _Strings
+from bellhop.constants import BHStrings
 
 
 class TestEnvironmentValidation:

@@ -8,7 +8,7 @@ from numpy.typing import NDArray
 
 import numpy as np
 import pandas as pd
-from bellhop.constants import _Strings, _Maps, _File_Ext, EnvDefaults
+from bellhop.constants import BHStrings, _Maps, _File_Ext, EnvDefaults
 from bellhop.environment import Environment
 
 def _read_next_valid_line(f: TextIO) -> str:
@@ -92,7 +92,7 @@ def _read_ssp_points(f: TextIO) -> pd.DataFrame:
     df.index.name = "depth"
     return df
 
-def _opt_lookup(name: str, opt: str, _map: dict[str, _Strings]) -> str | None:
+def _opt_lookup(name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
     opt_str = _map.get(opt)
     if opt_str is None:
         raise ValueError(f"{name} option {opt!r} not available")
@@ -170,10 +170,10 @@ class EnvironmentReader:
         self.env["volume_attenuation"]         = _opt_lookup("Volume attenuation",     topopt[3], _Maps.volume_attenuation)
         self.env["_altimetry"]                 = _opt_lookup("Altimetry",              topopt[4], _Maps._altimetry)
         self.env["_single_beam"]               = _opt_lookup("Single beam",            topopt[5], _Maps._single_beam)
-        if self.env["_altimetry"] == _Strings.from_file:
+        if self.env["_altimetry"] == BHStrings.from_file:
             self.env["surface"], self.env["surface_interp"] = read_ati(self.fname_base)
 
-        if self.env["volume_attenuation"] == _Strings.francois_garrison:
+        if self.env["volume_attenuation"] == BHStrings.francois_garrison:
             fg_spec_line = _read_next_valid_line(f)
             fg_parts = _parse_line(fg_spec_line)
             self.env["fg_salinity"]    = float(fg_parts[0])
@@ -182,7 +182,7 @@ class EnvironmentReader:
             self.env["fg_depth"]       = float(fg_parts[3])
 
         # Line 4a: Boundary condition params
-        if self.env["surface_boundary_condition"] == _Strings.acousto_elastic:
+        if self.env["surface_boundary_condition"] == BHStrings.acousto_elastic:
             surface_props_line = _read_next_valid_line(f)
             surface_props = _parse_line(surface_props_line) + [None] * 6
             self.env['_surface_min']               = _float(surface_props[0])
@@ -193,7 +193,7 @@ class EnvironmentReader:
             self.env['_surface_attenuation_shear'] = _float(surface_props[5])
 
         # Line 4b: Biological layer properties
-        if self.env["volume_attenuation"] == _Strings.biological:
+        if self.env["volume_attenuation"] == BHStrings.biological:
             self.env['biological_layer_parameters'] = self._read_biological_layers(f)
 
     def _read_biological_layers(self, f: TextIO) -> pd.DataFrame:
@@ -232,7 +232,7 @@ class EnvironmentReader:
 
         # Read SSP points and from file if applicable
         self.env['soundspeed'] = _read_ssp_points(f)
-        if self.env["soundspeed_interp"] == _Strings.quadrilateral:
+        if self.env["soundspeed_interp"] == BHStrings.quadrilateral:
             self.env['soundspeed'] = read_ssp(self.fname_base, self.env['soundspeed'].index)
 
     def _read_bottom_boundary(self, f: TextIO) -> None:
@@ -247,11 +247,11 @@ class EnvironmentReader:
         self.env['bottom_roughness']       = _float(bottom_parts[1])
         self.env['bottom_beta']            = _float(bottom_parts[2])
         self.env['bottom_transition_freq'] = _float(bottom_parts[3])
-        if self.env["_bathymetry"] == _Strings.from_file:
+        if self.env["_bathymetry"] == BHStrings.from_file:
             self.env["depth"], self.env["bottom_interp"] = read_bty(self.fname_base)
 
         # Bottom properties (depth, sound_speed, density, absorption)
-        if self.env["bottom_boundary_condition"] == _Strings.acousto_elastic:
+        if self.env["bottom_boundary_condition"] == BHStrings.acousto_elastic:
             bottom_props_line = _read_next_valid_line(f)
             bottom_props = _parse_line(bottom_props_line) + [None] * 6
             self.env['bottom_soundspeed'] = _float(bottom_props[1])
@@ -316,11 +316,11 @@ class EnvironmentReader:
         self.env['source_type'] = _Maps.source_type.get(task_code[3])
         self.env['grid_type']   = _Maps.grid_type.get(task_code[4])
         if self.env['_dimension'] == 2:
-            self.env['dimension'] = _Strings.two_d
+            self.env['dimension'] = BHStrings.two_d
         else:
             self.env['dimension'] = _Maps.dimension.get(task_code[5])
 
-        if self.env["_sbp_file"] == _Strings.from_file:
+        if self.env["_sbp_file"] == BHStrings.from_file:
             self.env["source_directionality"] = read_sbp(self.fname_base)
 
     def _read_beams_limits(self, f: TextIO) -> None:
