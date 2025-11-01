@@ -26,12 +26,12 @@ def test_arrivals_no_model():
 
     saved_models = bh.models._models.copy()  # snapshot
     try:
-        bh.mode._models.clear()
+        bh.models._models.clear()
         with pytest.raises(ValueError, match=r"No suitable propagation model"):
             env = bh.Environment()
             arr = bh.compute_arrivals(env, debug=True)
     finally:
-        bh.main._models[:] = saved_models  # restore contents in place
+        bh.models._models[:] = saved_models  # restore contents in place
 
 
 
