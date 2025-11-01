@@ -18,7 +18,7 @@ import numpy as np
 from numpy.typing import NDArray
 import pandas as pd
 
-from .constants import _Strings, _Maps, Defaults
+from .constants import _Strings, _Maps, EnvDefaults
 
 @dataclass
 class Environment(MutableMapping[str, Any]):
@@ -91,13 +91,13 @@ class Environment(MutableMapping[str, Any]):
 
     # Basic environment properties
     name: str = 'bellhop/python default'
-    dimension: str = Defaults.dimension
+    dimension: str = EnvDefaults.dimension
     _dimension: int = 2
-    frequency: float = Defaults.frequency
+    frequency: float = EnvDefaults.frequency
     _num_media: int = 1 # must always = 1 in bellhop
 
     # Sound speed parameters
-    soundspeed: Union[float, Any] = Defaults.sound_speed  # m/s
+    soundspeed: Union[float, Any] = EnvDefaults.sound_speed  # m/s
     soundspeed_interp: str = _Strings.linear
 
     # Depth parameters
@@ -116,9 +116,9 @@ class Environment(MutableMapping[str, Any]):
 
     # Bottom parameters
     bottom_interp: Optional[str] = None
-    bottom_soundspeed: float = Defaults.sound_speed # m/s
+    bottom_soundspeed: float = EnvDefaults.sound_speed # m/s
     _bottom_soundspeed_shear: float = 0.0  # m/s (ignored)
-    bottom_density: float = Defaults.density  # kg/m^3
+    bottom_density: float = EnvDefaults.density  # kg/m^3
     bottom_attenuation: Optional[float] = None  # dB/wavelength
     _bottom_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
     bottom_roughness: float = 0.0  # m (rms)
@@ -132,9 +132,9 @@ class Environment(MutableMapping[str, Any]):
     surface_interp: str = _Strings.linear  # curvilinear/linear
     surface_boundary_condition: str = _Strings.vacuum
     surface_reflection_coefficient: Optional[Any] = None
-    surface_soundspeed: float = Defaults.sound_speed # m/s
+    surface_soundspeed: float = EnvDefaults.sound_speed # m/s
     _surface_soundspeed_shear: float = 0.0  # m/s (ignored)
-    surface_density: float = Defaults.density  # kg/m^3
+    surface_density: float = EnvDefaults.density  # kg/m^3
     surface_attenuation: Optional[float] = None  # dB/wavelength
     _surface_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
     _surface_min: float | None = None
@@ -185,8 +185,8 @@ class Environment(MutableMapping[str, Any]):
     interference_mode: Optional[str] = None # subset of `task` for providing TL interface
 
     # Attenuation parameters
-    volume_attenuation: str = Defaults.volume_attenuation
-    attenuation_units: str = Defaults.attenuation_units
+    volume_attenuation: str = EnvDefaults.volume_attenuation
+    attenuation_units: str = EnvDefaults.attenuation_units
     biological_layer_parameters: Optional[Any] = None
 
     # Francois-Garrison volume attenuation parameters
@@ -195,7 +195,7 @@ class Environment(MutableMapping[str, Any]):
     fg_pH: Optional[float] = None
     fg_depth: Optional[float] = None
 
-    comment_pad: int = Defaults.comment_pad
+    comment_pad: int = EnvDefaults.comment_pad
 
     ############# CLASS METHODS ################
 
@@ -319,7 +319,7 @@ class Environment(MutableMapping[str, Any]):
         if self["surface_reflection_coefficient"] is not None:
             self["surface_boundary_condition"] = _Strings.from_file
 
-        self.surface = self.surface if self.surface is not None else Defaults.surface
+        self.surface = self.surface if self.surface is not None else EnvDefaults.surface
         def _extremum(
                         expl: float | None,
                         vec: float | NDArray[np.float64],
@@ -365,30 +365,30 @@ class Environment(MutableMapping[str, Any]):
         # Beam angle ranges default to half-space if source is left-most, otherwise full-space:
         if self['beam_angle_min'] is None:
             if np.min(self['receiver_range']) < 0:
-                self['beam_angle_min'] = - Defaults.beam_angle_fullspace
+                self['beam_angle_min'] = - EnvDefaults.beam_angle_fullspace
             else:
-                self['beam_angle_min'] = - Defaults.beam_angle_halfspace
+                self['beam_angle_min'] = - EnvDefaults.beam_angle_halfspace
         if self['beam_angle_max'] is None:
             if np.min(self['receiver_range']) < 0:
-                self['beam_angle_max'] =  Defaults.beam_angle_fullspace
+                self['beam_angle_max'] =  EnvDefaults.beam_angle_fullspace
             else:
-                self['beam_angle_max'] = Defaults.beam_angle_halfspace
+                self['beam_angle_max'] = EnvDefaults.beam_angle_halfspace
 
         # Identical logic for bearing angles
         if np.min(self['receiver_range']) < 0:
-            angle_min = -Defaults.beam_bearing_fullspace
-            angle_max = +Defaults.beam_bearing_fullspace
+            angle_min = -EnvDefaults.beam_bearing_fullspace
+            angle_max = +EnvDefaults.beam_bearing_fullspace
         else:
-            angle_min = -Defaults.beam_bearing_halfspace
-            angle_max = +Defaults.beam_bearing_halfspace
+            angle_min = -EnvDefaults.beam_bearing_halfspace
+            angle_max = +EnvDefaults.beam_bearing_halfspace
 
         self.beam_bearing_min = self._float_or_default('beam_bearing_min', angle_min)
         self.beam_bearing_max = self._float_or_default('beam_bearing_max', angle_max)
 
-        self.simulation_depth_scale = self._float_or_default('simulation_depth_scale', Defaults.simulation_depth_scale)
-        self.simulation_range_scale = self._float_or_default('simulation_range_scale', Defaults.simulation_range_scale)
-        self.simulation_cross_range_scale = self._float_or_default('simulation_cross_range_scale', Defaults.simulation_cross_range_scale)
-        self.simulation_cross_range_min = self._float_or_default('simulation_cross_range_min', Defaults.simulation_cross_range_min)
+        self.simulation_depth_scale = self._float_or_default('simulation_depth_scale', EnvDefaults.simulation_depth_scale)
+        self.simulation_range_scale = self._float_or_default('simulation_range_scale', EnvDefaults.simulation_range_scale)
+        self.simulation_cross_range_scale = self._float_or_default('simulation_cross_range_scale', EnvDefaults.simulation_cross_range_scale)
+        self.simulation_cross_range_min = self._float_or_default('simulation_cross_range_min', EnvDefaults.simulation_cross_range_min)
 
         self._range_max = np.abs(self['receiver_range']).max()
         bearing_absmax = np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()

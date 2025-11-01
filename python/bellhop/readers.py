@@ -8,7 +8,7 @@ from numpy.typing import NDArray
 
 import numpy as np
 import pandas as pd
-from bellhop.constants import _Strings, _Maps, _File_Ext, Defaults
+from bellhop.constants import _Strings, _Maps, _File_Ext, EnvDefaults
 from bellhop.environment import Environment
 
 def _read_next_valid_line(f: TextIO) -> str:
@@ -59,7 +59,7 @@ def _read_ssp_points(f: TextIO) -> pd.DataFrame:
 
     ssp_depth: list[float] = []
     ssp_speed: list[float] = []
-    ssp = dict(depth=0.0, speed=Defaults.sound_speed, speed_shear=0.0, density=Defaults.density, att=0.0, att_shear=0.0)
+    ssp = dict(depth=0.0, speed=EnvDefaults.sound_speed, speed_shear=0.0, density=EnvDefaults.density, att=0.0, att_shear=0.0)
 
     while True:
         line = f.readline()

@@ -244,7 +244,7 @@ class ModelDefaults:
     exe_3d: str = field(default="bellhop3d.exe", metadata={"desc": "Executable filename for the 3D model"})
 
 @dataclass
-class Defaults:
+class EnvEnvDefaults:
     """Dataclass of hard-coded defaults used throughout the Bellhop interface."""
     beam_angle_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_angle_halfspace: float = field(default=90.0, metadata={"units": "deg"})

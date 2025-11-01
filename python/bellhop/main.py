@@ -20,7 +20,7 @@ from typing import Any, List, Optional, Union, Tuple
 import numpy as np
 import pandas as pd
 
-from bellhop.constants import _Strings, Defaults
+from bellhop.constants import _Strings, EnvDefaults
 
 # this format to explicitly mark the functions as public:
 from bellhop.readers import read_ssp as read_ssp
@@ -393,7 +393,7 @@ def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode:
     >>> bh.plot_transmission_loss(tloss, width=1000)
     """
     env = env.copy()
-    task = mode or env.get("interference_mode") or Defaults.interference_mode
+    task = mode or env.get("interference_mode") or EnvDefaults.interference_mode
     env['interference_mode'] = task
     debug and print(f"  {task=}")
     env.check()

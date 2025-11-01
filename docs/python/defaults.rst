@@ -2,12 +2,12 @@ Default Values
 ==============
 
 This page documents the hard-coded default values used throughout the Bellhop interface.
-These defaults are defined in the ``Defaults`` dataclass in the ``bellhop.constants`` module.
+These defaults are defined in the ``EnvDefaults`` dataclass in the ``bellhop.constants`` module.
 
 The table below is automatically generated from the dataclass definition and will always
 reflect the current default values in the code.
 
-Defaults Table
+EnvDefaults Table
 --------------
 
-.. dataclass-table:: bellhop.constants.Defaults
+.. dataclass-table:: bellhop.constants.EnvDefaults

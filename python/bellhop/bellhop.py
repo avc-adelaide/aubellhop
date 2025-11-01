@@ -6,7 +6,7 @@ import shutil
 from tempfile import mkstemp as _mkstemp
 from typing import Any, Dict, List, Optional, Tuple
 
-from .constants import Defaults, _Strings, _File_Ext
+from .constants import EnvDefaults, _Strings, _File_Ext
 from .environment import Environment
 from .readers import read_shd, read_arrivals, read_rays
 

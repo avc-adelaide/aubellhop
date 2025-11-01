@@ -1,5 +1,5 @@
 import pytest
-from bellhop.constants import Defaults
+from bellhop.constants import EnvDefaults
 
 def test_import_arlpy():
     try:
