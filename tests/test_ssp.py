@@ -1,5 +1,6 @@
 import pytest
 import bellhop as bh
+import numpy as np
 import pandas as pd
 import pandas.testing as pdt
 
@@ -36,3 +37,16 @@ def test_ssp_neg():
     env = bh.Environment.from_file("tests/simple/simple_neg_ssp")
     with pytest.raises(RuntimeError):
         tl = bh.compute_transmission_loss(env)
+
+
+
+def test_ssp_error(): # too many columns
+    ssp = np.column_stack((
+                [0,10,20,30],
+                [1540,1530,1520,1525],
+                [1540,1530,1520,1525],
+                [1540,1530,1520,1525],
+        ))
+    env = bh.Environment(soundspeed=ssp,depth=30,soundspeed_interp="spline")
+    with pytest.raises(TypeError, match='For an NDArray, soundspeed must be defined as a Nx2 array'):
+        env.check()

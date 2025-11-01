@@ -35,6 +35,13 @@ def test_unwrap():
     print(env2[0].name)
     print(env2[1].name)
 
+def test_unwrap_error():
+
+    env1 = bh.Environment()
+    env1.frequency = [100, 200]
+    with pytest.raises(KeyError, match="Environment has no field 'quefrency'"):
+	    env2 = env1.unwrap('quefrency')
+
 def test_unwrap_twice():
 
     env1 = bh.Environment()

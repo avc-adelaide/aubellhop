@@ -354,7 +354,7 @@ class Environment(MutableMapping[str, Any]):
                 self["soundspeed"] = _pd.DataFrame(speed, columns=["speed"], index=depth)
                 self["soundspeed"].index.name = "depth"
             else:
-                raise ValueError("Soundspeed array must be a 2xN array (better to use a DataFrame)")
+                raise TypeError("For an NDArray, soundspeed must be defined as a Nx2 array of [depth,soundspeed].  Use a DataFrame with 'depth' index for a 2D soundspeed profile.")
 
         if "depth" in self["soundspeed"].columns:
             self["soundspeed"] = self["soundspeed"].set_index("depth")
