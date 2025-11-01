@@ -5,7 +5,7 @@ import numpy as np
 def test_models():
 
     env = bh.Environment()
-    models = bh.models()
+    models = bh.models.list()
     print(models)
     assert models is not None
 
@@ -13,7 +13,7 @@ def test_models():
 def test_models_task():
 
     env = bh.Environment()
-    models = bh.models(env,"coherent")
+    models = bh.models.list(env,"coherent")
     print(models)
     assert models is not None
 
@@ -21,7 +21,7 @@ def test_models_task():
 def test_models_task():
     """I would expect this to error but it doesn't :)"""
     env = bh.Environment()
-    models = bh.models(env,"foobar")
+    models = bh.models.list(env,"foobar")
     print("foobar model?")
     print(models)
     assert models is not None

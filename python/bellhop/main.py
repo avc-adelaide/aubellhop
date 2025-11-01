@@ -37,81 +37,93 @@ from bellhop.readers import read_arrivals as read_arrivals
 from bellhop.environment import Environment
 from bellhop.bellhop import BellhopSimulator
 
-_models: List[BellhopSimulator] = []
+class ModelRegistry:
+    """Registry for Bellhop simulator models."""
+    
+    def __init__(self):
+        self._models: List[BellhopSimulator] = []
+        self._initialize_defaults()
+    
+    def _initialize_defaults(self):
+        """Create default models."""
+        self.new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
+        self.new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
+    
+    def new(self, name: str, **kwargs: Any) -> BellhopSimulator:
+        """Instantiate a new Bellhop model and add it to the registry."""
+        for m in self._models:
+            if name == m.name:
+                raise ValueError(f"Bellhop model with this name ('{name}') already exists.")
+        model = BellhopSimulator(name=name, **kwargs)
+        self._models.append(model)
+        return model
+    
+    def list(self, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> List[str]:
+        """List available models."""
+        if env is not None:
+            env.check()
+        rv: List[str] = []
+        for m in self._models:
+            if m.supports(env=env, task=task, dim=dim):
+                rv.append(m.name)
+        return rv
+    
+    def get(self, name: str) -> BellhopSimulator:
+        """Get a model by name."""
+        for m in self._models:
+            if m.name == name:
+                return m
+        raise KeyError(f"Unknown model: '{name}'")
+    
+    def reset(self):
+        """Clear all models and reinitialize defaults (useful for testing)."""
+        self._models.clear()
+        self._initialize_defaults()
 
-def new_model(name: str, **kwargs: Any) -> BellhopSimulator:
-    """Instantiate a new Bellhop model and add it to the list of models.
-
-    Creates a Bellhop instance with the specified parameters and
-    adds it to the internal registry of models for later access.
-
-    Parameters
-    ----------
-    name : str
-        Descriptive name for this model instance, must be unique
-
-    **kwargs
-        Keyword arguments passed directly to the Bellhop constructor.
-        Common parameters include:
-        - exe : str
-            Filename of the Bellhop executable
-
-    Returns
-    -------
-    Bellhop
-        The newly created Bellhop model instance.
-
-    Examples
-    --------
-    >>> bh.models() # there is always a default model
-    ['bellhop', 'bellhop3d']
-    >>> bh.new_model(name="bellhop-at", exe="bellhop_at.exe")
-    >>> bh.models()
-    ['bellhop', 'bellhop3d', 'bellhop-at']
-    """
-    for m in _models:
-        if name == m.name:
-            raise ValueError(f"Bellhop model with this name ('{name}') already exists.")
-    model = BellhopSimulator(name=name, **kwargs)
-    _models.append(model)
-    return model
-
-new_model(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
-new_model(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
-
-def models(env: Environment | None = None, task: str | None = None, dim: int | None = None) -> List[str]:
-    """List available models.
-
-    Parameters
-    ----------
-    env : dict, optional
-        Environment to model
-    task : str, optional
-        Task type: arrivals/eigenrays/rays/coherent/incoherent/semicoherent
-
-    Returns
-    -------
-    list of str
-        List of models that can be used
-
-    Examples
-    --------
-    >>> import bellhop as bh
-    >>> bh.models()
-    ['bellhop']
-    >>> env = bh.Environment()
-    >>> bh.models(env, task="coherent")
-    ['bellhop']
-    """
-    if env is not None:
-        env.check()
-    rv: List[str] = []
-    for m in _models:
-        if m.supports(env=env, task=task, dim=dim):
-            rv.append(m.name)
-    return rv
+    def select( self,
+                 env: Environment,
+                task: str,
+               model: str | None = None,
+               debug: bool = False,
+              ) -> Any:
+        """Finds a model to use, or if a model is requested validate it.
+    
+        Parameters
+        ----------
+        env : dict
+            The environment dictionary
+        task : str
+            The task to be computed
+        model : str, optional
+            Specified model to use
+        debug : bool, default=False
+            Whether to print diagnostics
+    
+        Returns
+        -------
+        Bellhop
+            The model function to evaluate its `.run()` method
+    
+        Notes
+        -----
+        The intention of this function is to allow multiple models to be "loaded" and the
+        first appropriate model found is used for the computation.
+    
+        This is likely to be more useful once we extend the code to handle things like 3D
+        bellhop models, GPU bellhop models, and so on.
+        """
+        if model is not None:
+            return self.get(model)
+        debug and print("Searching for propagation model:")
+        for mm in self._models:
+            if mm.supports(env=env, task=task, dim=env._dimension):
+                debug and print(f'Model found: {mm.name}')
+                return mm
+        raise ValueError('No suitable propagation model available')
 
 
+# Create a global instance for convenience
+models = ModelRegistry()
 
 
 
@@ -168,12 +180,12 @@ def compute(
     >>> bh.plot_arrivals(output[0]['results'])
     """
     envs = env if isinstance(env, list) else [env]
-    models = model if isinstance(model, list) else [model]
+    models_ = model if isinstance(model, list) else [model]
     tasks = task if isinstance(task, list) else [task]
     results: List[Any] = []
     for this_env in envs:
         debug and print(f"Using environment: {this_env['name']}")
-        for this_model in models:
+        for this_model in models_:
             debug and print(f"Using model: {'[None] (default)' if this_model is None else this_model.get('name')}")
             for this_task in tasks:
                 debug and print(f"Using task: {this_task}")
@@ -181,7 +193,7 @@ def compute(
                 this_task = this_task or this_env.get('task')
                 if this_task is None:
                     raise ValueError("Task must be specified in env or as parameter")
-                model_fn = _select_model(this_env, this_task, this_model, debug)
+                model_fn = models.select(this_env, this_task, this_model, debug)
                 results.append({
                        "name": this_env["name"],
                        "model": this_model,
@@ -204,50 +216,6 @@ def compute(
     else:
         return results[0]
 
-def _select_model(env: Environment,
-                  task: str,
-                  model: str | None = None,
-                  debug: bool = False,
-                 ) -> Any:
-    """Finds a model to use, or if a model is requested validate it.
-
-    Parameters
-    ----------
-    env : dict
-        The environment dictionary
-    task : str
-        The task to be computed
-    model : str, optional
-        Specified model to use
-    debug : bool, default=False
-        Whether to print diagnostics
-
-    Returns
-    -------
-    Bellhop
-        The model function to evaluate its `.run()` method
-
-    Notes
-    -----
-    The intention of this function is to allow multiple models to be "loaded" and the
-    first appropriate model found is used for the computation.
-
-    This is likely to be more useful once we extend the code to handle things like 3D
-    bellhop models, GPU bellhop models, and so on.
-    """
-    if model is not None:
-        for m in _models:
-            if m.name == model:
-                debug and print(f'Model selected: {m.name}')
-                return m
-        raise ValueError(f"Unknown model: '{model}'")
-
-    debug and print("Searching for propagation model:")
-    for mm in _models:
-        if mm.supports(env=env, task=task, dim=env._dimension):
-            debug and print(f'Model found: {mm.name}')
-            return mm
-    raise ValueError('No suitable propagation model available')
 
 def compute_arrivals(env: Environment, model: Any | None = None, debug: bool = False, fname_base: str | None = None) -> Any:
     """Compute arrivals between each transmitter and receiver.
