@@ -14,7 +14,7 @@
 from typing import Any
 from sys import float_info as _fi
 
-import numpy as _np
+import numpy as np
 import scipy.interpolate as _interp
 import pandas as _pd
 
@@ -59,11 +59,11 @@ def pyplot_env(env: Environment, surface_color: str = 'dodgerblue', bottom_color
     """
 
     env.check()
-    if _np.array(env['receiver_range']).size > 1:
-        min_x = _np.min(env['receiver_range'])
+    if np.array(env['receiver_range']).size > 1:
+        min_x = np.min(env['receiver_range'])
     else:
         min_x = 0
-    max_x = _np.max(env['receiver_range'])
+    max_x = np.max(env['receiver_range'])
     if max_x - min_x > 10000:
         divisor = 1000
         min_x /= divisor
@@ -72,14 +72,14 @@ def pyplot_env(env: Environment, surface_color: str = 'dodgerblue', bottom_color
     else:
         divisor = 1
         xlabel = 'Range (m)'
-    if _np.size(env['surface']) == 1:
+    if np.size(env['surface']) == 1:
         min_y = 0
     else:
-        min_y = _np.min(env['surface'][:, 1])
+        min_y = np.min(env['surface'][:, 1])
     max_y = env['_depth_max']
     mgn_x = 0.01 * (max_x - min_x)
     mgn_y = 0.1 * (max_y - min_y)
-    if _np.size(env['surface']) == 1:
+    if np.size(env['surface']) == 1:
         _pyplt.plot([min_x, max_x], [0, 0], color=surface_color, **kwargs)
         _pyplt.xlabel(xlabel)
         _pyplt.ylabel('Depth (m)')
@@ -94,24 +94,24 @@ def pyplot_env(env: Environment, surface_color: str = 'dodgerblue', bottom_color
         _pyplt.ylabel('Depth (m)')
         _pyplt.xlim([min_x - mgn_x, max_x + mgn_x])
         _pyplt.ylim([-max_y - mgn_y, -min_y + mgn_y])
-    if _np.size(env['depth']) == 1:
+    if np.size(env['depth']) == 1:
         _pyplt.plot([min_x, max_x], [-env['depth'], -env['depth']], color=bottom_color, **kwargs)
     else:
         # linear and curvilinear options use the same bathymetry, just with different normals
         s = env['depth']
         _pyplt.plot(s[:, 0] / divisor, -s[:, 1], color=bottom_color, **kwargs)
     txd = env['source_depth']
-    # print(txd, [0]*_np.size(txd))
-    _pyplt.plot([0] * _np.size(txd), -txd, marker='*', markersize=6, color=source_color, **kwargs)
+    # print(txd, [0]*np.size(txd))
+    _pyplt.plot([0] * np.size(txd), -txd, marker='*', markersize=6, color=source_color, **kwargs)
     if receiver_plot is None:
-        receiver_plot = _np.size(env['receiver_depth']) * _np.size(env['receiver_range']) < 2000
+        receiver_plot = np.size(env['receiver_depth']) * np.size(env['receiver_range']) < 2000
     if receiver_plot:
         rxr = env['receiver_range']
-        if _np.size(rxr) == 1:
+        if np.size(rxr) == 1:
             rxr = [rxr]
-        for r in _np.array(rxr):
+        for r in np.array(rxr):
             rxd = env['receiver_depth']
-            _pyplt.plot([r / divisor] * _np.size(rxd), -rxd, marker='o', color=receiver_color, **kwargs)
+            _pyplt.plot([r / divisor] * np.size(rxd), -rxd, marker='o', color=receiver_color, **kwargs)
 
 def pyplot_ssp(env: Environment, **kwargs: Any) -> None:
     """Plots the sound speed profile with matplotlib.
@@ -137,17 +137,17 @@ def pyplot_ssp(env: Environment, **kwargs: Any) -> None:
     env.check()
     svp = env['soundspeed']
     if isinstance(svp, _pd.DataFrame):
-        svp = _np.hstack((_np.array([svp.index]).T, _np.asarray(svp)))
-    if _np.size(svp) == 1:
-        if _np.size(env['depth']) > 1:
-            max_y = _np.max(env['depth'][:, 1])
+        svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
+    if np.size(svp) == 1:
+        if np.size(env['depth']) > 1:
+            max_y = np.max(env['depth'][:, 1])
         else:
             max_y = env['depth']
         _pyplt.plot([svp, svp], [0, -max_y], **kwargs)
         _pyplt.xlabel('Soundspeed (m/s)')
         _pyplt.ylabel('Depth (m)')
     elif env['soundspeed_interp'] == _Strings.spline:
-        ynew = _np.linspace(_np.min(svp[:, 0]), _np.max(svp[:, 0]), 100)
+        ynew = np.linspace(np.min(svp[:, 0]), np.max(svp[:, 0]), 100)
         tck = _interp.splrep(svp[:, 0], svp[:, 1], s=0)
         xnew = _interp.splev(ynew, tck, der=0)
         _pyplt.plot(xnew, -ynew, **kwargs)
@@ -183,7 +183,7 @@ def pyplot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwar
     t0 = min(arrivals.time_of_arrival)
     t1 = max(arrivals.time_of_arrival)
     if dB:
-        min_y = 20 * _np.log10(_np.max(_np.abs(arrivals.arrival_amplitude))) - 60
+        min_y = 20 * np.log10(np.max(np.abs(arrivals.arrival_amplitude))) - 60
         ylabel = 'Amplitude (dB)'
     else:
         ylabel = 'Amplitude'
@@ -193,9 +193,9 @@ def pyplot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwar
         min_y = 0
     for _, row in arrivals.iterrows():
         t = row.time_of_arrival.real
-        y = _np.abs(row.arrival_amplitude)
+        y = np.abs(row.arrival_amplitude)
         if dB:
-            y = max(20 * _np.log10(_fi.epsilon + y), min_y)
+            y = max(20 * np.log10(_fi.epsilon + y), min_y)
         _pyplt.plot([t, t], [min_y, y], color=color, **kwargs)
         _pyplt.xlabel('Arrival time (s)')
         _pyplt.ylabel(ylabel)
@@ -229,7 +229,7 @@ def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool =
     if env is not None:
         env.check()
     rays = rays.sort_values('bottom_bounces', ascending=False)
-    max_amp = _np.max(_np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0
+    max_amp = np.max(np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0
     if max_amp <= 0:
         max_amp = 1
     divisor = 1
@@ -241,7 +241,7 @@ def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool =
         divisor = 1000
         xlabel = 'Range (km)'
     for _, row in rays.iterrows():
-        c = float(_np.abs(row.bottom_bounces) / max_amp)
+        c = float(np.abs(row.bottom_bounces) / max_amp)
         if invert_colors:
             c = 1.0 - c
         cmap = _pyplt.get_cmap("gray")
@@ -293,9 +293,9 @@ def pyplot_transmission_loss(tloss: Any, env: Environment | None = None, **kwarg
     if xr[1] - xr[0] > 10000:
         xr = (min(tloss.columns) / 1000, max(tloss.columns) / 1000)
         xlabel = 'Range (km)'
-    trans_loss = 20 * _np.log10(_fi.epsilon + _np.abs(_np.flipud(_np.array(tloss))))
-    x_mesh, ymesh = _np.meshgrid(_np.linspace(xr[0], xr[1], trans_loss.shape[1]),
-                                 _np.linspace(yr[0], yr[1], trans_loss.shape[0]))
+    trans_loss = 20 * np.log10(_fi.epsilon + np.abs(np.flipud(np.array(tloss))))
+    x_mesh, ymesh = np.meshgrid(np.linspace(xr[0], xr[1], trans_loss.shape[1]),
+                                 np.linspace(yr[0], yr[1], trans_loss.shape[0]))
     trans_loss = trans_loss.reshape(-1)
     # print(trans_loss.shape)
     if "vmin" in kwargs.keys():

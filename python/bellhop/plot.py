@@ -14,7 +14,7 @@
 from typing import Any, Optional
 from sys import float_info as _fi
 
-import numpy as _np
+import numpy as np
 import scipy.interpolate as _interp
 import pandas as _pd
 
@@ -71,7 +71,7 @@ def plot_env(env: Environment,
         env.check()
 
     min_x = 0.0
-    max_x = float(_np.max(env['receiver_range']))
+    max_x = float(np.max(env['receiver_range']))
     if max_x-min_x > 10000:
         divisor = 1000.0
         min_x /= divisor
@@ -80,16 +80,16 @@ def plot_env(env: Environment,
     else:
         divisor = 1.0
         xlabel = 'Range (m)'
-    if _np.size(env['surface']) == 1:
+    if np.size(env['surface']) == 1:
         min_y = 0
     else:
-        min_y = _np.min(env['surface'][:,1])
+        min_y = np.min(env['surface'][:,1])
     max_y = env['_depth_max']
     mgn_x = 0.01*(max_x-min_x)
     mgn_y = 0.1*(max_y-min_y)
 
     oh = _plt.hold()
-    if _np.size(env['surface']) == 1:
+    if np.size(env['surface']) == 1:
         xx = [min_x, max_x]
         yy = [0, 0]
     else:
@@ -99,7 +99,7 @@ def plot_env(env: Environment,
         yy = -s[:,1]
     _plt.plot(xx, yy, xlabel=xlabel, ylabel='Depth (m)', xlim=(min_x-mgn_x, max_x+mgn_x), ylim=(-max_y-mgn_y, -min_y+mgn_y), color=surface_color, **kwargs)
 
-    if _np.size(env['depth']) == 1:
+    if np.size(env['depth']) == 1:
         xx = [min_x, max_x]
         yy = [-env['depth'], -env['depth']]
     else:
@@ -110,17 +110,17 @@ def plot_env(env: Environment,
     _plt.plot(xx, yy, color=bottom_color)
 
     txd = env['source_depth']
-    _plt.plot([0]*_np.size(txd), -txd, marker='*', style='solid', color=source_color)
+    _plt.plot([0]*np.size(txd), -txd, marker='*', style='solid', color=source_color)
 
     if receiver_plot is None:
-        receiver_plot = _np.size(env['receiver_depth'])*_np.size(env['receiver_range']) < 2000
+        receiver_plot = np.size(env['receiver_depth'])*np.size(env['receiver_range']) < 2000
     if receiver_plot:
         rxr = env['receiver_range']
-        if _np.size(rxr) == 1:
+        if np.size(rxr) == 1:
             rxr = [rxr]
-        for r in _np.array(rxr):
+        for r in np.array(rxr):
             rxd = env['receiver_depth']
-            _plt.plot([r/divisor]*_np.size(rxd), -rxd, marker='o', style='solid', color=receiver_color)
+            _plt.plot([r/divisor]*np.size(rxd), -rxd, marker='o', style='solid', color=receiver_color)
 
     _plt.hold(oh if oh is not None else False)
 
@@ -151,9 +151,9 @@ def plot_ssp(env: Environment, **kwargs: Any) -> None:
     oh = _plt.hold()
     svp = env['soundspeed']
     if isinstance(svp, _pd.DataFrame):
-        svp = _np.hstack((_np.array([svp.index]).T, _np.asarray(svp)))
+        svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
     if env['soundspeed_interp'] == _Strings.spline:
-        ynew = _np.linspace(_np.min(svp[:,0]), _np.max(svp[:,0]), 100)
+        ynew = np.linspace(np.min(svp[:,0]), np.max(svp[:,0]), 100)
         tck = _interp.splrep(svp[:,0], svp[:,1], s=0)
         xnew = _interp.splev(ynew, tck, der=0)
         _plt.plot(xnew, -ynew, xlabel='Soundspeed (m/s)', ylabel='Depth (m)', hold=True, **kwargs)
@@ -189,7 +189,7 @@ def plot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwargs
     t1 = max(arrivals.time_of_arrival)
     oh = _plt.hold()
     if dB:
-        min_y = 20*_np.log10(_np.max(_np.abs(arrivals.arrival_amplitude)))-60
+        min_y = 20*np.log10(np.max(np.abs(arrivals.arrival_amplitude)))-60
         ylabel = 'Amplitude (dB)'
     else:
         ylabel = 'Amplitude'
@@ -197,9 +197,9 @@ def plot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwargs
     _plt.plot([t0, t1], [min_y, min_y], xlabel='Arrival time (s)', ylabel=ylabel, color=color, **kwargs)
     for _, row in arrivals.iterrows():
         t = row.time_of_arrival.real
-        y = _np.abs(row.arrival_amplitude)
+        y = np.abs(row.arrival_amplitude)
         if dB:
-            y = max(20*_np.log10(_fi.epsilon+y), min_y)
+            y = max(20*np.log10(_fi.epsilon+y), min_y)
         _plt.plot([t, t], [min_y, y], color=color, **kwargs)
     _plt.hold(oh if oh is not None else False)
 
@@ -232,7 +232,7 @@ def plot_rays(rays: Any, env: Optional[Environment] = None, invert_colors: bool 
     rays = rays.sort_values('bottom_bounces', ascending=False)
 
     # some edge cases to worry about here: rays.bottom_bounces could be all zeros?
-    max_amp = _np.max(_np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0.0
+    max_amp = np.max(np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0.0
     max_amp = max_amp or 1.0
 
     divisor = 1
@@ -246,7 +246,7 @@ def plot_rays(rays: Any, env: Optional[Environment] = None, invert_colors: bool 
 
     oh = _plt.hold()
     for _, row in rays.iterrows():
-        c = float(_np.abs(row.bottom_bounces) / max_amp)
+        c = float(np.abs(row.bottom_bounces) / max_amp)
         if invert_colors:
             c = 1.0 - c
         cmap = _pyplt.get_cmap("gray")
@@ -294,7 +294,7 @@ def plot_transmission_loss(tloss: Any, env: Optional[Environment] = None, **kwar
         xr = (min(tloss.columns)/1000, max(tloss.columns)/1000)
         xlabel = 'Range (km)'
     oh = _plt.hold()
-    _plt.image(20*_np.log10(_fi.epsilon+_np.abs(_np.flipud(_np.array(tloss)))), x=xr, y=yr, xlabel=xlabel, ylabel='Depth (m)', xlim=xr, ylim=yr, **kwargs)
+    _plt.image(20*np.log10(_fi.epsilon+np.abs(np.flipud(np.array(tloss)))), x=xr, y=yr, xlabel=xlabel, ylabel='Depth (m)', xlim=xr, ylim=yr, **kwargs)
     if env is not None:
         plot_env(env, receiver_plot=False, title=None)
     _plt.hold(oh if oh is not None else False)

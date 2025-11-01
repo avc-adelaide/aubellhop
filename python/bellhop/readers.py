@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Optional, Tuple, Union, TextIO, List, cast, IO
 from numpy.typing import NDArray
 
-import numpy as _np
+import numpy as np
 import pandas as _pd
 from bellhop.constants import _Strings, _Maps, _File_Ext, Defaults
 from bellhop.environment import Environment
@@ -41,11 +41,11 @@ def _parse_line_int(line: str) -> int:
     parts = _parse_line(line)
     return int(parts[0])
 
-def _parse_vector(line: str) -> Union[NDArray[_np.float64], float]:
+def _parse_vector(line: str) -> Union[NDArray[np.float64], float]:
     """Parse a vector of floats with unknown number of values"""
     parts = _parse_line(line)
     val = [float(p) for p in parts]
-    valout = _np.array(val) if len(val) > 1 else val[0]
+    valout = np.array(val) if len(val) > 1 else val[0]
     return valout
 
 def _unquote_string(line: str) -> str:
@@ -363,9 +363,9 @@ class EnvironmentReader:
 def read_ssp(fname: str,
              depths: Optional[Union[
                         List[float],
-                        NDArray[_np.float64],
+                        NDArray[np.float64],
                         _pd.DataFrame]] = None
-            ) -> Union[NDArray[_np.float64], _pd.DataFrame]:
+            ) -> Union[NDArray[np.float64], _pd.DataFrame]:
     """Read a 2D sound speed profile (.ssp) file used by BELLHOP.
 
     This function reads BELLHOP's .ssp files which contain range-dependent
@@ -432,7 +432,7 @@ def read_ssp(fname: str,
     with open(fname, 'r') as f:
         nranges = int(_read_next_valid_line(f))
         range_line = _read_next_valid_line(f)
-        ranges = _np.array([float(x) for x in _parse_line(range_line)])
+        ranges = np.array([float(x) for x in _parse_line(range_line)])
         ranges_m = ranges * 1000 # Convert ranges from km to meters (as expected by Environment())
 
         if len(ranges) != nranges:
@@ -450,12 +450,12 @@ def read_ssp(fname: str,
                     raise ValueError(f"SSP line {line_num} has {len(values)} range values, expected {nranges}")
                 ssp_data.append(values)
 
-        ssp_array = _np.array(ssp_data)
+        ssp_array = np.array(ssp_data)
         ndepths = ssp_array.shape[0]
 
         # Create depth indices (actual depths would normally come from associated .env file)
         if depths is None:
-            depths = _np.arange(ndepths, dtype=float)
+            depths = np.arange(ndepths, dtype=float)
 
         if ndepths == 0 or len(depths) != ndepths:
             raise ValueError("Wrong number of depths found in sound speed data file"
@@ -465,17 +465,17 @@ def read_ssp(fname: str,
         df.index.name = "depth"
         return df
 
-def read_bty(fname: str) -> Tuple[NDArray[_np.float64], str]:
+def read_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
     """Read a bathymetry file used by Bellhop."""
     fname, _ = _prepare_filename(fname, _File_Ext.bty, "BTY")
     return read_ati_bty(fname)
 
-def read_ati(fname: str) -> Tuple[NDArray[_np.float64], str]:
+def read_ati(fname: str) -> Tuple[NDArray[np.float64], str]:
     """Read an altimetry file used by Bellhop."""
     fname, _ = _prepare_filename(fname, _File_Ext.ati, "ATI")
     return read_ati_bty(fname)
 
-def read_ati_bty(fname: str) -> Tuple[NDArray[_np.float64], str]:
+def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
     """Read an altimetry (.ati) or bathymetry (.bty) file used by BELLHOP.
 
     This function reads BELLHOP's .bty files which define the bottom depth
@@ -540,13 +540,13 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[_np.float64], str]:
             raise ValueError(f"Expected {npoints} altimetry/bathymetry points, but found {len(ranges)}")
 
         # Convert ranges from km to m for consistency with bellhop env structure
-        ranges_m = _np.array(ranges) * 1000
-        depths_array = _np.array(depths)
+        ranges_m = np.array(ranges) * 1000
+        depths_array = np.array(depths)
 
         # Return as [range, depth] pairs
-        return _np.column_stack([ranges_m, depths_array]), _Maps.depth_interp[interp_type]
+        return np.column_stack([ranges_m, depths_array]), _Maps.depth_interp[interp_type]
 
-def read_sbp(fname: str) -> NDArray[_np.float64]:
+def read_sbp(fname: str) -> NDArray[np.float64]:
     """Read an source beam patterm (.sbp) file used by BELLHOP.
 
     The file format is:
@@ -588,23 +588,23 @@ def read_sbp(fname: str) -> NDArray[_np.float64]:
             raise ValueError(f"Expected {npoints} points, but found {len(angles)}")
 
         # Return as [range, depth] pairs
-        return _np.column_stack([angles, powers])
+        return np.column_stack([angles, powers])
 
-def read_brc(fname: str) -> NDArray[_np.float64]:
+def read_brc(fname: str) -> NDArray[np.float64]:
     """Read a BRC file and return array of reflection coefficients.
 
     See `read_refl_coeff` for documentation, but use this function for extension checkking."""
     fname, _ = _prepare_filename(fname, _File_Ext.brc, "BRC")
     return read_refl_coeff(fname)
 
-def read_trc(fname: str) -> NDArray[_np.float64]:
+def read_trc(fname: str) -> NDArray[np.float64]:
     """Read a TRC file and return array of reflection coefficients.
 
     See `read_refl_coeff` for documentation, but use this function for extension checkking."""
     fname, _ = _prepare_filename(fname, _File_Ext.trc, "TRC")
     return read_refl_coeff(fname)
 
-def read_refl_coeff(fname: str) -> NDArray[_np.float64]:
+def read_refl_coeff(fname: str) -> NDArray[np.float64]:
     """Read a reflection coefficient (.brc/.trc) file used by BELLHOP.
 
     This function reads BELLHOP's .brc files which define the reflection coefficient
@@ -674,7 +674,7 @@ def read_refl_coeff(fname: str) -> NDArray[_np.float64]:
             raise ValueError(f"Expected {npoints} reflection coefficient points, but found {len(theta)}")
 
         # Return as [range, depth] pairs
-        return _np.column_stack([theta, rmagn, rphas])
+        return np.column_stack([theta, rmagn, rphas])
 
 
 def read_arrivals(fname: str) -> _pd.DataFrame:
@@ -717,8 +717,8 @@ def read_arrivals(fname: str) -> _pd.DataFrame:
                             'receiver_depth': [receiver_depth[k]],
                             'receiver_range': [receiver_range[m]],
                             'arrival_number': [n],
-                            # 'arrival_amplitude': [data[0]*_np.exp(1j * data[1]* _np.pi/180)],
-                            'arrival_amplitude': [data[0] * _np.exp( -1j * (_np.deg2rad(data[1]) + freq[0] * 2 * _np.pi * (data[3] * 1j +  data[2])))],
+                            # 'arrival_amplitude': [data[0]*np.exp(1j * data[1]* np.pi/180)],
+                            'arrival_amplitude': [data[0] * np.exp( -1j * (np.deg2rad(data[1]) + freq[0] * 2 * np.pi * (data[3] * 1j +  data[2])))],
                             'time_of_arrival': [data[2]],
                             'complex_time_of_arrival': [data[2] + 1j*data[3]],
                             'angle_of_departure': [data[4]],
@@ -747,11 +747,11 @@ def read_shd(fname: str) -> _pd.DataFrame:
         pos_r_depth = _unpack('f'*nrd, f.read(4*nrd))
         f.seek(36*recl, 0)
         pos_r_range = _unpack('f'*nrr, f.read(4*nrr))
-        pressure = _np.zeros((nrd, nrr), dtype=_np.complex128)
+        pressure = np.zeros((nrd, nrr), dtype=np.complex128)
         for ird in range(nrd):
             recnum = 10 + ird
             f.seek(recnum*4*recl, 0)
-            temp = _np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
+            temp = np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
             pressure[ird,:] = temp[::2] + 1j*temp[1::2]
     return _pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
 
@@ -778,7 +778,7 @@ def read_rays(fname: str) -> _pd.DataFrame:
                 break
             a = float(s)
             pts, sb, bb = _read_array(f, (int, int, int))
-            ray = _np.empty((pts, _dim))
+            ray = np.empty((pts, _dim))
             for k in range(pts):
                 ray[k,:] = _read_array(f, (float,))
             rays.append(_pd.DataFrame({

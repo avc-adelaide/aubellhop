@@ -11,7 +11,7 @@
 """Easy-to-use plotting utilities based on `Bokeh <http://bokeh.pydata.org>`_."""
 
 from typing import Any, Optional, List, Tuple, Union
-import numpy as _np
+import numpy as np
 import os as _os
 import warnings as _warnings
 from tempfile import mkstemp as _mkstemp
@@ -84,24 +84,24 @@ def _new_figure(title: Optional[str], width: Optional[int], height: Optional[int
 
 def _process_canvas(figures: List[Any]) -> None:
     """Replace non-interactive Bokeh canvases with static images in Jupyter notebooks.
-    
+
     This optimization converts non-interactive plots to static images to reduce
     JavaScript overhead in notebooks. Only runs if JavaScript is enabled and there
     are figures without interactive tools.
     """
     global _using_js
-    
+
     if _disable_js or (not figures and _using_js):
         return
-    
+
     # Find indices of non-interactive figures
     disable_indices = [i + 1 for i, f in enumerate(figures) if f is not None and not f.tools]
-    
+
     if not disable_indices and not _using_js:
         return
-    
+
     _using_js = True
-    
+
     # JavaScript to convert non-interactive canvases to static images
     js_code = f"""
     var disable = {disable_indices};
@@ -120,7 +120,7 @@ def _process_canvas(figures: List[Any]) -> None:
         }}
     }}
     """
-    
+
     import IPython.display as _ipyd
     _ipyd.display(_ipyd.Javascript(js_code))
 
@@ -368,14 +368,14 @@ class many_figures:
             # Flatten nested list to get all figures
             all_figures = [fig for row in _figures for fig in row if fig is not None]
             gridplot = _bplt.gridplot(_figures, merge_tools=False)
-            
+
             if _static_images:
                 _show_static_images(gridplot)
             else:
                 _process_canvas([])
                 _bplt.show(gridplot)
                 _process_canvas(all_figures)
-        
+
         _figures = None
         _figsize = self.old_figsize
 
@@ -456,10 +456,10 @@ def plot(x: Any,
     >>> arlpy.plot.plot(np.random.normal(size=1000), fs=100, color='green', legend='B')
     """
     global _figure, _color
-    x = _np.asarray(x, dtype=_np.float64)
+    x = np.asarray(x, dtype=np.float64)
     if y is None:
         y = x
-        x = _np.arange(x.size)
+        x = np.arange(x.size)
         if fs is not None:
             x = x/fs
             if xlabel is None:
@@ -467,22 +467,22 @@ def plot(x: Any,
         if xlim is None:
             xlim = (x[0], x[-1])
     else:
-        y = _np.asarray(y, dtype=_np.float64)
+        y = np.asarray(y, dtype=np.float64)
 
     if x.ndim == 0:  # 0-dimensional array (scalar)
-        x = _np.array([x])
+        x = np.array([x])
     if y.ndim == 0:  # 0-dimensional array (scalar)
-        y = _np.array([y])
+        y = np.array([y])
 
     _figure = _new_figure(title, width, height, xlabel, ylabel, xlim, ylim, xtype, ytype, interactive)
     if color is None:
         color = _colors[_color % len(_colors)]
         _color += 1
     if x.size > maxpts:
-        n = int(_np.ceil(x.size / maxpts))
+        n = int(np.ceil(x.size / maxpts))
         x = x[::n]
         desc = f'Downsampled by {n}'
-        
+
         # Apply pooling to reduce data
         if pooling is None:
             y = y[::n]
@@ -490,25 +490,25 @@ def plot(x: Any,
             # Trim data to fit evenly into bins
             trimmed_size = n * (y.size // n)
             y_trimmed = y[:trimmed_size].reshape(-1, n)
-            
+
             pooling_funcs = {
-                'max': _np.amax,
-                'min': _np.amin,
-                'mean': _np.mean,
-                'median': _np.median
+                'max': np.amax,
+                'min': np.amin,
+                'mean': np.mean,
+                'median': np.median
             }
-            
+
             if pooling in pooling_funcs:
                 y = pooling_funcs[pooling](y_trimmed, axis=1)
                 desc += f', {pooling} pooled'
             else:
                 _warnings.warn(f'Unknown pooling: {pooling}')
                 y = y[::n]
-        
+
         # Ensure x and y have the same length
         if len(x) > len(y):
             x = x[:len(y)]
-        
+
         _figure.add_layout(_bmodels.Label(
             x=5, y=5, x_units='screen', y_units='screen',
             text=desc, text_font_size="8pt", text_alpha=0.5
@@ -553,8 +553,8 @@ def scatter(x: Any, y: Any, marker: str = '.', filled: bool = False, size: int =
     global _figure, _color
     if _figure is None:
         _figure = _new_figure(title, width, height, xlabel, ylabel, xlim, ylim, xtype, ytype, interactive)
-    x = _np.asarray(x, dtype=_np.float64)
-    y = _np.asarray(y, dtype=_np.float64)
+    x = np.asarray(x, dtype=np.float64)
+    y = np.asarray(y, dtype=np.float64)
     if color is None:
         color = _colors[_color % len(_colors)]
         _color += 1
@@ -564,7 +564,7 @@ def scatter(x: Any, y: Any, marker: str = '.', filled: bool = False, size: int =
         kwargs['fill_color'] = color
     if legend is not None:
         kwargs['legend_label'] = legend
-    
+
     # Map marker types to Bokeh scatter marker names (using modern Bokeh 3.4+ API)
     marker_map = {
         '.': 'circle',
@@ -576,7 +576,7 @@ def scatter(x: Any, y: Any, marker: str = '.', filled: bool = False, size: int =
         'd': 'diamond',
         '^': 'triangle',
     }
-    
+
     if marker in marker_map:
         bokeh_marker = marker_map[marker]
         # Small dots use smaller size and always filled
@@ -627,7 +627,7 @@ def image(img: Any, x: Optional[Any] = None, y: Optional[Any] = None, colormap: 
     if _figure is None:
         _figure = _new_figure(title, width, height, xlabel, ylabel, xlim, ylim, xtype, ytype, interactive)
     if clim is None:
-        clim = [_np.amin(img), _np.amax(img)]
+        clim = [np.amin(img), np.amax(img)]
     if not isinstance(colormap, _bmodels.ColorMapper):
         colormap = _bmodels.LinearColorMapper(palette=colormap, low=clim[0], high=clim[1])
     _figure.image([img], x=x[0], y=y[0], dw=x[-1]-x[0], dh=y[-1]-y[0], color_mapper=colormap)
@@ -653,7 +653,7 @@ def vlines(x: Any, color: str = 'gray', style: str = 'dashed', thickness: int = 
     global _figure
     if _figure is None:
         return
-    x = _np.asarray(x, dtype=_np.float64)
+    x = np.asarray(x, dtype=np.float64)
     for j in range(x.size):
         _figure.add_layout(_bmodels.Span(location=x[j], dimension='height', line_color=color, line_dash=style, line_width=thickness))
     if not hold and not _hold:
@@ -676,7 +676,7 @@ def hlines(y: Any, color: str = 'gray', style: str = 'dashed', thickness: int = 
     global _figure
     if _figure is None:
         return
-    y = _np.asarray(y, dtype=_np.float64)
+    y = np.asarray(y, dtype=np.float64)
     for j in range(y.size):
         _figure.add_layout(_bmodels.Span(location=y[j], dimension='width', line_color=color, line_dash=style, line_width=thickness))
     if not hold and not _hold:
@@ -776,15 +776,15 @@ def specgram(x: Any, fs: float = 2, nfft: Optional[int] = None, noverlap: Option
     >>> arlpy.plot.specgram(np.random.normal(size=(10000)), fs=10000, clim=30)
     """
     f, t, Sxx = _sig.spectrogram(x, fs=fs, nperseg=nfft, noverlap=noverlap)
-    Sxx = 10 * _np.log10(Sxx + _np.finfo(float).eps)
-    
+    Sxx = 10 * np.log10(Sxx + np.finfo(float).eps)
+
     # Convert scalar clim to range (for dynamic range specification)
     if isinstance(clim, (int, float)):
-        max_val = _np.max(Sxx)
+        max_val = np.max(Sxx)
         clim = (max_val - clim, max_val)
-    
-    image(Sxx, x=(t[0], t[-1]), y=(f[0], f[-1]), title=title, colormap=colormap, 
-          clim=clim, clabel=clabel, xlabel=xlabel, ylabel=ylabel, xlim=xlim, 
+
+    image(Sxx, x=(t[0], t[-1]), y=(f[0], f[-1]), title=title, colormap=colormap,
+          clim=clim, clabel=clabel, xlabel=xlabel, ylabel=ylabel, xlim=xlim,
           ylim=ylim, width=width, height=height, hold=hold, interactive=interactive)
 
 def psd(x: Any, fs: float = 2, nfft: int = 512, noverlap: Optional[int] = None, window: str = 'hann', color: Optional[str] = None, style: str = 'solid', thickness: int = 1, marker: Optional[str] = None, filled: bool = False, size: int = 6, title: Optional[str] = None, xlabel: str = 'Frequency (Hz)', ylabel: str = 'Power spectral density (dB/Hz)', xlim: Optional[Tuple[float, float]] = None, ylim: Optional[Tuple[float, float]] = None, width: Optional[int] = None, height: Optional[int] = None, legend: Optional[str] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
@@ -817,17 +817,17 @@ def psd(x: Any, fs: float = 2, nfft: int = 512, noverlap: Optional[int] = None, 
     >>> arlpy.plot.psd(np.random.normal(size=(10000)), fs=10000)
     """
     f, Pxx = _sig.welch(x, fs=fs, nperseg=nfft, noverlap=noverlap, window=window)
-    Pxx = 10 * _np.log10(Pxx + _np.finfo(float).eps)
-    
+    Pxx = 10 * np.log10(Pxx + np.finfo(float).eps)
+
     # Set default axis limits if not specified
     xlim = xlim or (0, fs / 2)
     if ylim is None:
-        max_pxx = _np.max(Pxx)
+        max_pxx = np.max(Pxx)
         ylim = (max_pxx - 50, max_pxx + 10)
-    
-    plot(f, Pxx, color=color, style=style, thickness=thickness, marker=marker, 
-         filled=filled, size=size, title=title, xlabel=xlabel, ylabel=ylabel, 
-         xlim=xlim, ylim=ylim, maxpts=len(f), width=width, height=height, 
+
+    plot(f, Pxx, color=color, style=style, thickness=thickness, marker=marker,
+         filled=filled, size=size, title=title, xlabel=xlabel, ylabel=ylabel,
+         xlim=xlim, ylim=ylim, maxpts=len(f), width=width, height=height,
          hold=hold, legend=legend, interactive=interactive)
 
 def iqplot(data: Any, marker: str = '.', color: Optional[str] = None, labels: Optional[Any] = None, filled: bool = False, size: Optional[int] = None, title: Optional[str] = None, xlabel: Optional[str] = None, ylabel: Optional[str] = None, xlim: List[float] = [-2, 2], ylim: List[float] = [-2, 2], width: Optional[int] = None, height: Optional[int] = None, hold: bool = False, interactive: Optional[bool] = None) -> None:
@@ -855,7 +855,7 @@ def iqplot(data: Any, marker: str = '.', color: Optional[str] = None, labels: Op
     >>> arlpy.plot.iqplot(arlpy.comms.qam(16), color='red', marker='x')
     >>> arlpy.plot.iqplot(arlpy.comms.psk(4), labels=['00', '01', '11', '10'])
     """
-    data = _np.asarray(data, dtype=_np.complex128)
+    data = np.asarray(data, dtype=np.complex128)
     if not _hold:
         figure(title=title, xlabel=xlabel, ylabel=ylabel, xlim=xlim, ylim=ylim, width=width, height=height, interactive=interactive)
     if labels is None:
@@ -901,19 +901,19 @@ def freqz(b: Any, a: Any = 1, fs: float = 2.0, worN: Optional[int] = None, whole
     >>> arlpy.plot.freqz([1,1,1,1,1], fs=120000);
     """
     w, h = _sig.freqz(b, a, worN, whole)
-    Hxx = 20*_np.log10(abs(h)+_np.finfo(float).eps)
-    f = w*fs/(2*_np.pi)
+    Hxx = 20*np.log10(abs(h)+np.finfo(float).eps)
+    f = w*fs/(2*np.pi)
     if xlim is None:
         xlim = (0, fs/2)
     if ylim is None:
-        ylim = (_np.max(Hxx)-50, _np.max(Hxx)+10)
+        ylim = (np.max(Hxx)-50, np.max(Hxx)+10)
     figure(title=title, xlabel=xlabel, ylabel='Amplitude (dB)', xlim=xlim, ylim=ylim, width=width, height=height, interactive=interactive)
     _hold_enable(True)
     plot(f, Hxx, color=color(0), style=style, thickness=thickness, legend='Magnitude')
     fig = gcf()
-    units = 180/_np.pi if degrees else 1
-    fig.extra_y_ranges = {'phase': _bmodels.Range1d(start=-_np.pi*units, end=_np.pi*units)}
+    units = 180/np.pi if degrees else 1
+    fig.extra_y_ranges = {'phase': _bmodels.Range1d(start=-np.pi*units, end=np.pi*units)}
     fig.add_layout(_bmodels.LinearAxis(y_range_name='phase', axis_label='Phase (degrees)' if degrees else 'Phase (radians)'), 'right')
-    phase = _np.angle(h)*units
+    phase = np.angle(h)*units
     fig.line(f, phase, line_color=color(1), line_dash=style, line_width=thickness, legend_label='Phase', y_range_name='phase')
     _hold_enable(hold)

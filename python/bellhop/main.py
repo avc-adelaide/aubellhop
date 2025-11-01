@@ -17,7 +17,7 @@ and `bellhop.exe` should be in your PATH.
 
 from typing import Any, List, Optional, Union, Tuple
 
-import numpy as _np
+import numpy as np
 import pandas as _pd
 
 from bellhop.constants import _Strings, Defaults
@@ -316,11 +316,11 @@ def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_dept
     """
     env.check()
     env = env.copy()
-    if _np.size(env['source_depth']) > 1:
+    if np.size(env['source_depth']) > 1:
         env['source_depth'] = env['source_depth'][source_depth_ndx]
-    if _np.size(env['receiver_depth']) > 1:
+    if np.size(env['receiver_depth']) > 1:
         env['receiver_depth'] = env['receiver_depth'][receiver_depth_ndx]
-    if _np.size(env['receiver_range']) > 1:
+    if np.size(env['receiver_range']) > 1:
         env['receiver_range'] = env['receiver_range'][receiver_range_ndx]
     output = compute(env, model, _Strings.eigenrays, debug, fname_base)
     assert isinstance(output, dict), "Single env should return single result"
@@ -355,7 +355,7 @@ def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Optional[An
     >>> bh.plot_rays(rays, width=1000)
     """
     env.check()
-    if _np.size(env['source_depth']) > 1:
+    if np.size(env['source_depth']) > 1:
         env = env.copy()
         env['source_depth'] = env['source_depth'][source_depth_ndx]
     output = compute(env, model, _Strings.rays, debug, fname_base)
@@ -397,7 +397,7 @@ def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode:
     env['interference_mode'] = task
     debug and print(f"  {task=}")
     env.check()
-    if _np.size(env['source_depth']) > 1:
+    if np.size(env['source_depth']) > 1:
         env['source_depth'] = env['source_depth'][source_depth_ndx]
     output = compute(env, model, task, debug, fname_base)
     assert isinstance(output, dict), "Single env should return single result"
@@ -433,10 +433,10 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
     >>> ir = bh.arrivals_to_impulse_response(arrivals, fs=192000)
     """
     t0 = 0 if abs_time else min(arrivals.time_of_arrival)
-    irlen = int(_np.ceil((max(arrivals.time_of_arrival)-t0)*fs))+1
-    ir = _np.zeros(irlen, dtype=_np.complex128)
+    irlen = int(np.ceil((max(arrivals.time_of_arrival)-t0)*fs))+1
+    ir = np.zeros(irlen, dtype=np.complex128)
     for _, row in arrivals.iterrows():
-        ndx = int(_np.round((row.time_of_arrival.real-t0)*fs))
+        ndx = int(np.round((row.time_of_arrival.real-t0)*fs))
         ir[ndx] = row.arrival_amplitude
     return ir
 
