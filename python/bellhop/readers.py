@@ -3,7 +3,7 @@ import os
 
 from struct import unpack as _unpack
 from pathlib import Path
-from typing import Any, Tuple, Union, TextIO, List, cast, IO
+from typing import Any, Tuple, TextIO, List, cast, IO
 from numpy.typing import NDArray
 
 import numpy as np
@@ -41,7 +41,7 @@ def _parse_line_int(line: str) -> int:
     parts = _parse_line(line)
     return int(parts[0])
 
-def _parse_vector(line: str) -> Union[NDArray[np.float64], float]:
+def _parse_vector(line: str) -> NDArray[np.float64] | float:
     """Parse a vector of floats with unknown number of values"""
     parts = _parse_line(line)
     val = [float(p) for p in parts]
@@ -361,11 +361,8 @@ class EnvironmentReader:
             self.env['simulation_depth'] = float(limits_parts[3])
 
 def read_ssp(fname: str,
-             depths: Union[
-                        List[float],
-                        NDArray[np.float64],
-                        pd.DataFrame] | None = None
-            ) -> Union[NDArray[np.float64], pd.DataFrame]:
+             depths: List[float] | NDArray[np.float64] | pd.DataFrame | None = None
+            ) -> NDArray[np.float64] | pd.DataFrame:
     """Read a 2D sound speed profile (.ssp) file used by BELLHOP.
 
     This function reads BELLHOP's .ssp files which contain range-dependent

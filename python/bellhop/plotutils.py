@@ -10,7 +10,7 @@
 
 """Easy-to-use plotting utilities based on `Bokeh <http://bokeh.pydata.org>`_."""
 
-from typing import Any, List, Tuple, Union
+from typing import Any, List, Tuple
 import numpy as np
 import os as _os
 import warnings as _warnings
@@ -53,7 +53,7 @@ def _new_figure(title: str | None, width: int | None, height: int | None, xlabel
     width = width or _figsize[0]
     height = height or _figsize[1]
     _color = 0
-    tools: Union[List[str], str] = []
+    tools: List[str] | str = []
     interactive = interactive or _interactive
     if interactive:
         tools = 'pan,box_zoom,wheel_zoom,reset,save'

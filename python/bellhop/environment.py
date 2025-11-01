@@ -8,7 +8,7 @@ replacing manual option checking with field validators.
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
-from typing import Union, Any, Dict, Iterator, List, TextIO, Self, Callable
+from typing import Any, Dict, Iterator, List, TextIO, Self, Callable
 
 from pprint import pformat
 import warnings
@@ -97,11 +97,11 @@ class Environment(MutableMapping[str, Any]):
     _num_media: int = 1 # must always = 1 in bellhop
 
     # Sound speed parameters
-    soundspeed: Union[float, Any] = EnvDefaults.sound_speed  # m/s
+    soundspeed: float | Any = EnvDefaults.sound_speed  # m/s
     soundspeed_interp: str = _Strings.linear
 
     # Depth parameters
-    depth: Union[float, Any] = 25.0  # m
+    depth: float | Any = 25.0  # m
     depth_interp: str = _Strings.linear
     _mesh_npts: int = 0 # ignored by bellhop
     _depth_sigma: float = 0.0 # ignored by bellhop
@@ -142,18 +142,18 @@ class Environment(MutableMapping[str, Any]):
 
     # Source parameters
     source_type: str = 'default'
-    source_range: Union[float, Any] = 0.0
-    source_cross_range: Union[float, Any] = 0.0
-    source_depth: Union[float, Any] = 5.0  # m - Any allows for np.ndarray
+    source_range: float | Any = 0.0
+    source_cross_range: float | Any = 0.0
+    source_depth: float | Any = 5.0  # m - Any allows for np.ndarray
     source_ndepth: int | None = None
     source_nrange: int | None = None
     source_ncrossrange: int | None = None
     source_directionality: Any | None = None  # [(deg, dB)...]
 
     # Receiver parameters
-    receiver_depth: Union[float, Any] = 10.0  # m - Any allows for np.ndarray
-    receiver_range: Union[float, Any] = 1000.0  # m - Any allows for np.ndarray
-    receiver_bearing: Union[float, Any] = 0.0  # deg - Any allows for np.ndarray
+    receiver_depth: float | Any = 10.0  # m - Any allows for np.ndarray
+    receiver_range: float | Any = 1000.0  # m - Any allows for np.ndarray
+    receiver_bearing: float | Any = 0.0  # deg - Any allows for np.ndarray
     receiver_ndepth: int | None = None
     receiver_nrange: int | None = None
     receiver_nbearing: int | None = None

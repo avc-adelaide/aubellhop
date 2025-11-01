@@ -15,7 +15,7 @@ to work, the complete bellhop.py package must be built and installed
 and `bellhop.exe` should be in your PATH.
 """
 
-from typing import Any, List, Union, Tuple
+from typing import Any, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -117,15 +117,12 @@ def models(env: Environment | None = None, task: str | None = None, dim: int | N
 
 
 def compute(
-            env: Union[Environment,List[Environment]],
+            env: Environment | List[Environment],
             model: Any | None = None,
             task: Any | None = None,
             debug: bool = False,
             fname_base: str | None = None
-           ) -> Union[  Any,
-                        Environment,
-                        Tuple[List[Environment], pd.DataFrame]
-                     ]:
+           ) ->   Any | Environment | Tuple[List[Environment], pd.DataFrame]:
     """Compute Bellhop task(s) for given model(s) and environment(s).
 
     Parameters
