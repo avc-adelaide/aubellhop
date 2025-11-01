@@ -109,7 +109,7 @@ depth_vec = np.linspace(1000,2000) # ramp seabed
 env1.depth = np.column_stack([range_vec,depth_vec])
 env1.check()
 env2 = env1.copy()
-assert env2.depth_max == 2000
+assert env2._depth_max == 2000
 ```
 
 ## Reading and writing --- `.from_file()` & `.to_file()`
@@ -142,7 +142,7 @@ The read/write chain should allow round-trip compatibility, although there may b
 
 For Python-only workflows, using dictionaries as an intermediate format
 is likely more natural that text files. Passing dictionaries of
-environment fields is likely to be most useful when defining standard 
+environment fields is likely to be most useful when defining standard
 environments for later reuse, or when constructing complex environments
 based on external data.
 ```
@@ -151,7 +151,7 @@ dict1 = env1.to_dict()
 # manipulate dict1
 env2 = bh.Environment.from_dict(dict1)
 ```
-A monte carlo analysis might generate thousands 
+A monte carlo analysis might generate thousands
 of environments, in which case this interface could
 be used to serialise to disk each environment via a dictionary
 to allow the simulations to be repeated or reproduced.

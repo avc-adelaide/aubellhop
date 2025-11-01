@@ -185,11 +185,11 @@ class EnvironmentReader:
         if self.env["surface_boundary_condition"] == _Strings.acousto_elastic:
             surface_props_line = _read_next_valid_line(f)
             surface_props = _parse_line(surface_props_line) + [None] * 6
-            self.env['surface_depth']             = _float(surface_props[0])
-            self.env['surface_soundspeed']        = _float(surface_props[1])
+            self.env['_surface_min']               = _float(surface_props[0])
+            self.env['surface_soundspeed']         = _float(surface_props[1])
             self.env['_surface_soundspeed_shear']  = _float(surface_props[2])
-            self.env['surface_density']           = _float(surface_props[3], scale=1000)  # convert from g/cm³ to kg/m³
-            self.env['surface_attenuation']       = _float(surface_props[4])
+            self.env['surface_density']            = _float(surface_props[3], scale=1000)  # convert from g/cm³ to kg/m³
+            self.env['surface_attenuation']        = _float(surface_props[4])
             self.env['_surface_attenuation_shear'] = _float(surface_props[5])
 
         # Line 4b: Biological layer properties

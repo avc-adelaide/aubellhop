@@ -17,11 +17,11 @@ def test_copy():
     range_vec = np.linspace(0,5000) # 5km simulation
     depth_vec = np.linspace(1000,2000) # ramp seabed
     env1.depth = np.column_stack([range_vec,depth_vec])
-    assert env1.depth_max == None
+    assert env1._depth_max == None
     env1.check()
-    assert env1.depth_max == 2000
+    assert env1._depth_max == 2000
     env2 = env1.copy()
-    assert env2.depth_max == 2000
+    assert env2._depth_max == 2000
 
 
 def test_unwrap():

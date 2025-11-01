@@ -80,19 +80,16 @@ def plot_env(env: Environment,
     else:
         divisor = 1.0
         xlabel = 'Range (m)'
-    if env['surface'] is None:
+    if _np.size(env['surface']) == 1:
         min_y = 0
     else:
         min_y = _np.min(env['surface'][:,1])
-    if _np.size(env['depth']) > 1:
-        max_y = _np.max(env['depth'][:,1])
-    else:
-        max_y = env['depth']
+    max_y = env['_depth_max']
     mgn_x = 0.01*(max_x-min_x)
     mgn_y = 0.1*(max_y-min_y)
 
     oh = _plt.hold()
-    if env['surface'] is None:
+    if _np.size(env['surface']) == 1:
         xx = [min_x, max_x]
         yy = [0, 0]
     else:

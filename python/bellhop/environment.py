@@ -8,13 +8,14 @@ replacing manual option checking with field validators.
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
-from typing import Optional, Union, Any, Dict, Iterator, List, TextIO, Self
+from typing import Optional, Union, Any, Dict, Iterator, List, TextIO, Self, Callable
 
 from pprint import pformat
 import warnings
 from itertools import product
 
 import numpy as _np
+from numpy.typing import NDArray
 import pandas as _pd
 
 from .constants import _Strings, _Maps, Defaults
@@ -104,8 +105,9 @@ class Environment(MutableMapping[str, Any]):
     depth_interp: str = _Strings.linear
     _mesh_npts: int = 0 # ignored by bellhop
     _depth_sigma: float = 0.0 # ignored by bellhop
-    depth_max: Optional[float] = None  # m
-    _range_max: Optional[float] = None  # m -- not used in the environment file
+    depth_max: float | None = None  # m
+    _depth_max: float | None = None  # m
+    _range_max: float | None = None  # m -- not used in the environment file
 
     # Flags to read/write from separate files
     _bathymetry: str = _Strings.flat  # set to "from-file" if multiple bottom depths
@@ -130,12 +132,13 @@ class Environment(MutableMapping[str, Any]):
     surface_interp: str = _Strings.linear  # curvilinear/linear
     surface_boundary_condition: str = _Strings.vacuum
     surface_reflection_coefficient: Optional[Any] = None
-    surface_depth: float = 0.0  # m
     surface_soundspeed: float = Defaults.sound_speed # m/s
     _surface_soundspeed_shear: float = 0.0  # m/s (ignored)
     surface_density: float = Defaults.density  # kg/m^3
     surface_attenuation: Optional[float] = None  # dB/wavelength
     _surface_attenuation_shear: Optional[float] = None  # dB/wavelength (ignored)
+    _surface_min: float | None = None
+    surface_min: float | None = None
 
     # Source parameters
     source_type: str = 'default'
@@ -206,7 +209,7 @@ class Environment(MutableMapping[str, Any]):
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Environment':
         """Create Environment from dictionary.
-        
+
         Unlike `Environment(**data)`, unknown fields are ignored (with a warning message)."""
         valid_fields = {f.name for f in fields(cls)}
         invalid = set(data.keys()) - valid_fields
@@ -309,30 +312,40 @@ class Environment(MutableMapping[str, Any]):
 
         if _np.size(self['depth']) > 1:
             self["_bathymetry"] = _Strings.from_file
-        if self["surface"] is not None:
+        if self["surface"] is not None and _np.size(self['surface']) > 1:
             self["_altimetry"] = _Strings.from_file
         if self["bottom_reflection_coefficient"] is not None:
             self["bottom_boundary_condition"] = _Strings.from_file
         if self["surface_reflection_coefficient"] is not None:
             self["surface_boundary_condition"] = _Strings.from_file
 
-        if self['depth_max'] is None:
-            if _np.size(self['depth']) == 1:
-                self['depth_max'] = self['depth']
-            else:
-                # depth : Nx2 array = [ranges,depths]
-                self['depth_max'] = _np.max(self['depth'][:,1])
+        self.surface = self.surface if self.surface is not None else Defaults.surface
+        def _extremum(
+                        expl: float | None,
+                        vec: float | NDArray[_np.float64],
+                        fn: Callable[[NDArray[_np.float64]], float]
+                     ) -> float:
+            if expl is not None:
+                return float(expl)
+            if _np.size(vec) == 1:
+                return float(vec)
+            if isinstance(vec, _np.ndarray):
+                return float(fn(vec[:, 1]))
+            raise TypeError(f"Unexpected type for _extremum argument: {type(vec)}")
+
+        self._depth_max = _extremum(self.depth_max, self['depth'], _np.max)
+        self._surface_min = _extremum(self.surface_min, self['surface'], _np.min)
 
         if not isinstance(self['soundspeed'], _pd.DataFrame):
             if _np.size(self['soundspeed']) == 1:
                 speed = [float(self["soundspeed"]), float(self["soundspeed"])]
-                depth = [0, float(self['depth_max'])]
+                depth = [0, self._depth_max]
                 self["soundspeed"] = _pd.DataFrame(speed, columns=["speed"], index=depth)
                 self["soundspeed"].index.name = "depth"
             elif self['soundspeed'].shape[0] == 1 and self['soundspeed'].shape[1] == 2:
                 speed = [float(self["soundspeed"][0,1]), float(self["soundspeed"][0,1])]
                 d1 = float(min([0.0, self["soundspeed"][0,0]]))
-                d2 = float(max([self["soundspeed"][0,0], self['depth_max']]))
+                d2 = float(max([self["soundspeed"][0,0], self['_depth_max']]))
                 self["soundspeed"] = _pd.DataFrame(speed, columns=["speed"], index=[d1, d2])
                 self["soundspeed"].index.name = "depth"
             elif self['soundspeed'].ndim == 2 and self['soundspeed'].shape[1] == 2:
@@ -381,7 +394,7 @@ class Environment(MutableMapping[str, Any]):
         bearing_absmax = _np.abs([self['beam_bearing_max'], self['beam_bearing_min']]).max()
         cross_range_max = self._range_max * _np.sin(_np.deg2rad(bearing_absmax))
 
-        self.simulation_depth = self._float_or_default('simulation_depth', self.simulation_depth_scale * self.depth_max)
+        self.simulation_depth = self._float_or_default('simulation_depth', self.simulation_depth_scale * self._depth_max)
         self.simulation_range = self._float_or_default('simulation_range', self.simulation_range_scale * self._range_max)
         self.simulation_cross_range = self._float_or_default('simulation_cross_range',
             _np.max([self.simulation_cross_range_min, self.simulation_cross_range_scale * cross_range_max]))
@@ -400,29 +413,28 @@ class Environment(MutableMapping[str, Any]):
         assert self["_num_media"] == 1, f"BELLHOP only supports 1 medium, found {self['_num_media']}"
 
     def _check_env_surface(self) -> None:
-        max_range = _np.max(self['receiver_range'])
-        if self['surface'] is not None:
-            assert _np.size(self['surface']) > 1, 'surface must be an Nx2 array'
+        assert self['surface'] is not None, 'surface must be defined or initialised'
+        if _np.size(self['surface']) > 1:
             assert self['surface'].ndim == 2, 'surface must be a scalar or an Nx2 array'
             assert self['surface'].shape[1] == 2, 'surface must be a scalar or an Nx2 array'
             assert self['surface'][0,0] <= 0, 'First range in surface array must be 0 m'
-            assert self['surface'][-1,0] >= max_range, 'Last range in surface array must be beyond maximum range: '+str(max_range)+' m'
+            assert self['surface'][-1,0] >= self._range_max, 'Last range in surface array must be beyond maximum range: '+str(self._range_max)+' m'
             assert _np.all(_np.diff(self['surface'][:,0]) > 0), 'surface array must be strictly monotonic in range'
         if self["surface_reflection_coefficient"] is not None:
             assert self["surface_boundary_condition"] == _Strings.from_file, "TRC values need to be read from file"
 
     def _check_env_depth(self) -> None:
-        max_range = _np.max(self['receiver_range'])
+        assert self['depth'] is not None, 'depth must be defined or initialised'
         if _np.size(self['depth']) > 1:
             assert self['depth'].ndim == 2, 'depth must be a scalar or an Nx2 array [ranges, depths]'
             assert self['depth'].shape[1] == 2, 'depth must be a scalar or an Nx2 array [ranges, depths]'
-            assert self['depth'][-1,0] >= max_range, 'Last range in depth array must be beyond maximum range: '+str(max_range)+' m'
+            assert self['depth'][-1,0] >= self._range_max, 'Last range in depth array must be beyond maximum range: '+str(self._range_max)+' m'
             assert _np.all(_np.diff(self['depth'][:,0]) > 0), 'Depth array must be strictly monotonic in range'
             assert self["_bathymetry"] == _Strings.from_file, 'len(depth)>1 requires BTY file'
         if self["bottom_reflection_coefficient"] is not None:
             assert self["bottom_boundary_condition"] == _Strings.from_file, "BRC values need to be read from file"
-        assert _np.max(self['source_depth']) <= self['depth_max'], 'source_depth cannot exceed water depth: '+str(self['depth_max'])+' m'
-        assert _np.max(self['receiver_depth']) <= self['depth_max'], 'receiver_depth cannot exceed water depth: '+str(self['depth_max'])+' m'
+        assert _np.max(self['source_depth']) <= self['_depth_max'], f'source_depth {self.source_depth} cannot exceed water depth: {str(self._depth_max)}'
+        assert _np.max(self['receiver_depth']) <= self['_depth_max'], f'receiver_depth {self.receiver_depth} cannot exceed water depth: {str(self._depth_max)}'
 
     def _check_env_ssp(self) -> None:
         assert isinstance(self['soundspeed'], _pd.DataFrame), 'Soundspeed should always be a DataFrame by this point'
@@ -436,20 +448,20 @@ class Environment(MutableMapping[str, Any]):
                 assert self['soundspeed'].shape[0] > 1, 'soundspeed profile must have at least 2 points'
             assert self['soundspeed'].index[0] <= 0.0, 'First depth in soundspeed array must be 0 m'
             assert _np.all(_np.diff(self['soundspeed'].index) > 0), 'Soundspeed array must be strictly monotonic in depth'
-            if self['depth_max'] != self['soundspeed'].index[-1]:
+            if self['_depth_max'] != self['soundspeed'].index[-1]:
                 if self['soundspeed'].shape[1] > 1:
                     # TODO: generalise interpolation trimming from np approach below
-                    assert self['soundspeed'].index[-1] == self['depth_max'], '2D SSP: Final entry in soundspeed array must be at the maximum water depth: '+str(self['depth_max'])+' m'
+                    assert self['soundspeed'].index[-1] == self['_depth_max'], '2D SSP: Final entry in soundspeed array must be at the maximum water depth: '+str(self['_depth_max'])+' m'
                 else:
-                    indlarger = _np.argwhere(self['soundspeed'].index > self['depth_max'])[0][0]
+                    indlarger = _np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
                     prev_ind = self['soundspeed'].index[:indlarger].tolist()
-                    insert_ss_val = _np.interp(self['depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,0])
-                    new_row = _pd.DataFrame([self['depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
+                    insert_ss_val = _np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,0])
+                    new_row = _pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
                     self['soundspeed'] = _pd.concat([
                             self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
                             new_row,                             # new row
                         ], ignore_index=True)
-                    self['soundspeed'].index = prev_ind + [self['depth_max']]
+                    self['soundspeed'].index = prev_ind + [self['_depth_max']]
                     warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
                     print("ATTEMPTING TO FIX")
             # TODO: check soundspeed range limits
@@ -509,11 +521,11 @@ class Environment(MutableMapping[str, Any]):
 
         if self['surface_boundary_condition'] == _Strings.from_file:
             self._create_refl_coeff_file(fname_base+".trc", self['surface_reflection_coefficient'])
-        if self['surface'] is not None:
+        if _np.size(self["surface"]) > 1:
             self._create_bty_ati_file(fname_base+'.ati', self['surface'], self['surface_interp'])
         if self['soundspeed_interp'] == _Strings.quadrilateral:
             self._create_ssp_quad_file(fname_base+'.ssp', self['soundspeed'])
-        if _np.size(self['depth']) > 1:
+        if _np.size(self.depth) > 1:
             self._create_bty_ati_file(fname_base+'.bty', self['depth'], self['depth_interp'])
         if self['bottom_boundary_condition'] == _Strings.from_file:
             self._create_refl_coeff_file(fname_base+".brc", self['bottom_reflection_coefficient'])
@@ -549,7 +561,7 @@ class Environment(MutableMapping[str, Any]):
         if self['surface_boundary_condition'] == _Strings.acousto_elastic:
             comment = "DEPTH_Top (m)  TOP_SoundSpeed (m/s)  TOP_SoundSpeed_Shear (m/s)  TOP_Density (g/cm^3)  [ TOP_Absorp [ TOP_Absorp_Shear ] ]"
             array_str = self._array2str([
-              0.0, # hardcoded top surface always = 0 by definition (i think)
+              self['_surface_min'],
               self['surface_soundspeed'],
               self['_surface_soundspeed_shear'],
               self._float(self['surface_density'],scale=1/1000),
@@ -573,14 +585,14 @@ class Environment(MutableMapping[str, Any]):
         svp = self['soundspeed']
 
         comment = "[Npts - ignored]  [Sigma - ignored]  Depth_Max"
-        self._print_env_line(fh,f"{self['_mesh_npts']} {self['_depth_sigma']} {self['depth_max']}",comment)
+        self._print_env_line(fh,f"{self['_mesh_npts']} {self['_depth_sigma']} {self['_depth_max']}",comment)
 
         svp_interp = _Maps.soundspeed_interp_rev[self['soundspeed_interp']]
         if isinstance(svp, _pd.DataFrame) and len(svp.columns) == 1:
             svp = _np.hstack((_np.array([svp.index]).T, _np.asarray(svp)))
         if svp.size == 1:
             self._print_env_line(fh,self._array2str([0.0, svp]),"Min_Depth SSP_Const")
-            self._print_env_line(fh,self._array2str([self['depth_max'], svp]),"Max_Depth SSP_Const")
+            self._print_env_line(fh,self._array2str([self['_depth_max'], svp]),"Max_Depth SSP_Const")
         elif svp_interp == "Q":
             for j in range(svp.shape[0]):
                 self._print_env_line(fh,self._array2str([svp.index[j], svp.iloc[j,0]]),f"ssp_{j}")
@@ -598,7 +610,7 @@ class Environment(MutableMapping[str, Any]):
         if self['bottom_boundary_condition'] == "acousto-elastic":
             comment = "Depth_Max  BOT_SoundSpeed  BOT_SS_Shear  BOT_Density  BOT_Absorp  BOT_Absorp Shear"
             array_str = self._array2str([
-              self['depth_max'],
+              self['_depth_max'],
               self['bottom_soundspeed'],
               self['_bottom_soundspeed_shear'],
               self._float(self['bottom_density'],scale=1/1000),

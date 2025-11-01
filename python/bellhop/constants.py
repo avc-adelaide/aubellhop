@@ -254,6 +254,7 @@ class Defaults:
     attenuation_units: str = field(default=_Strings.frequency_dependent, metadata={"desc": "Attenuation units to define volume attenuation"})
     volume_attenuation: str = field(default=_Strings.none, metadata={"desc": "Type of volume attenuation to apply"})
     sound_speed: float = field(default=1500.0, metadata={"units": "m/s", "desc": "Constant speed of sound in the medium"})
+    surface: float = field(default=0.0, metadata={"units": "m", "desc": "Depth of the surface. Should always be `0.0` for flat altimetry."})
     density: float = field(default=1000.0, metadata={"units": "kg/m^3", "desc": "Constant density of the medium"})
     simulation_depth_scale: float = field(default=1.01,metadata={'desc': 'Scaling factor on the maximum depth of the bathymetry to calculate the maximum simulation depth extent.'})
     simulation_range_scale: float = field(default=1.1,metadata={'desc': 'Scaling factor on the maximum range of the receivers to calculate the maximum simulation range extent.'})

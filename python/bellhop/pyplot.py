@@ -11,7 +11,7 @@
 """Plotting functions for the underwater acoustic propagation modeling toolbox.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 from sys import float_info as _fi
 
 import numpy as _np
@@ -21,10 +21,11 @@ import pandas as _pd
 import matplotlib.pyplot as _pyplt
 import matplotlib.colors as _mplc
 
-from bellhop.constants import _Strings
+from .constants import _Strings
+from .environment import Environment
 
-def pyplot_env(env: Dict[str, Any], surface_color: str = 'dodgerblue', bottom_color: str = 'peru', source_color: str = 'orangered', receiver_color: str = 'midnightblue',
-               receiver_plot: Optional[bool] = None, **kwargs: Any) -> None:
+def pyplot_env(env: Environment, surface_color: str = 'dodgerblue', bottom_color: str = 'peru', source_color: str = 'orangered', receiver_color: str = 'midnightblue',
+               receiver_plot: bool | None = None, **kwargs: Any) -> None:
     """Plots a visual representation of the environment with matplotlib.
 
     Parameters
@@ -57,6 +58,7 @@ def pyplot_env(env: Dict[str, Any], surface_color: str = 'dodgerblue', bottom_co
     >>> bh.plot_env(env)
     """
 
+    env.check()
     if _np.array(env['receiver_range']).size > 1:
         min_x = _np.min(env['receiver_range'])
     else:
@@ -70,17 +72,14 @@ def pyplot_env(env: Dict[str, Any], surface_color: str = 'dodgerblue', bottom_co
     else:
         divisor = 1
         xlabel = 'Range (m)'
-    if env['surface'] is None:
+    if _np.size(env['surface']) == 1:
         min_y = 0
     else:
         min_y = _np.min(env['surface'][:, 1])
-    if _np.size(env['depth']) > 1:
-        max_y = _np.max(env['depth'][:, 1])
-    else:
-        max_y = env['depth']
+    max_y = env['_depth_max']
     mgn_x = 0.01 * (max_x - min_x)
     mgn_y = 0.1 * (max_y - min_y)
-    if env['surface'] is None:
+    if _np.size(env['surface']) == 1:
         _pyplt.plot([min_x, max_x], [0, 0], color=surface_color, **kwargs)
         _pyplt.xlabel(xlabel)
         _pyplt.ylabel('Depth (m)')
@@ -114,12 +113,12 @@ def pyplot_env(env: Dict[str, Any], surface_color: str = 'dodgerblue', bottom_co
             rxd = env['receiver_depth']
             _pyplt.plot([r / divisor] * _np.size(rxd), -rxd, marker='o', color=receiver_color, **kwargs)
 
-def pyplot_ssp(env: Dict[str, Any], **kwargs: Any) -> None:
+def pyplot_ssp(env: Environment, **kwargs: Any) -> None:
     """Plots the sound speed profile with matplotlib.
 
     Parameters
     ----------
-    env : dict
+    env : Environment
         Environment description
     **kwargs
         Other keyword arguments applicable for `bellhop.plot.plot()` are also supported
@@ -135,6 +134,7 @@ def pyplot_ssp(env: Dict[str, Any], **kwargs: Any) -> None:
     >>> bh.plot_ssp(env)
     """
 
+    env.check()
     svp = env['soundspeed']
     if isinstance(svp, _pd.DataFrame):
         svp = _np.hstack((_np.array([svp.index]).T, _np.asarray(svp)))
@@ -200,14 +200,14 @@ def pyplot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwar
         _pyplt.xlabel('Arrival time (s)')
         _pyplt.ylabel(ylabel)
 
-def pyplot_rays(rays: Any, env: Optional[Dict[str, Any]] = None, invert_colors: bool = False, **kwargs: Any) -> None:
+def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool = False, **kwargs: Any) -> None:
     """Plots ray paths with matplotlib
 
     Parameters
     ----------
     rays : pandas.DataFrame
         Ray paths
-    env : dict, optional
+    env : Environment, optional
         Environment definition
     invert_colors : bool, default=False
         False to use black for high intensity rays, True to use white
@@ -226,6 +226,8 @@ def pyplot_rays(rays: Any, env: Optional[Dict[str, Any]] = None, invert_colors: 
     >>> rays = bh.compute_eigenrays(env)
     >>> bh.plot_rays(rays, width=1000)
     """
+    if env is not None:
+        env.check()
     rays = rays.sort_values('bottom_bounces', ascending=False)
     max_amp = _np.max(_np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0
     if max_amp <= 0:
@@ -253,14 +255,14 @@ def pyplot_rays(rays: Any, env: Optional[Dict[str, Any]] = None, invert_colors: 
     if env is not None:
         pyplot_env(env)
 
-def pyplot_transmission_loss(tloss: Any, env: Optional[Dict[str, Any]] = None, **kwargs: Any) -> None:
+def pyplot_transmission_loss(tloss: Any, env: Environment | None = None, **kwargs: Any) -> None:
     """Plots transmission loss with matplotlib.
 
     Parameters
     ----------
     tloss : pandas.DataFrame
         Complex transmission loss
-    env : dict, optional
+    env : Environment, optional
         Environment definition
     **kwargs
         Other keyword arguments applicable for `bellhop.plot.image()` are also supported
@@ -283,6 +285,8 @@ def pyplot_transmission_loss(tloss: Any, env: Optional[Dict[str, Any]] = None, *
     >>> tloss = bh.compute_transmission_loss(env)
     >>> bh.plot_transmission_loss(tloss, width=1000)
     """
+    if env is not None:
+        env.check()
     xr = (min(tloss.columns), max(tloss.columns))
     yr = (-max(tloss.index), -min(tloss.index))
     xlabel = 'Range (m)'
