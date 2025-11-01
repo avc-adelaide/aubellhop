@@ -15,7 +15,7 @@ def test_arrivals_bad_model():
     """Test with default settings to calculate arrival times. Catch error for unknown model.
     """
 
-    with pytest.raises(ValueError, match=r"Unknown model"):
+    with pytest.raises(KeyError, match=r"Unknown model: 'bellhop_not_found'"):
         env = bh.Environment()
         arr = bh.compute_arrivals(env, model="bellhop_not_found")
 
