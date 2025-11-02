@@ -15,9 +15,11 @@ class BellhopSimulator:
     """
     Interface to the Bellhop underwater acoustics ray tracing propagation model.
 
-    Two public methods are defined: `supports()` and `run()`.
-    Both take arguments of environment and task, and respectively
-    report whether the executable can perform the task, and to do so.
+    The following methods are defined:
+
+    * `supports()`
+    * `write_env()`
+    * `run()`
 
     Parameters
     ----------
@@ -44,46 +46,47 @@ class BellhopSimulator:
 
            This function is supposed to diagnose whether this combination of environment
            and task is supported by the model."""
-
         if env is not None:
             dim = dim or env._dimension
-
         which_bool = shutil.which(exe or self.exe) is not None
         task_bool = (task is None) or (task in self.taskmap)
         dim_bool = (dim is None) or (dim == self.dim)
-
         return (which_bool and task_bool and dim_bool)
 
-    def run(self, env: Environment,
-                  task: str,
-                  debug: bool = False,
-                  fname_base: str | None = None,
-           ) -> Any:
+    def write_env(self, env: Environment,
+                        task: str,
+                        fname_base: str | None = None,
+                        debug: bool = False,
+                 ) -> str:
         """
-        High-level interface function which runs the model.
-
-        The function definition performs setup and cleanup tasks
-        and passes the execution off to an auxiliary function.
+        Writes the environment to .env file prior to running the model.
 
         Uses the `taskmap` data structure to relate input flags to
         processng stages, in particular how to select specific "tasks"
         to be executed.
         """
-
         task_flag, load_task_data, task_ext = self.taskmap[task]
-
         fd, fname_base = self._prepare_env_file(fname_base)
         with _os.fdopen(fd, "w") as fh:
             env.to_file(task_flag, fh, fname_base)
+        return fname_base
 
+    def run(self, task: str,
+                  fname_base: str,
+                  rm_files: bool = True,
+                  debug: bool = False,
+           ) -> Any:
+        """
+        High-level interface function which runs the model.
+        """
+        task_flag, load_task_data, task_ext = self.taskmap[task]
         self._run_exe(fname_base)
         results = load_task_data(fname_base + task_ext)
-
-        if debug:
-            print('[DEBUG] Bellhop working files NOT deleted: '+fname_base+'.*')
-        else:
-            self._rm_files(fname_base)
-
+        if rm_files:
+            if debug:
+                print('[DEBUG] Bellhop working files NOT deleted: '+fname_base+'.*')
+            else:
+                self._rm_files(fname_base)
         return results
 
     @property

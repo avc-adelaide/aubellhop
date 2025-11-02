@@ -50,4 +50,5 @@ def test_missing_output_triggers_warning(capsys):
     with pytest.raises(RuntimeError, match="Bellhop did not generate expected output file"):
         # Patch the Enum member temporarily to a bogus extension
         with patch.object(bh.bellhop._File_Ext, "arr", new=".bogus"):
-            bellhop.run(env, task)
+            fname = bellhop.write_env(env, task)
+            bellhop.run(task, fname)

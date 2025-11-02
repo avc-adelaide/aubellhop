@@ -15,6 +15,7 @@ from bellhop.readers import read_arrivals as read_arrivals
 from bellhop.environment import Environment as Environment
 from bellhop.models import Models as Models
 
+from bellhop.compute import compute_from_file as compute_from_file
 from bellhop.compute import compute as compute
 from bellhop.compute import compute_rays as compute_rays
 from bellhop.compute import compute_eigenrays as compute_eigenrays

@@ -4,20 +4,47 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .constants import BHStrings, EnvDefaults
+from .constants import BHStrings, EnvDefaults, _File_Ext
 from .environment import Environment
 from .models import Models
 
 """Computing wrappers for bellhop.py.
 """
 
+def compute_from_file(
+                      model: Any,
+                      fname: str,
+                      debug: bool = False
+                     ) -> pd.DataFrame:
+    """Compute Bellhop model directly from existing .env file."""
+
+    ext = _File_Ext.env
+    if fname.endswith(ext):
+        nchar = len(ext)
+        fname_base = fname[:-nchar]
+    else:
+        fname_base = fname
+        fname = fname + ext
+
+    model_fn = Models.get(model)
+    env_tmp = Environment.from_file(fname)
+    task = env_tmp['task']
+
+    return {
+             "name": env_tmp["name"],
+             "model": model,
+             "task": task,
+             "results": model_fn.run(task, fname_base, rm_files=False, debug=debug),
+             "env": env_tmp.copy(),
+           }
+
 def compute(
             env: Environment | list[Environment],
             model: Any | None = None,
             task: Any | None = None,
             debug: bool = False,
-            fname_base: str | None = None
-           ) ->   Any | Environment | tuple[list[Environment], pd.DataFrame]:
+            fname_base: str | None = None,
+           ) -> dict[str, Any] | tuple[list[dict[str, Any]], pd.DataFrame]:
     """Compute Bellhop task(s) for given model(s) and environment(s).
 
     Parameters
@@ -65,7 +92,7 @@ def compute(
     envs = env if isinstance(env, list) else [env]
     models_ = model if isinstance(model, list) else [model]
     tasks = task if isinstance(task, list) else [task]
-    results: list[Any] = []
+    results: list[dict[str, Any]] = []
     for this_env in envs:
         debug and print(f"Using environment: {this_env['name']}")
         for this_model in models_:
@@ -77,11 +104,13 @@ def compute(
                 if this_task is None:
                     raise ValueError("Task must be specified in env or as parameter")
                 model_fn = Models.select(this_env, this_task, this_model, debug)
+                fname_base = model_fn.write_env(this_env, this_task, fname_base)
                 results.append({
                        "name": this_env["name"],
                        "model": this_model,
                        "task": this_task,
-                       "results": model_fn.run(this_env, this_task, debug, fname_base),
+                       "results": model_fn.run(this_task, fname_base, debug),
+                       "env": this_env.copy(),
                       })
     assert len(results) > 0, "No results generated"
     index_df = pd.DataFrame([

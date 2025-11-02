@@ -92,6 +92,7 @@ class Environment(MutableMapping[str, Any]):
 
     # Basic environment properties
     name: str = 'bellhop/python default'
+    _from_file: str | None = None
     dimension: str = EnvDefaults.dimension
     _dimension: int = 2
     frequency: float = EnvDefaults.frequency
@@ -204,7 +205,9 @@ class Environment(MutableMapping[str, Any]):
     def from_file(cls, fname: str) -> "Environment":
         """Create an Environment from an .env file."""
         from bellhop.readers import EnvironmentReader
-        return EnvironmentReader(cls(), fname).read()
+        env = EnvironmentReader(cls(), fname).read()
+        env._from_file = fname
+        return env
 
 
     @classmethod

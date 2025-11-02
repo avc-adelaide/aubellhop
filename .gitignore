@@ -60,6 +60,7 @@ tmp.*
 *.asv
 
 # BELLHOP output files - examples should not be committed
+*.arr
 *.shd
 *.ray
 *.grn
