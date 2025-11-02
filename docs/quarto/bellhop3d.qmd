@@ -26,12 +26,57 @@ Bellhop3D differs from Bellhop (2D) in roughly four ways:
 Load Bellhop and check the standard models available out of the box:
 ```{python}
 import bellhop as bh
+import bellhop.plot as bhp
 print(bh.models())
-
-env = bh.Environment(name="Example Bellhop3D",dimension="3D").check()
-assert env.dimension == "3D"
-assert env._dimension == 3
-
-results = bh.compute_rays(env)
-print(results)
 ```
+
+Now define a standard 2D and 3D case and do some computations on them:
+```{python}
+env2d = bh.Environment(name="Example Bellhop2D",dimension="2D").check()
+env3d = bh.Environment(name="Example Bellhop3D",dimension="3D").check()
+output, ind = bh.compute(env=[env2d, env3d],task=["rays"])
+print(ind)
+```
+
+Now look at the results:
+
+```{python}
+print("Size of output:")
+print(f"2D rays: N={len(output[0]['results'])}")
+print(f"3D rays: N={len(output[1]['results'])}")
+
+print("Each ray data structure:")
+print(output[0]['results'].iloc[1,:])
+print(output[1]['results'].iloc[1,:])
+
+print("Ray details 2D:")
+print(output[0]['results'].iloc[1,:]['ray'])
+
+print("Ray details 3D:")
+print(output[1]['results'].iloc[1,:]['ray'])
+```
+
+### Minimal example 2D
+
+```{python}
+import bellhop as bh
+import bellhop.plot as bhp
+
+env2d = bh.Environment(name="Example Bellhop2D",dimension="2D",beam_angle_min=-45,beam_angle_max=45).check()
+rays = bh.compute_rays(env2d)
+print(env2d)
+bhp.plot_rays(rays,env=env2d)
+```
+
+### Minimal example 3D
+
+```{python}
+import bellhop as bh
+import bellhop.plot as bhp
+
+env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45).check()
+rays = bh.compute_rays(env3d)
+bhp.plot_rays(rays,env=env3d)
+```
+
+
