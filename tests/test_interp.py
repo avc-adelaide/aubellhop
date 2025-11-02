@@ -21,8 +21,8 @@ ssp = [
 
 # Create environment with variable sound speed profile
 env = bh.Environment(soundspeed=ssp, depth=30,
-    bottom_soundspeed=1600.0, bottom_density=1600, 
-    soundspeed_interp="linear", 
+    bottom_soundspeed=1600.0, bottom_density=1600, bottom_attenuation=0.0,
+    soundspeed_interp="linear",
     beam_angle_min=-80, beam_angle_max=80)
 
 # Compute arrivals

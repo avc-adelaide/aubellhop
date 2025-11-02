@@ -151,7 +151,7 @@ def test_bathy():
         [1000, 20]  # 25 m water depth at 1 km
 	]
 
-    env = bh.Environment(depth=bathy,bottom_density=1600,bottom_soundspeed=1600.0,beam_angle_max=80,beam_angle_min=-80)
+    env = bh.Environment(depth=bathy,bottom_density=1600,bottom_soundspeed=1600.0,beam_angle_max=80,beam_angle_min=-80,bottom_attenuation=0.0)
 
     arrivals = bh.compute_arrivals(env)
     arrival_times = arrivals["time_of_arrival"]
