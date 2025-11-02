@@ -70,17 +70,17 @@ class Environment(MutableMapping[str, Any]):
 
     >>> import bellhop as bh
     >>> env = bh.Environment(depth=20,
-    >>>.        soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
+    >>>         soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
 
     A range-and-depth dependent sound speed profile can be provided as a Pandas frame:
 
     >>> import bellhop as bh
     >>> import pandas as pd
     >>> ssp2 = pd.DataFrame({
-              0: [1540, 1530, 1532, 1533],     # profile at 0 m range
-            100: [1540, 1535, 1530, 1533],     # profile at 100 m range
-            200: [1530, 1520, 1522, 1525] },   # profile at 200 m range
-            index=[0, 10, 20, 30])             # depths of the profile entries in m
+    >>>       0: [1540, 1530, 1532, 1533],     # profile at 0 m range
+    >>>     100: [1540, 1535, 1530, 1533],     # profile at 100 m range
+    >>>     200: [1530, 1520, 1522, 1525] },   # profile at 200 m range
+    >>>     index=[0, 10, 20, 30])             # depths of the profile entries in m
     >>> env = bh.Environment(depth=20, soundspeed=ssp2)
 
     The default environment has a constant water depth. A range dependent bathymetry

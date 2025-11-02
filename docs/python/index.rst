@@ -9,6 +9,8 @@ This is the Python API documentation for BELLHOP, an underwater acoustic propaga
 
    code
    environment
+   models
+   compute
    const
    defaults
    readers

@@ -39,6 +39,8 @@ File structure
     +------------------+-------------------------------------------------+
     | `environment.py` | Environment class definition                    |
     +------------------+-------------------------------------------------+
+    | `compute.py`     | Wrapper functions for executing computations    |
+    +------------------+-------------------------------------------------+
     | `plot.py`        | Plotting functions using Bokeh                  |
     +------------------+-------------------------------------------------+
     | `plotutils.py`   | Internal interface to Bokeh                     |
