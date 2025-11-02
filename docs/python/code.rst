@@ -21,54 +21,6 @@ Main interfaces
        D --> E
        A --> E
 
-.. mermaid::
-
-   classDiagram
-       class Models {
-           +new(name, ...)
-           +list()
-       }
-
-       class Environment {
-           +__init__()
-       }
-
-       class Bellhop {
-           +compute(env, task, model=None)
-       }
-
-       Models <|-- Bellhop : uses
-       Environment <.. Bellhop : input
-
-
-.. code-block:: text
-
-     import bellhop as bh
-
-   ┌──────────────────────────────────────────────────────────────┐
-   │ bh.Models                                                    │
-   │  • Registry of BellhopSimulator instances                    │
-   │                                                              │
-   │ bh.Models.new(name="...")                                    │
-   │    → create new model                                        │
-   │                                                              │
-   │ bh.Models.list()                                             │
-   │    → list all models                                         │
-   └──────────────────────────────────────────────────────────────┘
-
-   ┌──────────────────────────────────────────────────────────────┐
-   │ env = bh.Environment(...)                                    │
-   │    → create new Environment instance                         │
-   └──────────────────────────────────────────────────────────────┘
-
-   ┌──────────────────────────────────────────────────────────────┐
-   │ bh.compute(env, task=["..."])                                │
-   │    → run Bellhop computations using the *auto* model         │
-   │                                                              │
-   │ bh.compute(env, task=["..."], model=["..."])                 │
-   │    → run Bellhop computations using the *specified* model    │
-   └──────────────────────────────────────────────────────────────┘
-
 File structure
 --------------
 

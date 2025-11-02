@@ -1,4 +1,4 @@
-Environment class
+Models class
 =============================
 
 .. toctree::
@@ -12,16 +12,21 @@ Overview
    ┌───────────────────────────────────────────────┐
    │ import bellhop as bh                          │
    ├───────────────────────────────────────────────┤
-   │ env = bh.Environment(...)                     │
-   │    → create new Environment instance          │
+   │ bh.Models                                     │
+   │  • Registry of BellhopSimulator instances     │
+   │                                               │
+   │ bh.Models.new(name="...")                     │
+   │    → create new model                         │
+   │                                               │
+   │ bh.Models.list()                              │
+   │    → list all models                          │
    └───────────────────────────────────────────────┘
 
 
-Environment class
+Models class
 -----------------
 
-.. automodule:: bellhop.environment
+.. automodule:: bellhop.models
    :members:
-   :undoc-members:
-   :show-inheritance:
-   :no-value:
+
+

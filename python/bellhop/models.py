@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Self
 
 from .constants import ModelDefaults
 from .environment import Environment
@@ -110,7 +110,7 @@ class Models:
                 return mm
         raise ValueError('No suitable propagation model available')
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         raise TypeError("This utility class cannot be instantiated")
 
 Models.init()
