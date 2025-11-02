@@ -5,12 +5,18 @@ This page documents the hard-coded default values used throughout the Bellhop in
 These defaults are defined in the dataclasses defined in the ``bellhop.constants`` module.
 
 
-ModelDefaults Table
---------------
+ModelDefaults
+----------------
 
 .. dataclass-table:: bellhop.constants.ModelDefaults
 
-EnvDefaults Table
---------------
+EnvDefaults
+--------------------
 
 .. dataclass-table:: bellhop.constants.EnvDefaults
+
+
+MiscDefaults
+--------------------
+
+.. dataclass-table:: bellhop.constants.MiscDefaults

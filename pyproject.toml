@@ -130,6 +130,7 @@ dev = [
     "mypy",
     "jupyter",
     "nbformat",
+    "sphinxcontrib-mermaid",
 ]
 
 [tool.hatch.envs.default]

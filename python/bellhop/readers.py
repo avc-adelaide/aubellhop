@@ -1,6 +1,6 @@
+from __future__ import annotations
 
 import os
-
 from struct import unpack as _unpack
 from pathlib import Path
 from typing import Any, Tuple, TextIO, cast, IO

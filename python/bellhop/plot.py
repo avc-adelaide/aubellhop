@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 ##############################################################################
 #
 # Copyright (c) 2025-, Will Robertson

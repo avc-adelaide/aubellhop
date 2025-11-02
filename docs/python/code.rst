@@ -7,6 +7,40 @@ Code reference
 Main interfaces
 ---------------
 
+.. mermaid::
+
+   flowchart TD
+       A["bh.models<br/>Registry of models"]
+       B["bh.models.new(...)<br/>create new model"]
+       C["bh.models.list()<br/>list all models"]
+       D["env = bh.Environment()<br/>create Environment instance"]
+       E["bh.compute(env, ...)<br/>run with default model"]
+
+       B --> A
+       A --> C
+       D --> E
+       A --> E
+
+.. mermaid::
+
+   classDiagram
+       class Models {
+           +new(name, ...)
+           +list()
+       }
+
+       class Environment {
+           +__init__()
+       }
+
+       class Bellhop {
+           +compute(env, task, model=None)
+       }
+
+       Models <|-- Bellhop : uses
+       Environment <.. Bellhop : input
+
+
 .. code-block:: text
 
      import bellhop as bh

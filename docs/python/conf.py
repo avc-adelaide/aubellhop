@@ -22,12 +22,20 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'dataclass_table',
+    "sphinxcontrib.mermaid",
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 autodoc_mock_imports = ["matplotlib", "gcovr", "numpy", "scipy", "pandas", "bokeh"]
+
+# Avoid linking built-in types like typing.Any, typing.Optional, etc.
+autodoc_type_aliases = {}
+nitpick_ignore = [
+    ("py:class", "Any"),
+    ("py:class", "typing.Any"),
+]
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'alabaster'

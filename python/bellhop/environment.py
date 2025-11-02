@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 """
 Environment configuration for BELLHOP.
@@ -5,6 +6,7 @@ Environment configuration for BELLHOP.
 This module provides dataclass-based environment configuration with automatic validation,
 replacing manual option checking with field validators.
 """
+
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
@@ -507,7 +509,11 @@ class Environment(MutableMapping[str, Any]):
             File reference (already opened)
         fname_base : str
             Filename base (without extension)
-        :returns fname_base: filename base (no extension) of written file
+
+        Returns
+        -------
+        fname_base : str
+            Filename base (no extension) of written file
 
         We liberally insert comments and empty lines for readability and take care to
         ensure that comments are consistently aligned.
