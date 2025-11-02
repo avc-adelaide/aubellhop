@@ -1,11 +1,24 @@
 import pytest
 import bellhop as bh
+from bellhop.constants import EnvDefaults
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt
 import tempfile
 import os
 
+
+def test_defaults():
+    env = bh.Environment()
+    env.reset()
+    assert env.frequency is None, "Reset should set everything to None"
+    env.defaults()
+    assert env.frequency == EnvDefaults.frequency, "Defaults should now be set"
+    env.reset()
+    assert env.frequency is None, "Reset should set everything to None"
+    env.frequency = 200
+    env.defaults()
+    assert env.frequency == 200, "Defaults should not override explicit settings"
 
 def test_env_dict_round_trip():
     """Test creating an environment, exporting to DICT, then reading it back."""

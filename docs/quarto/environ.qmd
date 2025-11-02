@@ -32,6 +32,7 @@ The `Environment` class provide the following user-facing instance methods:
 
 * `Environment().check()` --- finalise and validate parameters (semi-automatic, see below)
 * `Environment().copy()` --- shallow copy the instance
+* `Environment().defaults()` --- fill `None` fields with a default setting if there is one (use with care)
 * `Environment().reset()` — set all user-facing values from the instance to `None`
 * `Environment().to_dict()` --- convert parameters to a standard `dict`
 * `Environment().to_file(fname)` --- write environment configuration to file(s) in original Bellhop `.env` text format (also writing additional `.ssp`, `.bty` files if needed)

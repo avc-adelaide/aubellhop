@@ -237,7 +237,7 @@ class _Maps:
 
 @dataclass
 class ModelDefaults:
-    """Dataclass of hard-coded defaults used throughout the Bellhop interface."""
+    """Defaults within the Bellhop model class."""
     name_2d: str = field(default="bellhop", metadata={"desc": "Name of the class instance for the 2D model"})
     exe_2d: str = field(default="bellhop.exe", metadata={"desc": "Executable filename for the 2D model"})
     dim_2d: int = field(default=2, metadata={"desc": "Number of dimensions in the 2D model"})
@@ -246,22 +246,28 @@ class ModelDefaults:
     dim_3d: int = field(default=3, metadata={"desc": "Number of dimensions in the 3D model"})
 
 @dataclass
-class EnvDefaults:
-    """Dataclass of hard-coded defaults used throughout the Bellhop interface."""
+class MiscDefaults:
+    """Defaults for parameters within setup code."""
     beam_angle_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_angle_fullspace: float = field(default=180.0, metadata={"units": "deg"})
     beam_bearing_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_bearing_fullspace: float = field(default=180.0, metadata={"units": "deg"})
-    bottom_attenuation: float = field(default=1.0, metadata={"units": "scale factor","desc": "When acousto-elastic bottom boundary condition is selected, this is the attenuation factor (0.0 = 100% attenuation, 1.0 = 0% attenuation)"})
+    density: float = field(default=1000.0, metadata={"units": "kg/m^3", "desc": "Constant density of the medium"})
+    sound_speed: float = field(default=1500.0, metadata={"units": "m/s", "desc": "Constant speed of sound in the medium"})
+
+@dataclass
+class EnvDefaults:
+    """Defaults for the Environment class."""
+    attenuation_units: str = field(default=BHStrings.db_per_wavelength, metadata={"desc": "Units for `bottom_attentuation`, etc."})
+    bottom_attenuation: float = field(default=0.1, metadata={"units": "scale factor","desc": "When acousto-elastic bottom boundary condition is selected, this is the attenuation factor"})
+    bottom_boundary_condition: str = field(default=BHStrings.acousto_elastic, metadata={"desc": "Standard boundary condition for seabed"})
     comment_pad: int = field(default=50, metadata={"desc": "Number of characters used before the comment in the constructed .env files."})
     interference_mode: str = field(default=BHStrings.coherent, metadata={"desc": "Mode of interference when calculating transmission loss"})
     frequency: float = field(default=25000.0, metadata={"desc": "Frequency of sound propagation", "units": "Hz"})
     dimension: str = field(default=BHStrings.two_d, metadata={"desc": "Dimension of simulation (2D, 2.5D, 3D)"})
     attenuation_units: str = field(default=BHStrings.frequency_dependent, metadata={"desc": "Attenuation units to define volume attenuation"})
     volume_attenuation: str = field(default=BHStrings.none, metadata={"desc": "Type of volume attenuation to apply"})
-    sound_speed: float = field(default=1500.0, metadata={"units": "m/s", "desc": "Constant speed of sound in the medium"})
     surface: float = field(default=0.0, metadata={"units": "m", "desc": "Depth of the surface. Should always be `0.0` for flat altimetry."})
-    density: float = field(default=1000.0, metadata={"units": "kg/m^3", "desc": "Constant density of the medium"})
     simulation_depth_scale: float = field(default=1.01,metadata={'desc': 'Scaling factor on the maximum depth of the bathymetry to calculate the maximum simulation depth extent.'})
     simulation_range_scale: float = field(default=1.1,metadata={'desc': 'Scaling factor on the maximum range of the receivers to calculate the maximum simulation range extent.'})
     simulation_cross_range_scale: float = field(default=2.0,metadata={'desc': 'Scaling factor on the maximum cross range of the receivers (based on maximum bearing angle) to calculate the maximum simulation cross range extent.'})

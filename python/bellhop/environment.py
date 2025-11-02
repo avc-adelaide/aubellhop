@@ -18,7 +18,7 @@ import numpy as np
 from numpy.typing import NDArray
 import pandas as pd
 
-from .constants import BHStrings, _Maps, EnvDefaults
+from .constants import BHStrings, _Maps, EnvDefaults, MiscDefaults
 
 @dataclass
 class Environment(MutableMapping[str, Any]):
@@ -97,7 +97,7 @@ class Environment(MutableMapping[str, Any]):
     _num_media: int = 1 # must always = 1 in bellhop
 
     # Sound speed parameters
-    soundspeed: float | Any = EnvDefaults.sound_speed  # m/s
+    soundspeed: float | Any = MiscDefaults.sound_speed  # m/s
     soundspeed_interp: str = BHStrings.linear
 
     # Depth parameters
@@ -116,9 +116,9 @@ class Environment(MutableMapping[str, Any]):
 
     # Bottom parameters
     bottom_interp: str | None = None
-    bottom_soundspeed: float = EnvDefaults.sound_speed # m/s
+    bottom_soundspeed: float = MiscDefaults.sound_speed # m/s
     _bottom_soundspeed_shear: float = 0.0  # m/s (ignored)
-    bottom_density: float = EnvDefaults.density  # kg/m^3
+    bottom_density: float = MiscDefaults.density  # kg/m^3
     bottom_attenuation: float | None = None  # dB/wavelength
     _bottom_attenuation_shear: float | None = None  # dB/wavelength (ignored)
     bottom_roughness: float = 0.0  # m (rms)
@@ -132,9 +132,9 @@ class Environment(MutableMapping[str, Any]):
     surface_interp: str = BHStrings.linear  # curvilinear/linear
     surface_boundary_condition: str = BHStrings.vacuum
     surface_reflection_coefficient: Any | None = None
-    surface_soundspeed: float = EnvDefaults.sound_speed # m/s
+    surface_soundspeed: float = MiscDefaults.sound_speed # m/s
     _surface_soundspeed_shear: float = 0.0  # m/s (ignored)
-    surface_density: float = EnvDefaults.density  # kg/m^3
+    surface_density: float = MiscDefaults.density  # kg/m^3
     surface_attenuation: float | None = None  # dB/wavelength
     _surface_attenuation_shear: float | None = None  # dB/wavelength (ignored)
     _surface_min: float | None = None
@@ -225,6 +225,13 @@ class Environment(MutableMapping[str, Any]):
         for k in self.keys():
             if not k.startswith("_"):
                 self[k] = None
+        return self
+
+    def defaults(self) -> Self:
+        """Applies default values if not already set."""
+        for f in fields(EnvDefaults):
+            if getattr(self, f.name) is None:
+                setattr(self, f.name, getattr(EnvDefaults(), f.name))
         return self
 
     def to_dict(self) -> Dict[str,Any]:
@@ -362,27 +369,27 @@ class Environment(MutableMapping[str, Any]):
         if len(self['soundspeed'].columns) > 1:
             self['soundspeed_interp'] == BHStrings.quadrilateral
 
-        self.bottom_attenuation = self._float_or_default('bottom_attenuation', EnvDefaults.bottom_attenuation) # avoid 100% attenuation if not specified
+        self.bottom_attenuation = self._float_or_default('bottom_attenuation', EnvDefaults.bottom_attenuation)
 
         # Beam angle ranges default to half-space if source is left-most, otherwise full-space:
         if self['beam_angle_min'] is None:
             if np.min(self['receiver_range']) < 0:
-                self['beam_angle_min'] = - EnvDefaults.beam_angle_fullspace
+                self['beam_angle_min'] = - MiscDefaults.beam_angle_fullspace
             else:
-                self['beam_angle_min'] = - EnvDefaults.beam_angle_halfspace
+                self['beam_angle_min'] = - MiscDefaults.beam_angle_halfspace
         if self['beam_angle_max'] is None:
             if np.min(self['receiver_range']) < 0:
-                self['beam_angle_max'] =  EnvDefaults.beam_angle_fullspace
+                self['beam_angle_max'] =  MiscDefaults.beam_angle_fullspace
             else:
-                self['beam_angle_max'] = EnvDefaults.beam_angle_halfspace
+                self['beam_angle_max'] = MiscDefaults.beam_angle_halfspace
 
         # Identical logic for bearing angles
         if np.min(self['receiver_range']) < 0:
-            angle_min = -EnvDefaults.beam_bearing_fullspace
-            angle_max = +EnvDefaults.beam_bearing_fullspace
+            angle_min = -MiscDefaults.beam_bearing_fullspace
+            angle_max = +MiscDefaults.beam_bearing_fullspace
         else:
-            angle_min = -EnvDefaults.beam_bearing_halfspace
-            angle_max = +EnvDefaults.beam_bearing_halfspace
+            angle_min = -MiscDefaults.beam_bearing_halfspace
+            angle_max = +MiscDefaults.beam_bearing_halfspace
 
         self.beam_bearing_min = self._float_or_default('beam_bearing_min', angle_min)
         self.beam_bearing_max = self._float_or_default('beam_bearing_max', angle_max)
@@ -609,7 +616,7 @@ class Environment(MutableMapping[str, Any]):
         bot_str = self._quoted_opt(bot_bc,dp_flag)
         comment = "BOT_Boundary_cond / BOT_Roughness"
         self._print_env_line(fh,f"{bot_str} {self['bottom_roughness']}",comment)
-        if self['bottom_boundary_condition'] == "acousto-elastic":
+        if self['bottom_boundary_condition'] == BHStrings.acousto_elastic:
             comment = "Depth_Max  BOT_SoundSpeed  BOT_SS_Shear  BOT_Density  BOT_Absorp  BOT_Absorp Shear"
             array_str = self._array2str([
               self['_depth_max'],
