@@ -3,7 +3,7 @@ import os
 
 from struct import unpack as _unpack
 from pathlib import Path
-from typing import Any, Tuple, TextIO, List, cast, IO
+from typing import Any, Tuple, TextIO, cast, IO
 from numpy.typing import NDArray
 
 import numpy as np
@@ -277,7 +277,7 @@ class EnvironmentReader:
         self._parse_src_rcv(sr_lines)
         self._parse_task(next_line)
 
-    def _parse_src_rcv(self, sr_lines: List[str]) -> None:
+    def _parse_src_rcv(self, sr_lines: list[str]) -> None:
         """Parse the N lines read defining sources and receivers and assign the corresponding variables."""
         nlines = len(sr_lines)
         if nlines == 6:
@@ -361,7 +361,7 @@ class EnvironmentReader:
             self.env['simulation_depth'] = float(limits_parts[3])
 
 def read_ssp(fname: str,
-             depths: List[float] | NDArray[np.float64] | pd.DataFrame | None = None
+             depths: list[float] | NDArray[np.float64] | pd.DataFrame | None = None
             ) -> NDArray[np.float64] | pd.DataFrame:
     """Read a 2D sound speed profile (.ssp) file used by BELLHOP.
 
@@ -698,7 +698,7 @@ def read_arrivals(fname: str) -> pd.DataFrame:
 #                 source_depth = _read_array(f, (float,)*source_depth_count)
 #                 receiver_depth = _read_array(f, (float,)*receiver_depth_count)
 #                 receiver_range = _read_array(f, (float,)*receiver_range_count)
-        arrivals: List[pd.DataFrame] = []
+        arrivals: list[pd.DataFrame] = []
         for j in range(source_depth_count):
             f.readline()
             for k in range(receiver_depth_count):

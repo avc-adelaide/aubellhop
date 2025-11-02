@@ -4,7 +4,7 @@ import subprocess as _proc
 import shutil
 
 from tempfile import mkstemp as _mkstemp
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
 
 from .constants import ModelDefaults, BHStrings, _File_Ext
 from .environment import Environment
@@ -86,7 +86,7 @@ class BellhopSimulator:
         return results
 
     @property
-    def taskmap(self) -> Dict[Any, List[Any]]:
+    def taskmap(self) -> Dict[Any, list[Any]]:
         """Dictionary which maps tasks to execution functions and their parameters"""
         return {
             BHStrings.arrivals:     ['A', read_arrivals, _File_Ext.arr],

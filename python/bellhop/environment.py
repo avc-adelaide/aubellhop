@@ -8,7 +8,7 @@ replacing manual option checking with field validators.
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
-from typing import Any, Dict, Iterator, List, TextIO, Self, Callable
+from typing import Any, Dict, Iterator, TextIO, Self, Callable
 
 from pprint import pformat
 import warnings
@@ -693,7 +693,7 @@ class Environment(MutableMapping[str, Any]):
                 self._print(fh, f"{j} ", newline=False)
             self._print(fh, " /")
 
-    def _array2str(self, values: List[Any]) -> str:
+    def _array2str(self, values: list[Any]) -> str:
         """Format list into space-separated string, trimmed at first None, ending with '/'."""
         try:
             values = values[:values.index(None)]

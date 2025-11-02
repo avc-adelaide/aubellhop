@@ -15,7 +15,7 @@ to work, the complete bellhop.py package must be built and installed
 and `bellhop.exe` should be in your PATH.
 """
 
-from typing import Any, List, Tuple
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -40,12 +40,12 @@ from bellhop.models import ModelRegistry
 models = ModelRegistry()
 
 def compute(
-            env: Environment | List[Environment],
+            env: Environment | list[Environment],
             model: Any | None = None,
             task: Any | None = None,
             debug: bool = False,
             fname_base: str | None = None
-           ) ->   Any | Environment | Tuple[List[Environment], pd.DataFrame]:
+           ) ->   Any | Environment | tuple[list[Environment], pd.DataFrame]:
     """Compute Bellhop task(s) for given model(s) and environment(s).
 
     Parameters
@@ -93,7 +93,7 @@ def compute(
     envs = env if isinstance(env, list) else [env]
     models_ = model if isinstance(model, list) else [model]
     tasks = task if isinstance(task, list) else [task]
-    results: List[Any] = []
+    results: list[Any] = []
     for this_env in envs:
         debug and print(f"Using environment: {this_env['name']}")
         for this_model in models_:

@@ -11,7 +11,7 @@
 """Defining the Model Registry for bellhop.py to allow multiple BellhopSimulators to be run.
 """
 
-from typing import Any, List
+from typing import Any
 
 from .constants import ModelDefaults
 from .environment import Environment
@@ -21,7 +21,7 @@ class ModelRegistry:
     """Registry for BellhopSimulator models."""
 
     def __init__(self) -> None:
-        self._models: List[BellhopSimulator] = []
+        self._models: list[BellhopSimulator] = []
         self._initialize_defaults()
 
     def _initialize_defaults(self) -> None:
@@ -38,11 +38,11 @@ class ModelRegistry:
         self._models.append(model)
         return model
 
-    def list(self, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> List[str]:
-        """List available models."""
+    def list(self, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> list[str]:
+        """list available models."""
         if env is not None:
             env.check()
-        rv: List[str] = []
+        rv: list[str] = []
         for m in self._models:
             if m.supports(env=env, task=task, dim=dim):
                 rv.append(m.name)
