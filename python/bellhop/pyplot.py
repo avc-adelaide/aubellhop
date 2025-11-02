@@ -1,18 +1,5 @@
 from __future__ import annotations
 
-##############################################################################
-#
-# Copyright (c) 2025-, Will Robertson
-# Copyright (c) 2018-2025, Mandar Chitre
-#
-# This file was originally part of arlpy, released under Simplified BSD License.
-# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-#
-##############################################################################
-
-"""Plotting functions for the underwater acoustic propagation modeling toolbox.
-"""
-
 from typing import Any
 from sys import float_info as _fi
 
@@ -25,6 +12,19 @@ import matplotlib.colors as _mplc
 
 from .constants import BHStrings
 from .environment import Environment
+
+##############################################################################
+#
+# Copyright (c) 2025-, Will Robertson
+# Copyright (c) 2018-2025, Mandar Chitre
+#
+# This file was originally part of arlpy, released under Simplified BSD License.
+# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
+#
+##############################################################################
+
+"""Plotting functions for the underwater acoustic propagation modeling toolbox.
+"""
 
 def pyplot_env(env: Environment, surface_color: str = 'dodgerblue', bottom_color: str = 'peru', source_color: str = 'orangered', receiver_color: str = 'midnightblue',
                receiver_plot: bool | None = None, **kwargs: Any) -> None:

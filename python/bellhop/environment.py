@@ -1,13 +1,5 @@
 from __future__ import annotations
 
-"""
-Environment configuration for BELLHOP.
-
-This module provides dataclass-based environment configuration with automatic validation,
-replacing manual option checking with field validators.
-"""
-
-
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
 from typing import Any, Dict, Iterator, TextIO, Self, Callable
@@ -21,6 +13,13 @@ from numpy.typing import NDArray
 import pandas as pd
 
 from .constants import BHStrings, _Maps, EnvDefaults, MiscDefaults
+
+"""
+Environment configuration for BELLHOP.
+
+This module provides dataclass-based environment configuration with automatic validation,
+replacing manual option checking with field validators.
+"""
 
 @dataclass
 class Environment(MutableMapping[str, Any]):

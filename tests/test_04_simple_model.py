@@ -24,14 +24,14 @@ def test_arrivals_no_model():
     """Test with default settings to calculate arrival times. Catch error for no model found.
     """
 
-    saved_models = bh.models._models.copy()  # snapshot
+    saved_models = bh.Models._models.copy()  # snapshot
     try:
-        bh.models._models.clear()
+        bh.Models._models.clear()
         with pytest.raises(ValueError, match=r"No suitable propagation model"):
             env = bh.Environment()
             arr = bh.compute_arrivals(env, debug=True)
     finally:
-        bh.models._models[:] = saved_models  # restore contents in place
+        bh.Models._models[:] = saved_models  # restore contents in place
 
 
 

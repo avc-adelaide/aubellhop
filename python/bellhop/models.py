@@ -1,3 +1,11 @@
+from __future__ import annotations
+
+from typing import Any
+
+from .constants import ModelDefaults
+from .environment import Environment
+from .bellhop import BellhopSimulator
+
 ##############################################################################
 #
 # Copyright (c) 2025-, Will Robertson
@@ -11,56 +19,57 @@
 """Defining the Model Registry for bellhop.py to allow multiple BellhopSimulators to be run.
 """
 
-from typing import Any
+class Models:
+    """Registry for BellhopSimulator models.
 
-from .constants import ModelDefaults
-from .environment import Environment
-from .bellhop import BellhopSimulator
+    This is a *Utility Class* which consists of only class methods and a global registry
+    of defined models.
+    """
 
-class ModelRegistry:
-    """Registry for BellhopSimulator models."""
+    _models: list[BellhopSimulator] = []  # class-level storage for all models
 
-    def __init__(self) -> None:
-        self._models: list[BellhopSimulator] = []
-        self._initialize_defaults()
-
-    def _initialize_defaults(self) -> None:
+    @classmethod
+    def init(cls) -> None:
         """Create default models."""
-        self.new(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
-        self.new(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
+        cls.new(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
+        cls.new(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
 
-    def new(self, name: str, **kwargs: Any) -> BellhopSimulator:
+    @classmethod
+    def new(cls, name: str, **kwargs: Any) -> BellhopSimulator:
         """Instantiate a new Bellhop model and add it to the registry."""
-        for m in self._models:
+        for m in cls._models:
             if name == m.name:
                 raise ValueError(f"Bellhop model with this name ('{name}') already exists.")
         model = BellhopSimulator(name=name, **kwargs)
-        self._models.append(model)
+        cls._models.append(model)
         return model
 
-    def list(self, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> list[str]:
-        """list available models."""
+    @classmethod
+    def list(cls, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> list[str]:
+        """List available models."""
         if env is not None:
             env.check()
         rv: list[str] = []
-        for m in self._models:
+        for m in cls._models:
             if m.supports(env=env, task=task, dim=dim):
                 rv.append(m.name)
         return rv
 
-    def get(self, name: str) -> BellhopSimulator:
+    @classmethod
+    def get(cls, name: str) -> BellhopSimulator:
         """Get a model by name."""
-        for m in self._models:
+        for m in cls._models:
             if m.name == name:
                 return m
         raise KeyError(f"Unknown model: '{name}'")
 
-    def reset(self) -> None:
-        """Clear all models and reinitialize defaults (useful for testing)."""
-        self._models.clear()
-        self._initialize_defaults()
+    @classmethod
+    def reset(cls) -> None:
+        """Clear all models."""
+        cls._models.clear()
 
-    def select( self,
+    @classmethod
+    def select( cls,
                  env: Environment,
                 task: str,
                model: str | None = None,
@@ -93,11 +102,15 @@ class ModelRegistry:
         bellhop models, GPU bellhop models, and so on.
         """
         if model is not None:
-            return self.get(model)
+            return cls.get(model)
         debug and print("Searching for propagation model:")
-        for mm in self._models:
+        for mm in cls._models:
             if mm.supports(env=env, task=task, dim=env._dimension):
                 debug and print(f'Model found: {mm.name}')
                 return mm
         raise ValueError('No suitable propagation model available')
 
+    def __new__(cls, *args, **kwargs):
+        raise TypeError("This utility class cannot be instantiated")
+
+Models.init()

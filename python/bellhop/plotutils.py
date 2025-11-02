@@ -1,5 +1,16 @@
 from __future__ import annotations
 
+from typing import Any, List, Tuple
+import numpy as np
+import os as _os
+import warnings as _warnings
+from tempfile import mkstemp as _mkstemp
+import bokeh.plotting as _bplt
+import bokeh.models as _bmodels
+import bokeh.resources as _bres
+import bokeh.io as _bio
+import scipy.signal as _sig
+
 ##############################################################################
 #
 # Copyright (c) 2025-, Will Robertson
@@ -12,16 +23,6 @@ from __future__ import annotations
 
 """Easy-to-use plotting utilities based on `Bokeh <http://bokeh.pydata.org>`_."""
 
-from typing import Any, List, Tuple
-import numpy as np
-import os as _os
-import warnings as _warnings
-from tempfile import mkstemp as _mkstemp
-import bokeh.plotting as _bplt
-import bokeh.models as _bmodels
-import bokeh.resources as _bres
-import bokeh.io as _bio
-import scipy.signal as _sig
 
 light_palette = ['mediumblue', 'crimson', 'forestgreen', 'gold', 'darkmagenta', 'olive', 'palevioletred', 'yellowgreen',
                  'deepskyblue', 'dimgray', 'indianred', 'mediumaquamarine', 'orange', 'saddlebrown', 'teal', 'mediumorchid']

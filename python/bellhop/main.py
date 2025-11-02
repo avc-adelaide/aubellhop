@@ -1,19 +1,4 @@
-##############################################################################
-#
-# Copyright (c) 2025-, Will Robertson
-# Copyright (c) 2018-2025, Mandar Chitre
-#
-# This file was originally part of arlpy, released under Simplified BSD License.
-# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-#
-##############################################################################
-
-"""Underwater acoustic propagation modeling toolbox.
-
-This toolbox uses the Bellhop acoustic propagation model. For this model
-to work, the complete bellhop.py package must be built and installed
-and `bellhop.exe` should be in your PATH.
-"""
+from __future__ import annotations
 
 from typing import Any
 
@@ -36,8 +21,24 @@ from bellhop.readers import read_arrivals as read_arrivals
 
 from bellhop.environment import Environment
 
-from bellhop.models import ModelRegistry
-models = ModelRegistry()
+from bellhop.models import Models
+
+##############################################################################
+#
+# Copyright (c) 2025-, Will Robertson
+# Copyright (c) 2018-2025, Mandar Chitre
+#
+# This file was originally part of arlpy, released under Simplified BSD License.
+# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
+#
+##############################################################################
+
+"""Underwater acoustic propagation modeling toolbox.
+
+This toolbox uses the Bellhop acoustic propagation model. For this model
+to work, the complete bellhop.py package must be built and installed
+and `bellhop.exe` should be in your PATH.
+"""
 
 def compute(
             env: Environment | list[Environment],
@@ -104,7 +105,7 @@ def compute(
                 this_task = this_task or this_env.get('task')
                 if this_task is None:
                     raise ValueError("Task must be specified in env or as parameter")
-                model_fn = models.select(this_env, this_task, this_model, debug)
+                model_fn = Models.select(this_env, this_task, this_model, debug)
                 results.append({
                        "name": this_env["name"],
                        "model": this_model,

@@ -10,9 +10,9 @@ Main interfaces
 .. mermaid::
 
    flowchart TD
-       A["bh.models<br/>Registry of models"]
-       B["bh.models.new(...)<br/>create new model"]
-       C["bh.models.list()<br/>list all models"]
+       A["bh.Models<br/>Registry of models"]
+       B["bh.Models.new(...)<br/>create new model"]
+       C["bh.Models.list()<br/>list all models"]
        D["env = bh.Environment()<br/>create Environment instance"]
        E["bh.compute(env, ...)<br/>run with default model"]
 
@@ -46,13 +46,13 @@ Main interfaces
      import bellhop as bh
 
    ┌──────────────────────────────────────────────────────────────┐
-   │ bh.models                                                    │
+   │ bh.Models                                                    │
    │  • Registry of BellhopSimulator instances                    │
    │                                                              │
-   │ bh.models.new(name="...")                                    │
+   │ bh.Models.new(name="...")                                    │
    │    → create new model                                        │
    │                                                              │
-   │ bh.models.list()                                             │
+   │ bh.Models.list()                                             │
    │    → list all models                                         │
    └──────────────────────────────────────────────────────────────┘
 
