@@ -4,6 +4,37 @@ Code reference
 .. toctree::
    :maxdepth: 3
 
+Main interfaces
+---------------
+
+.. code-block:: text
+
+     import bellhop as bh
+
+   ┌──────────────────────────────────────────────────────────────┐
+   │ bh.models                                                    │
+   │  • Registry of BellhopSimulator instances                    │
+   │                                                              │
+   │ bh.models.new(name="...")                                    │
+   │    → create new model                                        │
+   │                                                              │
+   │ bh.models.list()                                             │
+   │    → list all models                                         │
+   └──────────────────────────────────────────────────────────────┘
+
+   ┌──────────────────────────────────────────────────────────────┐
+   │ env = bh.Environment(...)                                    │
+   │    → create new Environment instance                         │
+   └──────────────────────────────────────────────────────────────┘
+
+   ┌──────────────────────────────────────────────────────────────┐
+   │ bh.compute(env, task=["..."])                                │
+   │    → run Bellhop computations using the *auto* model         │
+   │                                                              │
+   │ bh.compute(env, task=["..."], model=["..."])                 │
+   │    → run Bellhop computations using the *specified* model    │
+   └──────────────────────────────────────────────────────────────┘
+
 File structure
 --------------
 

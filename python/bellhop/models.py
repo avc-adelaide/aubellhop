@@ -18,7 +18,7 @@ from .environment import Environment
 from .bellhop import BellhopSimulator
 
 class ModelRegistry:
-    """Registry for Bellhop simulator models."""
+    """Registry for BellhopSimulator models."""
 
     def __init__(self) -> None:
         self._models: List[BellhopSimulator] = []
