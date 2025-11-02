@@ -203,7 +203,7 @@ def plot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwargs
         _plt.plot([t, t], [min_y, y], color=color, **kwargs)
     _plt.hold(oh if oh is not None else False)
 
-def plot_rays(rays: Any, env: Environment | None = None, invert_colors: bool = False, **kwargs: Any) -> None:
+def plot_rays(rays: pd.DataFrame, env: Environment | None = None, invert_colors: bool = False, **kwargs: Any) -> None:
     """Plots ray paths.
 
     Parameters
@@ -232,26 +232,25 @@ def plot_rays(rays: Any, env: Environment | None = None, invert_colors: bool = F
     rays = rays.sort_values('bottom_bounces', ascending=False)
 
     # some edge cases to worry about here: rays.bottom_bounces could be all zeros?
-    max_amp = np.max(np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0.0
-    max_amp = max_amp or 1.0
+    max_amp = np.max(np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0
+    max_amp = max_amp or 1
 
     divisor = 1
-    xlabel = 'Range (m)'
+    xunits = '(m)'
     r = []
     for _, row in rays.iterrows():
         r += list(row.ray[:,0])
     if max(r)-min(r) > 10000:
         divisor = 1000
-        xlabel = 'Range (km)'
+        xunits = '(km)'
 
     oh = _plt.hold()
     for _, row in rays.iterrows():
-        c = float(np.abs(row.bottom_bounces) / max_amp)
-        if invert_colors:
-            c = 1.0 - c
+        rr = float( (row.bottom_bounces + 1) / (max_amp + 1) )
+        c = 1.0 - rr if invert_colors else rr
         cmap = _pyplt.get_cmap("gray")
         col_str = _mplc.to_hex(cmap(c))
-        _plt.plot(row.ray[:,0]/divisor, -row.ray[:,1], color=col_str, xlabel=xlabel, ylabel='Depth (m)', **kwargs)
+        _plt.plot(row.ray[:,0]/divisor, -row.ray[:,1], color=col_str, xlabel='Range '+xunits, ylabel='Depth (m)', **kwargs)
     if env is not None:
         plot_env(env,title=None)
     _plt.hold(oh if oh is not None else False)
