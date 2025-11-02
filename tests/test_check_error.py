@@ -11,7 +11,7 @@ import pytest
 import tempfile
 import os
 from pathlib import Path
-from bellhop.main import BellhopSimulator
+from bellhop.bellhop import BellhopSimulator
 
 
 class TestCheckError:

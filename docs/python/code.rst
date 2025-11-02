@@ -12,7 +12,9 @@ File structure
     +==================+=================================================+
     | `main.py`        | Top level module file                           |
     +------------------+-------------------------------------------------+
-    | `bellhop.py`     | Class definition of bellhop.exe interface       |
+    | `models.py`      | Model registry for BellhopSimulator variants    |
+    +------------------+-------------------------------------------------+
+    | `bellhop.py`     | Class definition of bellhop(3d).exe interface   |
     +------------------+-------------------------------------------------+
     | `constants.py`   | Strings and mappings mainly for option parsing  |
     +------------------+-------------------------------------------------+
