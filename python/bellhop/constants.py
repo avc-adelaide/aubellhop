@@ -252,6 +252,7 @@ class EnvDefaults:
     beam_angle_fullspace: float = field(default=180.0, metadata={"units": "deg"})
     beam_bearing_halfspace: float = field(default=90.0, metadata={"units": "deg"})
     beam_bearing_fullspace: float = field(default=180.0, metadata={"units": "deg"})
+    bottom_attenuation: float = field(default=1.0, metadata={"units": "scale factor","desc": "When acousto-elastic bottom boundary condition is selected, this is the attenuation factor (0.0 = 100% attenuation, 1.0 = 0% attenuation)"})
     comment_pad: int = field(default=50, metadata={"desc": "Number of characters used before the comment in the constructed .env files."})
     interference_mode: str = field(default=BHStrings.coherent, metadata={"desc": "Mode of interference when calculating transmission loss"})
     frequency: float = field(default=25000.0, metadata={"desc": "Frequency of sound propagation", "units": "Hz"})

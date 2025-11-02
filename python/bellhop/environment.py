@@ -362,6 +362,8 @@ class Environment(MutableMapping[str, Any]):
         if len(self['soundspeed'].columns) > 1:
             self['soundspeed_interp'] == BHStrings.quadrilateral
 
+        self.bottom_attenuation = self._float_or_default('bottom_attenuation', EnvDefaults.bottom_attenuation) # avoid 100% attenuation if not specified
+
         # Beam angle ranges default to half-space if source is left-most, otherwise full-space:
         if self['beam_angle_min'] is None:
             if np.min(self['receiver_range']) < 0:
