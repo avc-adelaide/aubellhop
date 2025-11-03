@@ -292,7 +292,18 @@ class EnvironmentReader:
     def _parse_src_rcv(self, sr_lines: list[str]) -> None:
         """Parse the N lines read defining sources and receivers and assign the corresponding variables."""
         nlines = len(sr_lines)
-        if nlines == 6:
+        if nlines == 3: # sometimes see a shorthand version like: ['1   25.0 /', '10 100.0 1000.0 /', '1,  80.0']
+            self.env['_dimension'] = 2
+            val0 = _parse_vector(sr_lines[0])
+            val1 = _parse_vector(sr_lines[1])
+            val2 = _parse_vector(sr_lines[2])
+            self.env['source_ndepth']   = int(val0[0])
+            self.env['receiver_ndepth'] = val0[1:]
+            self.env['receiver_nrange'] = int(val1[0])
+            self.env['source_depth']    = val1[1:]
+            self.env['receiver_depth']  = int(val2[0])
+            self.env['receiver_range']  = val2[1:]
+        elif nlines == 6:
             self.env['_dimension'] = 2
             self.env['source_ndepth']   = _parse_line_int(sr_lines[0])
             self.env['receiver_ndepth'] = _parse_line_int(sr_lines[2])
@@ -344,7 +355,8 @@ class EnvironmentReader:
         beam_num_line = _read_next_valid_line(f)
         beam_num_parts = _parse_line(beam_num_line) + [None] * 1
         self.env['beam_num'] = int(beam_num_parts[0] or 0)
-        self.env['single_beam_index'] = _int(beam_num_parts[1])
+        if self.env["_single_beam"]: # defensive in case there is a spurious value in here
+            self.env['single_beam_index'] = _int(beam_num_parts[1])
 
         # Beam angles (beam_angle_min, beam_angle_max)
         angles_line = _read_next_valid_line(f)
@@ -575,11 +587,11 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
             elif nvalues == 7 and len(parts) == 7:
                 ranges.append(float(parts[0]))  # Range in km
                 depths.append(float(parts[1]))  # Depth in m
-                wave_speed.append(float(parts[2]))  # 
-                wave_attenuation.append(float(parts[3]))  # 
-                density.append(float(parts[4]))  # 
-                shear_speed.append(float(parts[5]))  # 
-                shear_attenuation.append(float(parts[6]))  # 
+                wave_speed.append(float(parts[2]))  #
+                wave_attenuation.append(float(parts[3]))  #
+                density.append(float(parts[4]))  #
+                shear_speed.append(float(parts[5]))  #
+                shear_attenuation.append(float(parts[6]))  #
 
         if len(ranges) != npoints:
             raise ValueError(f"Expected {npoints} altimetry/bathymetry points, but found {len(ranges)}")
@@ -596,12 +608,12 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
             shear_speed_array = np.array(shear_speed)
             shear_attenuation_array = np.array(shear_attenuation)
             val_array = [
-                         ranges_m, 
-                         depths_array, 
-                         wave_speed_array, 
-                         wave_attenuation_array, 
-                         density_array, 
-                         shear_speed_array, 
+                         ranges_m,
+                         depths_array,
+                         wave_speed_array,
+                         wave_attenuation_array,
+                         density_array,
+                         shear_speed_array,
                          shear_attenuation_array,
                         ]
         return np.column_stack(val_array), _Maps.depth_interp[interp_type]
