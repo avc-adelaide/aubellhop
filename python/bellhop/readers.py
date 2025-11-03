@@ -549,20 +549,37 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
     """
 
     with open(fname, 'r') as f:
-        # Read interpolation type (usually 'L' or 'C')
+        # Read interpolation type ('L' or 'C')
         interp_type = _read_next_valid_line(f).strip("'\"")
+        nvalues = 2
+        if len(interp_type) > 1:
+            nvalues = 7 if interp_type[1] == "L" else 2
+            interp_type = interp_type[0]
         npoints = int(_read_next_valid_line(f))
         ranges = []
         depths = []
+        wave_speed = []
+        wave_attenuation = []
+        density = []
+        shear_speed = []
+        shear_attenuation = []
         for i in range(npoints):
             try:
                 line = _read_next_valid_line(f)
             except EOFError:
                 break
             parts = _parse_line(line)
-            if len(parts) >= 2:
+            if nvalues == 2 and len(parts) >= 2:
                 ranges.append(float(parts[0]))  # Range in km
                 depths.append(float(parts[1]))  # Depth in m
+            elif nvalues == 7 and len(parts) == 7:
+                ranges.append(float(parts[0]))  # Range in km
+                depths.append(float(parts[1]))  # Depth in m
+                wave_speed.append(float(parts[2]))  # 
+                wave_attenuation.append(float(parts[3]))  # 
+                density.append(float(parts[4]))  # 
+                shear_speed.append(float(parts[5]))  # 
+                shear_attenuation.append(float(parts[6]))  # 
 
         if len(ranges) != npoints:
             raise ValueError(f"Expected {npoints} altimetry/bathymetry points, but found {len(ranges)}")
@@ -570,9 +587,25 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
         # Convert ranges from km to m for consistency with bellhop env structure
         ranges_m = np.array(ranges) * 1000
         depths_array = np.array(depths)
+        if nvalues == 2:
+            val_array = [ranges_m, depths_array]
+        elif nvalues == 7:
+            wave_speed_array = np.array(wave_speed)
+            wave_attenuation_array = np.array(wave_attenuation)
+            density_array = np.array(density)
+            shear_speed_array = np.array(shear_speed)
+            shear_attenuation_array = np.array(shear_attenuation)
+            val_array = [
+                         ranges_m, 
+                         depths_array, 
+                         wave_speed_array, 
+                         wave_attenuation_array, 
+                         density_array, 
+                         shear_speed_array, 
+                         shear_attenuation_array,
+                        ]
+        return np.column_stack(val_array), _Maps.depth_interp[interp_type]
 
-        # Return as [range, depth] pairs
-        return np.column_stack([ranges_m, depths_array]), _Maps.depth_interp[interp_type]
 
 def read_sbp(fname: str) -> NDArray[np.float64]:
     """Read an source beam patterm (.sbp) file used by BELLHOP.
