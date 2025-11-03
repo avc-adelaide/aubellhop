@@ -294,9 +294,9 @@ class EnvironmentReader:
         nlines = len(sr_lines)
         if nlines == 3: # sometimes see a shorthand version like: ['1   25.0 /', '10 100.0 1000.0 /', '1,  80.0']
             self.env['_dimension'] = 2
-            val0 = _parse_vector(sr_lines[0])
-            val1 = _parse_vector(sr_lines[1])
-            val2 = _parse_vector(sr_lines[2])
+            val0 = np.asarray(_parse_vector(sr_lines[0]))
+            val1 = np.asarray(_parse_vector(sr_lines[1]))
+            val2 = np.asarray(_parse_vector(sr_lines[2]))
             self.env['source_ndepth']   = int(val0[0])
             self.env['receiver_ndepth'] = val0[1:]
             self.env['receiver_nrange'] = int(val1[0])

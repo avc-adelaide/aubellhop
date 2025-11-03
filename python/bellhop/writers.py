@@ -221,7 +221,8 @@ class EnvironmentWriter:
         """Read parameters for Cerveny Gaussian Beams, if applicable"""
         if self.env['beam_type'] not in (BHStrings.cartesian, BHStrings.ray):
             return None
-        self._print_env_line(fh,self._array2str([self.env['beam_width_type'], self.env['beam_epsilon_multipler'], self.env['beam_range_loop'] / 1000]),"Beam_width_type Eps_Mult Range_Loop")
+        rloop = None if self.env['beam_range_loop'] is None else self.env['beam_range_loop'] / 1000
+        self._print_env_line(fh,self._array2str([self.env['beam_width_type'], self.env['beam_epsilon_multipler'], rloop]),"Beam_width_type Eps_Mult Range_Loop")
         self._print_env_line(fh,self._array2str([self.env['beam_images_num'], self.env['beam_window'], self.env['beam_component']]),"Beam_width_type Eps_Mult Range_Loop")
 
     def _print(self, fh: TextIO, s: str, newline: bool = True) -> None:
