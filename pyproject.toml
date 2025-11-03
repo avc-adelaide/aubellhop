@@ -168,7 +168,7 @@ docp = "sphinx-build docs/python docs/_build/media/python"
 docq = "quarto render docs/quarto --to html"
 lintf = "fortitude check --output-format concise --line-length 129 --ignore PORT011,C121,C003"
 lintp = "ruff check python/bellhop/"
-typep = ["install-dev", "mypy python/"]
+typep = ["install-dev", "mypy python/bellhop"]
 
 [tool.hatch.build.targets.sdist]
 ignore-vcs = true

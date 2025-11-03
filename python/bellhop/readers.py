@@ -77,7 +77,8 @@ def _read_ssp_points(f: TextIO) -> pd.DataFrame:
         if parts[0] is None: # empty line after stripping comments
             continue
         ssp.update({
-            k: _float(v) if v is not None else ssp[k] for k, v in zip(ssp.keys(), parts)
+            k: ssp[k] if v is None else cast(float,_float(v))
+            for k, v in zip(ssp.keys(), parts)
         })
         ssp_depth.append(ssp["depth"])
         ssp_speed.append(ssp["speed"])
@@ -355,10 +356,10 @@ class EnvironmentReader:
         self.env['step_size'] = _float(limits_parts[0])
         if self.env['_dimension'] == 2:
             self.env['simulation_depth'] = _float(limits_parts[1])
-            self.env['simulation_range'] = _float(limits_parts[2]) * 1000.0  # convert km to m
+            self.env['simulation_range'] = _float(limits_parts[2], 1000.0)  # convert km to m
         else:
-            self.env['simulation_range'] = _float(limits_parts[1]) * 1000.0  # convert km to m
-            self.env['simulation_cross_range'] = _float(limits_parts[2]) * 1000.0  # convert km to m
+            self.env['simulation_range'] = _float(limits_parts[1], 1000.0)  # convert km to m
+            self.env['simulation_cross_range'] = _float(limits_parts[2], 1000.0)  # convert km to m
             self.env['simulation_depth'] = _float(limits_parts[3])
 
     def _read_gaussian_params(self, f: TextIO) -> None:
@@ -367,7 +368,8 @@ class EnvironmentReader:
             return None
         line = _read_next_valid_line(f)
         parts = _parse_line(line) + [None] * 3
-        self.env['beam_width_type'] = _unquote_string(parts[0]) + " "
+        assert isinstance(parts[0],str)
+        self.env['beam_width_type'] = _unquote_string(parts[0])
         self.env['beam_epsilon_multipler'] = _float(parts[1])
         self.env['beam_range_loop'] = _float(parts[2],1000)
 
