@@ -138,10 +138,10 @@ class EnvironmentReader:
         if self.env["volume_attenuation"] == BHStrings.francois_garrison:
             fg_spec_line = _read_next_valid_line(f)
             fg_parts = _parse_line(fg_spec_line)
-            self.env["fg_salinity"]    = float(fg_parts[0])
-            self.env["fg_temperature"] = float(fg_parts[1])
-            self.env["fg_pH"]          = float(fg_parts[2])
-            self.env["fg_depth"]       = float(fg_parts[3])
+            self.env["_fg_salinity"]    = float(fg_parts[0])
+            self.env["_fg_temperature"] = float(fg_parts[1])
+            self.env["_fg_pH"]          = float(fg_parts[2])
+            self.env["_fg_depth"]       = float(fg_parts[3])
 
         # Line 4a: Boundary condition params
         if self.env["surface_boundary_condition"] == BHStrings.acousto_elastic:

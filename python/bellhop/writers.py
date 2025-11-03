@@ -111,7 +111,7 @@ class EnvironmentWriter:
 
         if self.env['volume_attenuation'] == BHStrings.francois_garrison:
             comment = "Francois-Garrison volume attenuation parameters (sal, temp, pH, depth)"
-            self._print_env_line(fh,f"{self.env['fg_salinity']} {self.env['fg_temperature']} {self.env['fg_pH']} {self.env['fg_depth']}",comment)
+            self._print_env_line(fh,f"{self.env['_fg_salinity']} {self.env['_fg_temperature']} {self.env['_fg_pH']} {self.env['_fg_depth']}",comment)
 
         # Line 4a
         if self.env['surface_boundary_condition'] == BHStrings.acousto_elastic:

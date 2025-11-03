@@ -18,11 +18,13 @@ tl_exp = bh.read_shd("tests/VolAtt/free_FGB.shd")
 
 def test_simple():
     env2 = bh.Environment(bottom_density=1600,bottom_soundspeed=1600.0)
-    env2["volume_attenuation"] = "francois-garrison"
-    env2["fg_salinity"] = 19.3
-    env2["fg_temperature"] = 33.5
-    env2["fg_depth"] = 20
-    env2["fg_pH"] = 7.5
+    env2.set_fg_attenuation(
+      salinity = 19.3,
+      temperature = 33.5,
+      depth = 20,
+      pH = 7.5,
+    )
+
     arr = bh.compute_arrivals(env2,fname_base="tests/VolAtt/debug_output",debug=True)
 
     assert arr is not None

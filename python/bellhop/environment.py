@@ -203,11 +203,11 @@ class Environment(MutableMapping[str, Any]):
     attenuation_units: str = EnvDefaults.attenuation_units
     biological_layer_parameters: Any | None = None
 
-    # Francois-Garrison volume attenuation parameters
-    fg_salinity: float | None = None
-    fg_temperature: float | None = None
-    fg_pH: float | None = None
-    fg_depth: float | None = None
+    # Francois-Garrison volume attenuation parameters (has setter `.set_fg_attenuation(...)`)
+    _fg_salinity: float | None = None
+    _fg_temperature: float | None = None
+    _fg_pH: float | None = None
+    _fg_depth: float | None = None
 
     comment_pad: int = EnvDefaults.comment_pad
 
@@ -325,6 +325,21 @@ class Environment(MutableMapping[str, Any]):
             envs.append(env_i)
 
         return envs
+
+    ############## SETTERS ###############
+
+    def set_fg_attenuation(self,
+                           salinity: float,
+                           temperature: float,
+                           pH: float,
+                           depth: float
+                          ) -> Self:
+        """Interface to set Francois-Garrison volume attenuation parameters."""
+        self.volume_attenuation = BHStrings.francois_garrison
+        self._fg_salinity = salinity
+        self._fg_temperature = temperature
+        self._fg_pH = pH
+        self._fg_depth = depth
 
     ############## CHECKING ###############
 
