@@ -169,7 +169,7 @@ coverage-test: coverage-install
 	@echo "Running fortran coverage test..."
 	export PATH="$(PWD)/bin:$$PATH" && \
 	export PYTHONPATH="$(PWD)/python:$$PYTHONPATH" && \
-	export COVERAGE_RUN="true" && pytest --capture=tee-sys --ignore=tests/only_python/
+	export COVERAGE_RUN="true" && pytest --capture=tee-sys --ignore=tests/only_python/ tests/
 
 coverage-report:
 	@echo "Generating coverage report from existing data..."
