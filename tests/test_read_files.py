@@ -116,8 +116,22 @@ def test_read_bty_complex():
 def test_bty_long_format():
 
     bty = bh.read_bty("tests/Pekeris/PekerisRDB.bty")
+    assert bty[1] == "linear"
     assert bty[0].shape[0] == 3, "Should be 3 lines long"
     assert bty[0].shape[1] == 7, "Should be 7 entries per row"
+
+#       0 100 1700 0.0 1.2 0.5 0
+#     2.5 100 1550 0.0 1.2 0.5 0
+#     5.0 100 1550 0.0 1.2 0.5 0
+
+    assert bty[0][0,0] ==    0.0
+    assert bty[0][1,0] == 2500.0
+    assert bty[0][2,0] == 5000.0
+    assert bty[0][0,2] == 1700.0
+    assert bty[0][1,2] == 1550.0
+    assert bty[0][2,2] == 1550.0
+    assert bty[0][1,4] ==    1.2
+    assert bty[0][2,5] ==    0.5
 
 
 def test_integration_with_env():

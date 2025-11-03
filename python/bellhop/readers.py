@@ -298,11 +298,11 @@ class EnvironmentReader:
             val1 = np.asarray(_parse_vector(sr_lines[1]))
             val2 = np.asarray(_parse_vector(sr_lines[2]))
             self.env['source_ndepth']   = int(val0[0])
-            self.env['receiver_ndepth'] = val0[1:]
             self.env['receiver_nrange'] = int(val1[0])
-            self.env['source_depth']    = val1[1:]
-            self.env['receiver_depth']  = int(val2[0])
-            self.env['receiver_range']  = val2[1:]
+            self.env['receiver_ndepth'] = int(val2[0])
+            self.env['source_depth']    = val0[1:]
+            self.env['receiver_depth']  = val1[1:]
+            self.env['receiver_range']  = val2[1:] * 1000.0 # convert km to m
         elif nlines == 6:
             self.env['_dimension'] = 2
             self.env['source_ndepth']   = _parse_line_int(sr_lines[0])
