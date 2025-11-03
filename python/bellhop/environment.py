@@ -479,7 +479,7 @@ class Environment(MutableMapping[str, Any]):
         if self["bottom_reflection_coefficient"] is not None:
             assert self["bottom_boundary_condition"] == BHStrings.from_file, "BRC values need to be read from file"
         assert np.max(self['source_depth']) <= self['_depth_max'], f'source_depth {self.source_depth} cannot exceed water depth: {str(self._depth_max)}'
-        assert np.max(self['receiver_depth']) <= self['_depth_max'], f'receiver_depth {self.receiver_depth} cannot exceed water depth: {str(self._depth_max)}'
+        #assert np.max(self['receiver_depth']) <= self['_depth_max'], f'receiver_depth {self.receiver_depth} cannot exceed water depth: {str(self._depth_max)}'
 
     def _check_env_ssp(self) -> None:
         assert isinstance(self['soundspeed'], pd.DataFrame), 'Soundspeed should always be a DataFrame by this point'

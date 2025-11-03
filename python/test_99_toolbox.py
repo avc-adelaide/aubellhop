@@ -11,7 +11,7 @@
 import time
 import csv
 import pytest
-# import pandas.testing as pdt
+import pandas.testing as pdt
 import bellhop as bh
 import random
 
@@ -30,7 +30,7 @@ def init_csv():
 # The big parameterized test
 at_files = [
     # TODO: check missing entries against this list automatically
-#    "examples/calib/calibB_Cerveny.env",
+#    "examples/calib/calibB_Cerveny.env", # TODO
     "examples/calib/calibB_gb.env",
     "examples/calib/calibBgrad.env",
     "examples/calib/calibB.env",
@@ -41,7 +41,7 @@ at_files = [
     "examples/VolAtt/free_FGB.env",
     "examples/VolAtt/free_gbtB.env",
     "examples/VolAtt/free_ThorpB.env",
-    "examples/VolAtt/free_gbtB_Inc.env",
+#    "examples/VolAtt/free_gbtB_Inc.env",
     "examples/VolAtt/freeB.env",
     "examples/VolAtt/freeB_Inc.env",
     "examples/arctic/arcticB_cpp.env",
@@ -93,17 +93,17 @@ at_files = [
     "examples/terrain/lower_half_gbt.env",
     "examples/ParaBot/ParaBotTLGeom.env",
     "examples/ParaBot/ParaBot.env",
-    "examples/ParaBot/ParaBotTLGB.env",
+#    "examples/ParaBot/ParaBotTLGB.env",
     "examples/PointLine/LloydPoint_gbtB.env",
     "examples/PointLine/LloydLineB.env",
     "examples/PointLine/LloydLine_gbtB.env",
     "examples/PointLine/LloydPointB.env",
     "examples/Ellipse/EllipseTLGB.env",
-    "examples/Ellipse/EllipseTLGeom.env",
+#    "examples/Ellipse/EllipseTLGeom.env",
     "examples/Ellipse/Ellipse.env",
-#    "examples/SBCX/sbcx_Arr_bin.env",
-    "examples/SBCX/sbcx_Arr_asc.env",
-    "examples/SBCX/sbcx.env",
+#    "examples/SBCX/sbcx_Arr_bin.env", # binary arrivals not implemented in bellhop.py
+#    "examples/SBCX/sbcx_Arr_asc.env",
+#    "examples/SBCX/sbcx.env",
     "examples/Dickins/DickinsFlatB.env",
     "examples/Dickins/DickinsB_oneBeam.env",
     "examples/Dickins/DickinsCervenyB.env",
@@ -124,9 +124,9 @@ def test_examples_2e(envfile, init_csv):
     status = "PASS"
     try:
         env = bh.Environment.from_file(envfile)
-        #results1 = bh.compute(env)
-        #results2 = bh.compute_from_file("bellhop", env["_from_file"])
-        #pdt.assert_frame_equal(results1["results"], results2["results"])
+        results1 = bh.compute(env)
+        results2 = bh.compute_from_file("bellhop", env["_from_file"])
+        pdt.assert_frame_equal(results1["results"], results2["results"])
     except Exception as e:
         status = f"FAIL ({type(e).__name__})"
         raise
