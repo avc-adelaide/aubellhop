@@ -276,12 +276,20 @@ class EnvironmentWriter:
         return None if x is None else float(x) * scale
 
     def _create_bty_ati_file(self, filename: str, depth: Any, interp: BHStrings) -> None:
-        """Write data to bathymetry/altimetry file"""
+        """Write data to bathymetry/altimetry file
+
+        The short/long ("S"/"L") flags are hard-coded to keep it simple.
+        """
         with open(filename, 'wt') as f:
-            f.write(f"'{_Maps.depth_interp_rev[interp]}'\n")
+            format_flag = "S" if depth.shape[1] == 2 else "L"
+            f.write(f"'{_Maps.depth_interp_rev[interp]}{format_flag}'\n")
             f.write(str(depth.shape[0])+"\n")
-            for j in range(depth.shape[0]):
-                f.write(f"{depth[j,0]/1000} {depth[j,1]}\n")
+            if depth.shape[1] == 2:
+                for j in range(depth.shape[0]):
+                    f.write(f"{depth[j,0]/1000} {depth[j,1]}\n")
+            elif depth.shape[1] == 7:
+                for j in range(depth.shape[0]):
+                    f.write(f"{depth[j,0]/1000} {depth[j,1]} {depth[j,2]} {depth[j,3]} {depth[j,4]} {depth[j,5]} {depth[j,6]}\n")
 
     def _create_sbp_file(self, filename: str, dir: Any) -> None:
         """Write data to sbp file"""

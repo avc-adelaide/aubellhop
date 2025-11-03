@@ -112,6 +112,14 @@ def test_read_bty_complex():
     # Depths should include the shallow section at 20 km
     assert bty[2, 1] == 500, "Depth at 20 km should be 500 m"
 
+
+def test_bty_long_format():
+
+    bty = bh.read_bty("tests/Pekeris/PekerisRDB.bty")
+    assert bty[0].shape[0] == 3, "Should be 3 lines long"
+    assert bty[0].shape[1] == 7, "Should be 7 entries per row"
+
+
 def test_integration_with_env():
     """Test that read functions work with environment creation"""
     ssp_file = "tests/MunkB_geo_rot/MunkB_geo_rot.ssp"

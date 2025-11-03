@@ -60,7 +60,7 @@ at_files = [
     "examples/halfspace/lower_halfB.env",
     "examples/sduct/single.env",
     "examples/sduct/sductB.env",
-#    "examples/sduct/sduct_bbB.env", # slow
+    "examples/sduct/sduct_bbB.env",
     "examples/sduct/sductB_gb.env",
     "examples/PekerisRD/PekerisRDB.env",
     "examples/BeamPattern/omni.env",

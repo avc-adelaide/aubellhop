@@ -80,3 +80,4 @@ def test_write_trc():
     trc2 = bh.read_trc("tests/refl_coeff/trc_debug.trc")
 
     np.testing.assert_array_equal(trc1, trc2)
+
