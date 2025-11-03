@@ -37,14 +37,14 @@ def _parse_line(line: str) -> list[str]:
     return line.split()
 
 def _parse_line_int(line: str) -> int:
-    """Parse an integer on a line by itself"""
+    """Parse an integer on a line by itself. Strip spurious comma(s)."""
     parts = _parse_line(line)
-    return int(parts[0])
+    return int(parts[0].strip(","))
 
 def _parse_vector(line: str) -> NDArray[np.float64] | float:
-    """Parse a vector of floats with unknown number of values"""
+    """Parse a vector of floats with unknown number of values. Strip commas if necessary."""
     parts = _parse_line(line)
-    val = [float(p) for p in parts]
+    val = [float(p.strip(",")) for p in parts]
     valout = np.array(val) if len(val) > 1 else val[0]
     return valout
 
@@ -77,7 +77,7 @@ def _read_ssp_points(f: TextIO) -> pd.DataFrame:
         if parts[0] is None: # empty line after stripping comments
             continue
         ssp.update({
-            k: float(v) if v is not None else ssp[k] for k, v in zip(ssp.keys(), parts)
+            k: _float(v) if v is not None else ssp[k] for k, v in zip(ssp.keys(), parts)
         })
         ssp_depth.append(ssp["depth"])
         ssp_speed.append(ssp["speed"])
@@ -100,11 +100,11 @@ def _opt_lookup(name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
 
 def _float(x: Any, scale: float = 1) -> float | None:
     """Permissive float-enator with unit scaling"""
-    return None if x is None else float(x) * scale
+    return None if x is None else float(x.strip(",")) * scale
 
 def _int(x: Any) -> int | None:
     """Permissive int-enator"""
-    return None if x is None else int(x)
+    return None if x is None else int(x.strip(","))
 
 def _prepare_filename(fname: str, ext: str, name: str) -> Tuple[str,str]:
     """Checks filename is present and file exists."""
@@ -241,7 +241,9 @@ class EnvironmentReader:
         # Bottom boundary options
         bottom_line = _read_next_valid_line(f)
         bottom_parts = _parse_line(bottom_line) + [None] * 3
+        print(bottom_parts)
         botopt = _unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
+        print(botopt)
         self.env["bottom_boundary_condition"] = _opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
         self.env["_bathymetry"]               = _opt_lookup("Bathymetry",                botopt[1], _Maps._bathymetry)
         self.env['bottom_roughness']       = _float(bottom_parts[1])
@@ -351,14 +353,14 @@ class EnvironmentReader:
         # Ray tracing limits (step, max_depth, max_range) - last line
         limits_line = _read_next_valid_line(f)
         limits_parts = _parse_line(limits_line)
-        self.env['step_size'] = float(limits_parts[0])
+        self.env['step_size'] = _float(limits_parts[0])
         if self.env['_dimension'] == 2:
-            self.env['simulation_depth'] = float(limits_parts[1])
-            self.env['simulation_range'] = float(limits_parts[2]) * 1000.0  # convert km to m
+            self.env['simulation_depth'] = _float(limits_parts[1])
+            self.env['simulation_range'] = _float(limits_parts[2]) * 1000.0  # convert km to m
         else:
-            self.env['simulation_range'] = float(limits_parts[1]) * 1000.0  # convert km to m
-            self.env['simulation_cross_range'] = float(limits_parts[2]) * 1000.0  # convert km to m
-            self.env['simulation_depth'] = float(limits_parts[3])
+            self.env['simulation_range'] = _float(limits_parts[1]) * 1000.0  # convert km to m
+            self.env['simulation_cross_range'] = _float(limits_parts[2]) * 1000.0  # convert km to m
+            self.env['simulation_depth'] = _float(limits_parts[3])
 
 def read_ssp(fname: str,
              depths: list[float] | NDArray[np.float64] | pd.DataFrame | None = None
@@ -440,7 +442,7 @@ def read_ssp(fname: str,
         line_num = 0
         for line in f:
             line_num += 1
-            line = line.strip()
+            line = line.replace(","," ").strip()
             if line:  # Skip empty lines
                 values = [float(x) for x in line.split()]
                 if len(values) != nranges:
@@ -734,7 +736,7 @@ def read_shd(fname: str) -> pd.DataFrame:
         # _title = str(f.read(80))
         f.seek(4*recl, 0)
         ptype = f.read(10).decode('utf8').strip()
-        assert ptype == 'rectilin', 'Invalid file format (expecting ptype == "rectilin")'
+        assert ptype == 'rectilin', f'Invalid file format (expecting {ptype} == "rectilin")'
         f.seek(8*recl, 0)
         nfreq, ntheta, nsx, nsy, nsd, nrd, nrr, atten = _unpack('iiiiiiif', f.read(32))
         assert nfreq == 1, 'Invalid file format (expecting nfreq == 1)'

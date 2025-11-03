@@ -65,8 +65,11 @@ class BHStrings(str, Enum):
     point = "point"
 
     # beam
+    cartesian = "cartesian",
+    ray = "ray",
     hat_cartesian = "hat-cartesian",
     hat_ray = "hat-ray",
+    gaussian_simple = "gaussian-simple",
     gaussian_cartesian = "gaussian-cartesian",
     gaussian_ray = "gaussian-ray",
     omnidirectional = "omnidirectional"
@@ -187,12 +190,15 @@ class _Maps:
         " ": BHStrings.default,
     }
     beam_type = {
+        "C": BHStrings.cartesian,
+        "R": BHStrings.ray,
         "G": BHStrings.hat_cartesian,
         "^": BHStrings.hat_cartesian,
         "g": BHStrings.hat_ray,
+        "S": BHStrings.gaussian_simple,
         "B": BHStrings.gaussian_cartesian,
         "b": BHStrings.gaussian_ray,
-        " ": BHStrings.default,
+        " ": BHStrings.default, # = "G"
     }
     dimension = {
         " ": BHStrings.two_d,
