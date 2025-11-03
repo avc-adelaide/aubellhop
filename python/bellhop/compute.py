@@ -109,7 +109,7 @@ def compute(
                        "name": this_env["name"],
                        "model": this_model,
                        "task": this_task,
-                       "results": model_fn.run(this_task, fname_base, debug),
+                       "results": model_fn.run(this_task, fname_base, debug=debug),
                        "env": this_env.copy(),
                       })
     assert len(results) > 0, "No results generated"
