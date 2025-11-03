@@ -315,6 +315,8 @@ class EnvironmentReader:
             self.env['receiver_range']     = _parse_vector(sr_lines[9]) * 1000.0 # convert km to m
             self.env['receiver_bearing']   = _parse_vector(sr_lines[11])
         else:
+            print("SCANNED SRC/RCV LINES:")
+            print(sr_lines)
             raise RuntimeError(
                 "The python parsing of Bellhop's so-called 'list-directed IO' is not robust."
                 f"Expected to read 6 or 12 lines (2D or 3D cases); found: {nlines}")
