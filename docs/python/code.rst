@@ -37,6 +37,8 @@ File structure
     +------------------+-------------------------------------------------+
     | `readers.py`     | Functions for reading Bellhop input text files  |
     +------------------+-------------------------------------------------+
+    | `writers.py`     | Functions for writing Bellhop input text files  |
+    +------------------+-------------------------------------------------+
     | `environment.py` | Environment class definition                    |
     +------------------+-------------------------------------------------+
     | `compute.py`     | Wrapper functions for executing computations    |

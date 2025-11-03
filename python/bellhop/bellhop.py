@@ -68,7 +68,7 @@ class BellhopSimulator:
         task_flag, load_task_data, task_ext = self.taskmap[task]
         fd, fname_base = self._prepare_env_file(fname_base)
         with _os.fdopen(fd, "w") as fh:
-            env.to_file(task_flag, fh, fname_base)
+            env.to_file(fh, fname_base, task_flag)
         return fname_base
 
     def run(self, task: str,
