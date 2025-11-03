@@ -55,6 +55,7 @@ class BHStrings(str, Enum):
     vacuum = "vacuum"
     acousto_elastic = "acousto-elastic"
     rigid = "rigid"
+    grain = "grain"
 
     # bathymetry
     from_file = "from-file"
@@ -137,6 +138,7 @@ class _Maps:
         "V": BHStrings.vacuum,
         "A": BHStrings.acousto_elastic,
         "R": BHStrings.rigid,
+        "G": BHStrings.grain,
         "F": BHStrings.from_file,
         " ": BHStrings.default,
     }

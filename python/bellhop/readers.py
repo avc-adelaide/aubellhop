@@ -260,11 +260,17 @@ class EnvironmentReader:
         if self.env["bottom_boundary_condition"] == BHStrings.acousto_elastic:
             bottom_props_line = _read_next_valid_line(f)
             bottom_props = _parse_line(bottom_props_line) + [None] * 6
+            self.env['_bottom_depth'] = _float(bottom_props[0])
             self.env['bottom_soundspeed'] = _float(bottom_props[1])
             self.env['_bottom_soundspeed_shear'] = _float(bottom_props[2])
             self.env['bottom_density'] = _float(bottom_props[3], 1000)  # convert from g/cm³ to kg/m³
             self.env['bottom_attenuation'] = _float(bottom_props[4])
             self.env['_bottom_attenuation_shear'] = _float(bottom_props[5])
+        elif self.env["bottom_boundary_condition"] == BHStrings.grain:
+            bottom_props_line = _read_next_valid_line(f)
+            bottom_props = _parse_line(bottom_props_line) + [None] * 2
+            self.env['_bottom_grain_depth'] = _float(bottom_props[0])
+            self.env['bottom_grain_size'] = _float(bottom_props[1])
 
     def _read_sources_receivers_task(self, f: TextIO) -> None:
         """Read environment file sources, receivers, and task.

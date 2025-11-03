@@ -118,6 +118,7 @@ class Environment(MutableMapping[str, Any]):
 
     # Bottom parameters
     bottom_interp: str | None = None
+    _bottom_depth: float | None = None  # m
     bottom_soundspeed: float = MiscDefaults.sound_speed # m/s
     _bottom_soundspeed_shear: float = 0.0  # m/s (ignored)
     bottom_density: float = MiscDefaults.density  # kg/m^3
@@ -128,6 +129,8 @@ class Environment(MutableMapping[str, Any]):
     bottom_transition_freq: float | None = None  # Hz
     bottom_boundary_condition: str = BHStrings.acousto_elastic
     bottom_reflection_coefficient: Any | None = None
+    _bottom_grain_depth: float | None = None
+    bottom_grain_size: float | None = None
 
     # Surface parameters
     surface: Any | None = None  # surface profile
@@ -639,12 +642,19 @@ class Environment(MutableMapping[str, Any]):
         if self['bottom_boundary_condition'] == BHStrings.acousto_elastic:
             comment = "Depth_Max  BOT_SoundSpeed  BOT_SS_Shear  BOT_Density  BOT_Absorp  BOT_Absorp Shear"
             array_str = self._array2str([
-              self['_depth_max'],
+              self['_bottom_depth'] or self['_depth_max'],
               self['bottom_soundspeed'],
               self['_bottom_soundspeed_shear'],
               self._float(self['bottom_density'],scale=1/1000),
               self['bottom_attenuation'],
               self['_bottom_attenuation_shear']
+            ])
+            self._print_env_line(fh,array_str,comment)
+        elif self['bottom_boundary_condition'] == BHStrings.grain:
+            comment = "Grain_Depth  Grain_Size"
+            array_str = self._array2str([
+              self['_bottom_grain_depth'] or self['_depth_max'],
+              self['bottom_grain_size']
             ])
             self._print_env_line(fh,array_str,comment)
 
