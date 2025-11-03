@@ -34,6 +34,7 @@ def _read_next_valid_line(f: TextIO) -> str:
 def _parse_line(line: str) -> list[str]:
     """Parse a line, removing comments, /, and whitespace, and return the parts in a list"""
     line = line.split("!", 1)[0].split('/', 1)[0].strip()
+    line = line.replace(","," ")
     return line.split()
 
 def _parse_line_int(line: str) -> int:
@@ -51,47 +52,6 @@ def _parse_vector(line: str) -> NDArray[np.float64] | float:
 def _unquote_string(line: str) -> str:
     """Extract string from within single quotes, possibly with commas too."""
     return line.strip().strip(",'")
-
-def _read_ssp_points(f: TextIO) -> pd.DataFrame:
-    """Read sound speed profile points until we find the bottom boundary line
-
-       Default values are according to 'EnvironmentalFile.htm'."""
-
-    ssp_depth: list[float] = []
-    ssp_speed: list[float] = []
-    ssp = dict(depth=0.0, speed=MiscDefaults.sound_speed, speed_shear=0.0, density=MiscDefaults.density, att=0.0, att_shear=0.0)
-
-    while True:
-        line = f.readline()
-        if not line:
-            raise EOFError("File ended during env file reading of SSP points.")
-        line = line.strip()
-        if not line: # completely empty line
-            continue
-        if line.startswith("'"): # Check if this is a bottom boundary line (starts with quote)
-            # This is the bottom boundary line, put it back
-            f.seek(f.tell() - len(line.encode()) - 1)
-            break
-
-        parts = (_parse_line(line) + [None] * 6)[0:6]
-        if parts[0] is None: # empty line after stripping comments
-            continue
-        ssp.update({
-            k: ssp[k] if v is None else cast(float,_float(v))
-            for k, v in zip(ssp.keys(), parts)
-        })
-        ssp_depth.append(ssp["depth"])
-        ssp_speed.append(ssp["speed"])
-        # TODO: add extra terms (but this needs adjustments elsewhere)
-
-    if len(ssp_speed) == 0:
-        raise ValueError("No SSP points were found in the env file.")
-    elif len(ssp_speed) == 1:
-        raise ValueError("Only one SSP point found but at least two required (top and bottom)")
-
-    df = pd.DataFrame(ssp_speed,index=ssp_depth,columns=["speed"])
-    df.index.name = "depth"
-    return df
 
 def _opt_lookup(name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
     opt_str = _map.get(opt)
@@ -147,8 +107,8 @@ class EnvironmentReader:
         with open(self.fname, 'r') as f:
             self._read_header(f)
             self._read_top_boundary(f)
-            self._read_sound_speed_profile(f)
-            self._read_bottom_boundary(f)
+            next_line = self._read_sound_speed_profile(f)
+            self._read_bottom_boundary(f, next_line)
             self._read_sources_receivers_task(f)
             self._read_beams_limits(f)
             self._read_gaussian_params(f)
@@ -221,11 +181,12 @@ class EnvironmentReader:
             raise ValueError(f"Expected {npoints} points, but found {len(z1)}")
         return pd.DataFrame({"z1": z1, "z2": z2, "f0": f0, "Q": QQ, "a0": a0})
 
-    def _read_sound_speed_profile(self, f: TextIO) -> None:
+    def _read_sound_speed_profile(self, f: TextIO) -> str:
         """Read environment file sound speed profile"""
 
         # SSP depth specification
         ssp_spec_line = _read_next_valid_line(f)
+        ssp_spec_line = ssp_spec_line.replace(",", " ")
         ssp_parts = _parse_line(ssp_spec_line) + [None] * 3
         self.env['_mesh_npts']   = _int(ssp_parts[0])
         self.env['_depth_sigma'] = _float(ssp_parts[1])
@@ -233,15 +194,58 @@ class EnvironmentReader:
         self.env['depth'] = self.env['depth_max']
 
         # Read SSP points and from file if applicable
-        self.env['soundspeed'] = _read_ssp_points(f)
+        ssp_lines, next_line = self._read_until_quote(f)
+        self.env['soundspeed'] = self._read_ssp_points(ssp_lines)
         if self.env["soundspeed_interp"] == BHStrings.quadrilateral:
             self.env['soundspeed'] = read_ssp(self.fname_base, self.env['soundspeed'].index)
+        return next_line
 
-    def _read_bottom_boundary(self, f: TextIO) -> None:
+    def _read_until_quote(self, f: TextIO) -> tuple[list[str],str]:
+        """Read lines until one starts with ' character."""
+        lines: list[str] = []
+        while True:
+            line = f.readline()
+            if not line:
+                raise EOFError("File ended during env file reading of SSP points.")
+            line = line.strip()
+            if not line: # completely empty line
+                continue
+            if line.startswith("'"): # Check if this is a bottom boundary line (starts with quote)
+                return lines, line
+            lines.append(line)
+
+    def _read_ssp_points(self, lines: list[str]) -> pd.DataFrame:
+        """Read sound speed profile points until we find the bottom boundary line
+
+           Default values are according to 'EnvironmentalFile.htm'."""
+
+        ssp_depth: list[float] = []
+        ssp_speed: list[float] = []
+        ssp = dict(depth=0.0, speed=MiscDefaults.sound_speed, speed_shear=0.0, density=MiscDefaults.density, att=0.0, att_shear=0.0)
+
+        for line in lines:
+            parts = (_parse_line(line) + [None] * 6)[0:6]
+            if parts[0] is None: # empty line after stripping comments
+                continue
+            ssp.update({
+                k: ssp[k] if v is None else cast(float,_float(v))
+                for k, v in zip(ssp.keys(), parts)
+            })
+            ssp_depth.append(ssp["depth"])
+            ssp_speed.append(ssp["speed"])
+            # TODO: add extra terms (but this needs adjustments elsewhere)
+
+        if len(ssp_speed) == 0:
+            raise ValueError("No SSP points were found in the env file.")
+        elif len(ssp_speed) == 1:
+            raise ValueError("Only one SSP point found but at least two required (top and bottom)")
+
+        df = pd.DataFrame(ssp_speed,index=ssp_depth,columns=["speed"])
+        df.index.name = "depth"
+        return df
+
+    def _read_bottom_boundary(self, f: TextIO, bottom_line: str) -> None:
         """Read environment file bottom boundary condition"""
-
-        # Bottom boundary options
-        bottom_line = _read_next_valid_line(f)
         bottom_parts = _parse_line(bottom_line) + [None] * 3
         botopt = _unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
         self.env["bottom_boundary_condition"] = _opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
