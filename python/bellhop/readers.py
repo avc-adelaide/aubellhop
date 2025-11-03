@@ -241,9 +241,7 @@ class EnvironmentReader:
         # Bottom boundary options
         bottom_line = _read_next_valid_line(f)
         bottom_parts = _parse_line(bottom_line) + [None] * 3
-        print(bottom_parts)
         botopt = _unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
-        print(botopt)
         self.env["bottom_boundary_condition"] = _opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
         self.env["_bathymetry"]               = _opt_lookup("Bathymetry",                botopt[1], _Maps._bathymetry)
         self.env['bottom_roughness']       = _float(bottom_parts[1])
