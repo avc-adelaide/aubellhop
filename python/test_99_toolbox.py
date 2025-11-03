@@ -10,9 +10,8 @@
 """
 import time
 import csv
-import os
 import pytest
-import pandas.testing as pdt
+# import pandas.testing as pdt
 import bellhop as bh
 import random
 
