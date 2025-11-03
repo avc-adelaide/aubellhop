@@ -171,6 +171,16 @@ class Environment(MutableMapping[str, Any]):
     single_beam_index: int | None = None
     _single_beam: str = BHStrings.default # value inferred from `single_beam_index`
 
+    # Cerveny Gaussian Beams
+    beam_width_type: str | None = None
+    beam_reflection_curvature_change: str | None = None
+    beam_reflection_shift: str | None = None
+    beam_epsilon_multipler: float | None = None
+    beam_range_loop: float | None = None # km in env file
+    beam_images_num: int | None = None
+    beam_window: int | None = None
+    beam_component: str | None = None
+
     # Simulation extent
     simulation_depth: float | None = None
     simulation_range: float | None = None
@@ -534,6 +544,8 @@ class Environment(MutableMapping[str, Any]):
         self._print_env_line(fh,"")
         self._write_env_task(fh, taskcode)
         self._write_env_beam_footer(fh)
+        self._print_env_line(fh,"")
+        self._write_gaussian_params(fh)
         self._print_env_line(fh,"","End of Bellhop environment file")
 
         if self['surface_boundary_condition'] == BHStrings.from_file:
@@ -670,6 +682,13 @@ class Environment(MutableMapping[str, Any]):
             self._print_env_line(fh,f"{self['step_size']} {self['simulation_depth']} {self['simulation_range'] / 1000}","Step_Size (m), ZBOX (m), RBOX (km)")
         elif self._dimension == 3:
             self._print_env_line(fh,f"{self['step_size']} {self['simulation_range'] / 1000} {self['simulation_cross_range'] / 1000} {self['simulation_depth']}","Step_Size (m), BoxRange (x) (km), BoxCrossRange (y) (km), BoxDepth (z) (m)")
+
+    def _write_gaussian_params(self, fh: TextIO) -> None:
+        """Read parameters for Cerveny Gaussian Beams, if applicable"""
+        if self['beam_type'] not in (BHStrings.cartesian, BHStrings.ray):
+            return None
+        self._print_env_line(fh,self._array2str([self['beam_width_type'], self['beam_epsilon_multipler'], self['beam_range_loop'] / 1000]),"Beam_width_type Eps_Mult Range_Loop")
+        self._print_env_line(fh,self._array2str([self['beam_images_num'], self['beam_window'], self['beam_component']]),"Beam_width_type Eps_Mult Range_Loop")
 
     def _print(self, fh: TextIO, s: str, newline: bool = True) -> None:
         """Write a line of text with or w/o a newline char to the output file"""

@@ -150,6 +150,7 @@ class EnvironmentReader:
             self._read_bottom_boundary(f)
             self._read_sources_receivers_task(f)
             self._read_beams_limits(f)
+            self._read_gaussian_params(f)
         return self.env
 
     def _read_header(self, f: TextIO) -> None:
@@ -359,6 +360,22 @@ class EnvironmentReader:
             self.env['simulation_range'] = _float(limits_parts[1]) * 1000.0  # convert km to m
             self.env['simulation_cross_range'] = _float(limits_parts[2]) * 1000.0  # convert km to m
             self.env['simulation_depth'] = _float(limits_parts[3])
+
+    def _read_gaussian_params(self, f: TextIO) -> None:
+        """Read parameters for Cerveny Gaussian Beams, if applicable"""
+        if self.env['beam_type'] not in (BHStrings.gaussian_simple, BHStrings.ray):
+            return None
+        line = _read_next_valid_line(f)
+        parts = _parse_line(line) + [None] * 3
+        self.env['beam_width_type'] = _unquote_string(parts[0]) + " "
+        self.env['beam_epsilon_multipler'] = _float(parts[1])
+        self.env['beam_range_loop'] = _float(parts[2],1000)
+
+        line = _read_next_valid_line(f)
+        parts = _parse_line(line) + [None] * 3
+        self.env['beam_images_num'] = _int(parts[0])
+        self.env['beam_window'] = _int(parts[1])
+        self.env['beam_component'] = _unquote_string(parts[2]) if parts[2] is not None else " "
 
 def read_ssp(fname: str,
              depths: list[float] | NDArray[np.float64] | pd.DataFrame | None = None
