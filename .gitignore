@@ -95,6 +95,7 @@ test_debug*.*
 test_*range.*
 simple_test.*
 *_tmp*
+test_results.csv
 
 # quarto
 .quarto*
