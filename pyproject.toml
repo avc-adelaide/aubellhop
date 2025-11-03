@@ -144,11 +144,11 @@ PYTHONPATH = "{root}/python:{env:PYTHONPATH:}"
 install-dev = "pip install -e ."
 test = [
     "install-dev",
-    "pytest"
+    "pytest tests/"
 ]
 testv = [
     "install-dev",
-    "pytest --capture=tee-sys"
+    "pytest --capture=tee-sys --exitfirst"
 ]
 covf = [
     "install-dev",
