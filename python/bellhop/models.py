@@ -46,7 +46,7 @@ class Models:
 
     @classmethod
     def list(cls, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> list[str]:
-        """List available models."""
+        """List available models, maybe narrowed by env, task, and/or dimension."""
         if env is not None:
             env.check()
         rv: list[str] = []
@@ -90,24 +90,16 @@ class Models:
 
         Returns
         -------
-        Bellhop
-            The model function to evaluate its `.run()` method
+        BellhopSimulator
+            The first model in the list which satisfies the input parameters. 
 
-        Notes
-        -----
-        The intention of this function is to allow multiple models to be "loaded" and the
-        first appropriate model found is used for the computation.
-
-        This is likely to be more useful once we extend the code to handle things like 3D
-        bellhop models, GPU bellhop models, and so on.
         """
         if model is not None:
             return cls.get(model)
-        debug and print("Searching for propagation model:")
-        for mm in cls._models:
-            if mm.supports(env=env, task=task, dim=env._dimension):
-                debug and print(f'Model found: {mm.name}')
-                return mm
+        models = cls.list(env=env, task=task, dim=env._dimension)
+        debug and print(f'Models found: {models}')
+        if len(models) > 0:
+            return models[0]
         raise ValueError('No suitable propagation model available')
 
     def __new__(cls, *args: Any, **kwargs: Any) -> Self:
