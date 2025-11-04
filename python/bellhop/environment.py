@@ -340,6 +340,7 @@ class Environment(MutableMapping[str, Any]):
         self._fg_temperature = temperature
         self._fg_pH = pH
         self._fg_depth = depth
+        return self
 
     ############## CHECKING ###############
 

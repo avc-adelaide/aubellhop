@@ -99,7 +99,7 @@ class Models:
         models = cls.list(env=env, task=task, dim=env._dimension)
         debug and print(f'Models found: {models}')
         if len(models) > 0:
-            return models[0]
+            return cls.get(models[0])
         raise ValueError('No suitable propagation model available')
 
     def __new__(cls, *args: Any, **kwargs: Any) -> Self:
