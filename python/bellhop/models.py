@@ -6,16 +6,6 @@ from .constants import ModelDefaults
 from .environment import Environment
 from .bellhop import BellhopSimulator
 
-##############################################################################
-#
-# Copyright (c) 2025-, Will Robertson
-# Copyright (c) 2018-2025, Mandar Chitre
-#
-# This file was originally part of arlpy, released under Simplified BSD License.
-# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-#
-##############################################################################
-
 """Defining the Model Registry for bellhop.py to allow multiple BellhopSimulators to be run.
 """
 
@@ -91,7 +81,7 @@ class Models:
         Returns
         -------
         BellhopSimulator
-            The first model in the list which satisfies the input parameters. 
+            The first model in the list which satisfies the input parameters.
 
         """
         if model is not None:

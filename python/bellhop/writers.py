@@ -7,15 +7,16 @@ from .environment import Environment
 from .constants import BHStrings, _Maps
 
 """
-Environment configuration for BELLHOP.
+File writing class methods for BELLHOP.PY.
 
-This module provides dataclass-based environment configuration with automatic validation,
-replacing manual option checking with field validators.
+These files are the input files passed directly into the `bellhop(3d).exe` binaries.
+
+The `EnvironmentWriter` class provides encapsulation of methods. It is not intended
+to be user-facing.
 """
 
 class EnvironmentWriter:
-    """xx
-    """
+    """Bellhop file-writer class which creates the `.env` and related input files."""
 
     def __init__(self,
                  env: Environment,
@@ -23,18 +24,23 @@ class EnvironmentWriter:
                  fname_base: str,
                  taskcode: str
                 ):
-        """Initialize writer with filename base.
+        """Initialize writer with existing file reference and filename base, plus taskcode.
+
+        The filename base is, e.g., the `foo.env` file stripped of its extension.
+
+        Although the taskcode can be stored within the environment, it is so common to
+        override this that we use an explicit function input.
 
         Parameters
         ----------
-        env : dict
-            Environment dict
+        env : Environment
+            The Environment instance
         fh : file object
             File reference (already opened)
         fname_base : str
             Filename base (without extension)
         taskcode : str
-            Task string which defines the computation to run
+            Task char which defines the computation to run (`R`, `I`, `C`, etc.)
 
         """
         self.env = env
@@ -45,7 +51,6 @@ class EnvironmentWriter:
 
     def write(self) -> None:
         """Writes a complete .env file for specifying a Bellhop simulation
-
 
         Returns
         -------
