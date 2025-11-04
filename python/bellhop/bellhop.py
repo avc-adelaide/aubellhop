@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import os as _os
-import subprocess as _proc
+import os
+import subprocess
 import shutil
 
-from tempfile import mkstemp as _mkstemp
+import tempfile
 from typing import Any, Dict, Tuple
 
 from .constants import ModelDefaults, BHStrings, _File_Ext
@@ -66,9 +66,11 @@ class BellhopSimulator:
         to be executed.
         """
         task_flag, load_task_data, task_ext = self.taskmap[task]
-        fd, fname_base = self._prepare_env_file(fname_base)
-        with _os.fdopen(fd, "w") as fh:
+        fname_base, fname = self._prepare_env_file(fname_base)
+
+        with open(fname, "w") as fh:
             env.to_file(fh, fname_base, task_flag)
+
         return fname_base
 
     def run(self, task: str,
@@ -101,7 +103,7 @@ class BellhopSimulator:
             BHStrings.semicoherent: ['S', read_shd,      _File_Ext.shd],
         }
 
-    def _prepare_env_file(self, fname_base: str | None) -> Tuple[int, str]:
+    def _prepare_env_file(self, fname_base: str | None) -> Tuple[str, str]:
         """Opens a file for writing the .env file, in a temp location if necessary, and delete other files with same basename.
 
         Parameters
@@ -117,13 +119,17 @@ class BellhopSimulator:
             Filename base
         """
         if fname_base is not None:
-            fname = fname_base + _File_Ext.env
-            fh = _os.open(_os.path.abspath(fname), _os.O_WRONLY | _os.O_CREAT | _os.O_TRUNC)
+            fname = os.path.abspath(fname_base + _File_Ext.env)
+            os.makedirs(os.path.dirname(fname), exist_ok=True)
+            open(fname, "w").close()
         else:
-            fh, fname = _mkstemp(suffix = _File_Ext.env)
-            fname_base = fname[:-len(_File_Ext.env)]
-        self._rm_files(fname_base, not_env=True) # delete all other files
-        return fh, fname_base
+            tmp = tempfile.NamedTemporaryFile(suffix=_File_Ext.env, delete=False, mode="w")
+            fname = tmp.name
+            fname_base = fname[: -len(_File_Ext.env)]
+            tmp.close()
+
+        self._rm_files(fname_base, not_env=True)
+        return fname_base, fname
 
     def _rm_files(self, fname_base: str, not_env: bool = False) -> None:
         """Remove files that would be constructed as bellhop inputs or created as bellhop outputs."""
@@ -147,7 +153,7 @@ class BellhopSimulator:
         runcmd = [exe_path, fname_base] + args.split()
         if debug:
             print("RUNNING:", " ".join(runcmd))
-        result = _proc.run(runcmd, stderr=_proc.STDOUT, stdout=_proc.PIPE, text=True)
+        result = subprocess.run(runcmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, text=True)
 
         if debug and result.stdout:
             print(result.stdout.strip())
@@ -179,7 +185,7 @@ class BellhopSimulator:
     def _unlink(self, f: str) -> None:
         """Delete file only if it exists"""
         try:
-            _os.unlink(f)
+            os.unlink(f)
         except FileNotFoundError:
             pass
 

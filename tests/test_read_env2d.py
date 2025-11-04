@@ -70,9 +70,10 @@ def test_read_env_round_trip():
         # Create the Bellhop model and generate the env file
         from bellhop.bellhop import BellhopSimulator
         model = BellhopSimulator()
-        fh_fd, fname_base = model._prepare_env_file(fname_base)
-        with os.fdopen(fh_fd, "w") as fh:
-            env_orig.to_file(fh, fname_base, 'R')
+        fname_base, fname = model._prepare_env_file(fname_base)
+        task_flag = "R"
+        with open(fname, "w") as fh:
+            env_orig.to_file(fh, fname_base, task_flag)
         env_file = fname_base + '.env'
 
         # Read it back
