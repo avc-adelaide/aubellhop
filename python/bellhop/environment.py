@@ -508,21 +508,17 @@ class Environment(MutableMapping[str, Any]):
         assert self['soundspeed'].index[0] <= 0.0, 'First depth in soundspeed array must be 0 m'
         assert np.all(np.diff(self['soundspeed'].index) > 0), 'Soundspeed array must be strictly monotonic in depth'
         if self['_depth_max'] != self['soundspeed'].index[-1]:
-            if self['soundspeed'].shape[1] > 1:
-                # TODO: generalise interpolation trimming from np approach below
-                assert self['soundspeed'].index[-1] == self['_depth_max'], '2D SSP: Final entry in soundspeed array must be at the maximum water depth: '+str(self['_depth_max'])+' m'
-            else:
-                indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
-                prev_ind = self['soundspeed'].index[:indlarger].tolist()
-                insert_ss_val = np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,0])
-                new_row = pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
-                self['soundspeed'] = pd.concat([
-                        self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
-                        new_row,                             # new row
-                    ], ignore_index=True)
-                self['soundspeed'].index = prev_ind + [self['_depth_max']]
-                warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
-                print("ATTEMPTING TO FIX")
+            indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
+            prev_ind = self['soundspeed'].index[:indlarger].tolist()
+            insert_ss_val = np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,:])
+            new_row = pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
+            self['soundspeed'] = pd.concat([
+                    self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
+                    new_row,                             # new row
+                ], ignore_index=True)
+            self['soundspeed'].index = prev_ind + [self['_depth_max']]
+            warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
+            print("ATTEMPTING TO FIX")
         # TODO: check soundspeed range limits
 
     def _check_env_source(self) -> None:

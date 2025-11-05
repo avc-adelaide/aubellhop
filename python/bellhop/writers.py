@@ -148,8 +148,7 @@ class EnvironmentWriter:
         self._print_env_line(fh,f"{self.env['_mesh_npts']} {self.env['_depth_sigma']} {self.env['_depth_max']}",comment)
 
         svp = self.env['soundspeed']
-        svp_interp = _Maps.soundspeed_interp_rev[self.env['soundspeed_interp']]
-        if svp_interp == BHStrings.quadrilateral:
+        if self.env['soundspeed_interp'] == BHStrings.quadrilateral:
             for j in range(svp.shape[0]):
                 # only print a single "dummy" column -- rest of data in .ssp file
                 self._print_env_line(fh,self._array2str([svp.index[j], svp.iloc[j,0]]),f"ssp_{j}")

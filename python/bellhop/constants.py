@@ -3,7 +3,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 
-
 class _File_Ext:
     """Strings to define file extensions.
 
