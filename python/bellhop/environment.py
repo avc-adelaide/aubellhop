@@ -501,32 +501,29 @@ class Environment(MutableMapping[str, Any]):
     def _check_env_ssp(self) -> None:
         assert isinstance(self['soundspeed'], pd.DataFrame), 'Soundspeed should always be a DataFrame by this point'
         assert self['soundspeed'].size > 1, "Soundspeed DataFrame should have been constructed internally to be two elements"
-        if self['soundspeed'].size > 1:
-            if len(self['soundspeed'].columns) > 1:
-                assert self['soundspeed_interp'] == BHStrings.quadrilateral, "SVP DataFrame with multiple columns implies quadrilateral interpolation."
-            if self['soundspeed_interp'] == BHStrings.spline:
-                assert self['soundspeed'].shape[0] > 3, 'soundspeed profile must have at least 4 points for spline interpolation'
+        if self['soundspeed_interp'] == BHStrings.spline:
+            assert self['soundspeed'].shape[0] > 3, 'soundspeed profile must have at least 4 points for spline interpolation'
+        else:
+            assert self['soundspeed'].shape[0] > 1, 'soundspeed profile must have at least 2 points'
+        assert self['soundspeed'].index[0] <= 0.0, 'First depth in soundspeed array must be 0 m'
+        assert np.all(np.diff(self['soundspeed'].index) > 0), 'Soundspeed array must be strictly monotonic in depth'
+        if self['_depth_max'] != self['soundspeed'].index[-1]:
+            if self['soundspeed'].shape[1] > 1:
+                # TODO: generalise interpolation trimming from np approach below
+                assert self['soundspeed'].index[-1] == self['_depth_max'], '2D SSP: Final entry in soundspeed array must be at the maximum water depth: '+str(self['_depth_max'])+' m'
             else:
-                assert self['soundspeed'].shape[0] > 1, 'soundspeed profile must have at least 2 points'
-            assert self['soundspeed'].index[0] <= 0.0, 'First depth in soundspeed array must be 0 m'
-            assert np.all(np.diff(self['soundspeed'].index) > 0), 'Soundspeed array must be strictly monotonic in depth'
-            if self['_depth_max'] != self['soundspeed'].index[-1]:
-                if self['soundspeed'].shape[1] > 1:
-                    # TODO: generalise interpolation trimming from np approach below
-                    assert self['soundspeed'].index[-1] == self['_depth_max'], '2D SSP: Final entry in soundspeed array must be at the maximum water depth: '+str(self['_depth_max'])+' m'
-                else:
-                    indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
-                    prev_ind = self['soundspeed'].index[:indlarger].tolist()
-                    insert_ss_val = np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,0])
-                    new_row = pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
-                    self['soundspeed'] = pd.concat([
-                            self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
-                            new_row,                             # new row
-                        ], ignore_index=True)
-                    self['soundspeed'].index = prev_ind + [self['_depth_max']]
-                    warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
-                    print("ATTEMPTING TO FIX")
-            # TODO: check soundspeed range limits
+                indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
+                prev_ind = self['soundspeed'].index[:indlarger].tolist()
+                insert_ss_val = np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,0])
+                new_row = pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
+                self['soundspeed'] = pd.concat([
+                        self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
+                        new_row,                             # new row
+                    ], ignore_index=True)
+                self['soundspeed'].index = prev_ind + [self['_depth_max']]
+                warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
+                print("ATTEMPTING TO FIX")
+        # TODO: check soundspeed range limits
 
     def _check_env_source(self) -> None:
         if self._dimension == 2:
