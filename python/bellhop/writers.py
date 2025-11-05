@@ -143,23 +143,20 @@ class EnvironmentWriter:
 
     def _write_env_sound_speed(self, fh: TextIO) -> None:
         """Writes sound speed profile lines of env file."""
-        svp = self.env['soundspeed']
 
         comment = "[Npts - ignored]  [Sigma - ignored]  Depth_Max"
         self._print_env_line(fh,f"{self.env['_mesh_npts']} {self.env['_depth_sigma']} {self.env['_depth_max']}",comment)
 
+        svp = self.env['soundspeed']
         svp_interp = _Maps.soundspeed_interp_rev[self.env['soundspeed_interp']]
-        if isinstance(svp, pd.DataFrame) and len(svp.columns) == 1:
-            svp = np.hstack((np.array([svp.index]).T, np.asarray(svp)))
-        if svp.size == 1:
-            self._print_env_line(fh,self._array2str([0.0, svp]),"Min_Depth SSP_Const")
-            self._print_env_line(fh,self._array2str([self.env['_depth_max'], svp]),"Max_Depth SSP_Const")
-        elif svp_interp == "Q":
+        if svp_interp == BHStrings.quadrilateral:
             for j in range(svp.shape[0]):
+                # only print a single "dummy" column -- rest of data in .ssp file
                 self._print_env_line(fh,self._array2str([svp.index[j], svp.iloc[j,0]]),f"ssp_{j}")
         else:
             for j in range(svp.shape[0]):
-                self._print_env_line(fh,self._array2str([svp[j,0], svp[j,1]]),f"ssp_{j}")
+                row_values = [svp.index[j]] + svp.iloc[j,:].tolist()
+                self._print_env_line(fh, self._array2str(row_values), f"ssp_{j}")
 
     def _write_env_bottom(self, fh: TextIO) -> None:
         """Writes bottom boundary lines of env file."""

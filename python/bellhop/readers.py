@@ -221,7 +221,11 @@ class EnvironmentReader:
 
         ssp_depth: list[float] = []
         ssp_speed: list[float] = []
-        ssp = dict(depth=0.0, speed=MiscDefaults.sound_speed, speed_shear=0.0, density=MiscDefaults.density, att=0.0, att_shear=0.0)
+        ssp_shear: list[float] = []
+        ssp_density: list[float] = []
+        ssp_atten: list[float] = []
+        ssp_att_shear: list[float] = []
+        ssp = dict(depth=0.0, speed=MiscDefaults.sound_speed, speed_shear=0.0, density=MiscDefaults.density, atten=0.0, att_shear=0.0)
 
         for line in lines:
             parts = (_parse_line(line) + [None] * 6)[0:6]
@@ -233,14 +237,19 @@ class EnvironmentReader:
             })
             ssp_depth.append(ssp["depth"])
             ssp_speed.append(ssp["speed"])
-            # TODO: add extra terms (but this needs adjustments elsewhere)
+            ssp_shear.append(ssp["shear"])
+            ssp_density.append(ssp["density"])
+            ssp_atten.append(ssp["atten"])
+            ssp_att_shear.append(ssp["att_shear"])
 
         if len(ssp_speed) == 0:
             raise ValueError("No SSP points were found in the env file.")
         elif len(ssp_speed) == 1:
             raise ValueError("Only one SSP point found but at least two required (top and bottom)")
 
-        df = pd.DataFrame(ssp_speed,index=ssp_depth,columns=["speed"])
+        df = pd.DataFrame([ssp_speed, ssp_shear, ssp_density, 
+                           ssp_atten, ssp_att_shear],
+                          index=ssp_depth,columns=["speed","shear_speed","density","attenuation","shear_attenuation"])
         df.index.name = "depth"
         return df
 
