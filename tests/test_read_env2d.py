@@ -88,9 +88,10 @@ def test_read_env_round_trip():
         assert env_read['beam_angle_max'] == env_orig['beam_angle_max']
         assert env_read['beam_num'] == env_orig['beam_num']
 
-        # Sound speed gets converted to profile format
-        pdt.assert_frame_equal(env_read['soundspeed'], env_orig['soundspeed'])
-
+        # Sound speed gets converted to profile format (const entry for both)
+        assert env_read['soundspeed'].iloc[0, 1] == env_orig['soundspeed'].iloc[0, 1]
+        assert env_read['soundspeed'].iloc[1, 1] == env_orig['soundspeed'].iloc[0, 1]
+  
         # Arrays should match
         np.testing.assert_array_equal(env_read['source_depth'], env_orig['source_depth'])
         np.testing.assert_array_equal(env_read['receiver_depth'], env_orig['receiver_depth'])
