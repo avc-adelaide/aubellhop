@@ -237,7 +237,7 @@ class EnvironmentReader:
             })
             ssp_depth.append(ssp["depth"])
             ssp_speed.append(ssp["speed"])
-            ssp_shear.append(ssp["shear"])
+            ssp_shear.append(ssp["speed_shear"])
             ssp_density.append(ssp["density"])
             ssp_atten.append(ssp["atten"])
             ssp_att_shear.append(ssp["att_shear"])
