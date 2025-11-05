@@ -249,8 +249,11 @@ class EnvironmentReader:
 
         df = pd.DataFrame([ssp_speed, ssp_shear, ssp_density, 
                            ssp_atten, ssp_att_shear],
-                          index=ssp_depth,columns=["speed","shear_speed","density","attenuation","shear_attenuation"])
+                          index=ssp_depth)
+        all_columns = ["speed", "shear_speed", "density", "attenuation", "shear_attenuation"]
+        df.columns = all_columns[:df.shape[1]]  # Truncate to match actual column count
         df.index.name = "depth"
+
         return df
 
     def _read_bottom_boundary(self, f: TextIO, bottom_line: str) -> None:
