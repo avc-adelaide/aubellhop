@@ -247,13 +247,14 @@ class EnvironmentReader:
         elif len(ssp_speed) == 1:
             raise ValueError("Only one SSP point found but at least two required (top and bottom)")
 
-        df = pd.DataFrame([ssp_speed, ssp_shear, ssp_density, 
-                           ssp_atten, ssp_att_shear],
-                          index=ssp_depth)
-        all_columns = ["speed", "shear_speed", "density", "attenuation", "shear_attenuation"]
-        df.columns = all_columns[:df.shape[1]]  # Truncate to match actual column count
+        df = pd.DataFrame({
+                "speed": ssp_speed,
+                "shear_speed": ssp_shear,
+                "density": ssp_density,
+                "attenuation": ssp_atten,
+                "shear_attenuation": ssp_att_shear
+            }, index=ssp_depth)
         df.index.name = "depth"
-
         return df
 
     def _read_bottom_boundary(self, f: TextIO, bottom_line: str) -> None:
