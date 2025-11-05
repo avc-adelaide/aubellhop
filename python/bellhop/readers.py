@@ -227,14 +227,17 @@ class EnvironmentReader:
         ssp_att_shear: list[float] = []
         ssp = dict(depth=0.0, speed=MiscDefaults.sound_speed, speed_shear=0.0, density=MiscDefaults.density, atten=0.0, att_shear=0.0)
 
+        MAX_SSP_COLS: int = 6
+        sound_speed_param_count: int = 0
         for line in lines:
-            parts = (_parse_line(line) + [None] * 6)[0:6]
+            raw_parts = _parse_line(line)
+            parts = (raw_parts + [None] * MAX_SSP_COLS)[:MAX_SSP_COLS]
             if parts[0] is None: # empty line after stripping comments
                 continue
-            ssp.update({
-                k: ssp[k] if v is None else cast(float,_float(v))
-                for k, v in zip(ssp.keys(), parts)
-            })
+            sound_speed_param_count = max(len(raw_parts), sound_speed_param_count)
+            for k, v in zip(ssp, parts):
+                if v is not None:
+                    ssp[k] = cast(float, _float(v)) # "fill in the blanks" if empty entries on any lines
             ssp_depth.append(ssp["depth"])
             ssp_speed.append(ssp["speed"])
             ssp_shear.append(ssp["speed_shear"])
@@ -254,6 +257,7 @@ class EnvironmentReader:
                 "attenuation": ssp_atten,
                 "shear_attenuation": ssp_att_shear
             }, index=ssp_depth)
+        df = df.iloc[:, :sound_speed_param_count]  # Keep only the max number of columns read
         df.index.name = "depth"
         return df
 
