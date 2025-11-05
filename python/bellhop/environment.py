@@ -510,15 +510,20 @@ class Environment(MutableMapping[str, Any]):
         if self['_depth_max'] != self['soundspeed'].index[-1]:
             indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]
             prev_ind = self['soundspeed'].index[:indlarger].tolist()
-            insert_ss_val = np.interp(self['_depth_max'], self['soundspeed'].index, self['soundspeed'].iloc[:,:])
-            new_row = pd.DataFrame([self['_depth_max'], insert_ss_val], columns=self['soundspeed'].columns)
+            insert_ss_val = [
+                np.interp(self['_depth_max'],
+                          self['soundspeed'].index,
+                          self['soundspeed'].iloc[:, i])
+                for i in range(self['soundspeed'].shape[1])
+            ]
+            new_row = pd.DataFrame([insert_ss_val], columns=self['soundspeed'].columns)
+            new_row.index = [self._depth_max]
             self['soundspeed'] = pd.concat([
-                    self['soundspeed'].iloc[:(indlarger-1)],  # rows before insertion
+                    self['soundspeed'].iloc[:indlarger],  # rows before insertion
                     new_row,                             # new row
-                ], ignore_index=True)
+                ])
             self['soundspeed'].index = prev_ind + [self['_depth_max']]
             warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
-            print("ATTEMPTING TO FIX")
         # TODO: check soundspeed range limits
 
     def _check_env_source(self) -> None:
