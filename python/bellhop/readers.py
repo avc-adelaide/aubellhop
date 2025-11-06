@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from struct import unpack as _unpack
 from pathlib import Path
-from typing import Any, Tuple, TextIO, cast, IO
+from typing import Any, TextIO, cast
 from numpy.typing import NDArray
 
 import numpy as np
@@ -71,7 +71,7 @@ def _int(x: Any) -> int | None:
     """Permissive int-enator"""
     return None if x is None else int(x.strip(","))
 
-def _prepare_filename(fname: str, ext: str, name: str) -> Tuple[str,str]:
+def _prepare_filename(fname: str, ext: str, name: str) -> tuple[str,str]:
     """Checks filename is present and file exists."""
     if fname.endswith(ext):
         nchar = len(ext)
@@ -525,17 +525,17 @@ def read_ssp(fname: str,
         df.index.name = "depth"
         return df
 
-def read_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
+def read_bty(fname: str) -> tuple[NDArray[np.float64], str]:
     """Read a bathymetry file used by Bellhop."""
     fname, _ = _prepare_filename(fname, _File_Ext.bty, "BTY")
     return read_ati_bty(fname)
 
-def read_ati(fname: str) -> Tuple[NDArray[np.float64], str]:
+def read_ati(fname: str) -> tuple[NDArray[np.float64], str]:
     """Read an altimetry file used by Bellhop."""
     fname, _ = _prepare_filename(fname, _File_Ext.ati, "ATI")
     return read_ati_bty(fname)
 
-def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
+def read_ati_bty(fname: str) -> tuple[NDArray[np.float64], str]:
     """Read an altimetry (.ati) or bathymetry (.bty) file used by BELLHOP.
 
     This function reads BELLHOP's .bty files which define the bottom depth
@@ -895,7 +895,7 @@ def _ensure_file_exists(fname: str) -> Path:
         raise RuntimeError(f"Bellhop did not generate expected output file: {path}")
     return path
 
-def _read_array(f: IO[str], types: Tuple[Any, ...], dtype: type = str) -> Tuple[Any, ...]:
+def _read_array(f: TextIO, types: tuple[Any, ...], dtype: type = str) -> tuple[Any, ...]:
     """Wrapper around readline() to read in a 1D array of data"""
     p = f.readline().split()
     for j in range(len(p)):
