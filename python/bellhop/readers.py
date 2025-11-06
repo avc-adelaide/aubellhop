@@ -257,7 +257,7 @@ class EnvironmentReader:
                 "attenuation": ssp_atten,
                 "shear_attenuation": ssp_att_shear
             }, index=ssp_depth)
-        df = df.iloc[:, :sound_speed_param_count]  # Keep only the max number of columns read
+        df = df.iloc[:, :(sound_speed_param_count-1)]  # Keep only the max number of columns read
         df.index.name = "depth"
         return df
 
