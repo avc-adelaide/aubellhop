@@ -760,6 +760,8 @@ def read_refl_coeff(fname: str) -> NDArray[np.float64]:
             except EOFError:
                 break
             parts = _parse_line(line)
+            if len(parts) != 3:
+                raise ValueError(f"Expected 3 reflection coefficient points, but found {len(parts)}")
             assert isinstance(parts[0],str)
             assert isinstance(parts[1],str)
             assert isinstance(parts[2],str)
