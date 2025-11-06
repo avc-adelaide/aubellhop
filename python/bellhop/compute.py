@@ -94,11 +94,12 @@ def compute(
     tasks = task if isinstance(task, list) else [task]
     results: list[dict[str, Any]] = []
     for this_env in envs:
-        debug and print(f"Using environment: {this_env['name']}")
         for this_model in models_:
-            debug and print(f"Using model: {'[None] (default)' if this_model is None else this_model.get('name')}")
             for this_task in tasks:
-                debug and print(f"Using task: {this_task}")
+                if debug:
+                    print(f"Using environment: {this_env['name']}")
+                    print(f"Using model: {'[None] (default)' if this_model is None else this_model.get('name')}")
+                    print(f"Using task: {this_task}")
                 this_env.check()
                 this_task = this_task or this_env.get('task')
                 if this_task is None:
@@ -272,7 +273,6 @@ def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode:
     env = env.copy()
     task = mode or env.get("interference_mode") or EnvDefaults.interference_mode
     env['interference_mode'] = task
-    debug and print(f"  {task=}")
     env.check()
     if np.size(env['source_depth']) > 1:
         env['source_depth'] = env['source_depth'][source_depth_ndx]

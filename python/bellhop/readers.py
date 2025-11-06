@@ -31,21 +31,23 @@ def _read_next_valid_line(f: TextIO) -> str:
         if line:
             return line
 
-def _parse_line(line: str) -> list[str]:
+def _parse_line(line: str, none_pad: int = 0) -> list[str | None]:
     """Parse a line, removing comments, /, and whitespace, and return the parts in a list"""
     line = line.split("!", 1)[0].split('/', 1)[0].strip()
     line = line.replace(","," ")
-    return line.split()
+    return [*line.split(), *([None] * none_pad)]
 
-def _parse_line_int(line: str) -> int:
+def _parse_line_int(line: str) -> int | None:
     """Parse an integer on a line by itself. Strip spurious comma(s)."""
     parts = _parse_line(line)
+    if parts[0] is None:
+        return None
     return int(parts[0].strip(","))
 
 def _parse_vector(line: str) -> NDArray[np.float64] | float:
     """Parse a vector of floats with unknown number of values. Strip commas if necessary."""
     parts = _parse_line(line)
-    val = [float(p.strip(",")) for p in parts]
+    val = [float(str(p).strip(",")) for p in parts]
     valout = np.array(val) if len(val) > 1 else val[0]
     return valout
 
@@ -59,9 +61,11 @@ def _opt_lookup(name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
         raise ValueError(f"{name} option {opt!r} not available")
     return opt_str
 
-def _float(x: Any, scale: float = 1) -> float | None:
+def _float(x: str | None, scale: float = 1) -> float | None:
     """Permissive float-enator with unit scaling"""
-    return None if x is None else float(x.strip(",")) * scale
+    if x is None:
+        return None
+    return float(x.strip(",")) * scale
 
 def _int(x: Any) -> int | None:
     """Permissive int-enator"""
@@ -138,15 +142,15 @@ class EnvironmentReader:
         if self.env["volume_attenuation"] == BHStrings.francois_garrison:
             fg_spec_line = _read_next_valid_line(f)
             fg_parts = _parse_line(fg_spec_line)
-            self.env["_fg_salinity"]    = float(fg_parts[0])
-            self.env["_fg_temperature"] = float(fg_parts[1])
-            self.env["_fg_pH"]          = float(fg_parts[2])
-            self.env["_fg_depth"]       = float(fg_parts[3])
+            self.env["_fg_salinity"]    = _float(fg_parts[0])
+            self.env["_fg_temperature"] = _float(fg_parts[1])
+            self.env["_fg_pH"]          = _float(fg_parts[2])
+            self.env["_fg_depth"]       = _float(fg_parts[3])
 
         # Line 4a: Boundary condition params
         if self.env["surface_boundary_condition"] == BHStrings.acousto_elastic:
             surface_props_line = _read_next_valid_line(f)
-            surface_props = _parse_line(surface_props_line) + [None] * 6
+            surface_props = _parse_line(surface_props_line, none_pad=6)
             self.env['_surface_min']               = _float(surface_props[0])
             self.env['surface_soundspeed']         = _float(surface_props[1])
             self.env['_surface_soundspeed_shear']  = _float(surface_props[2])
@@ -161,7 +165,6 @@ class EnvironmentReader:
     def _read_biological_layers(self, f: TextIO) -> pd.DataFrame:
         """Read biological layer parameters for attenuation due to fish."""
         next_line = _read_next_valid_line(f)
-        print(next_line)
         npoints = int(next_line)
         z1 = []
         z2 = []
@@ -172,11 +175,11 @@ class EnvironmentReader:
             line = _read_next_valid_line(f)
             parts = _parse_line(line)
             if len(parts) == 5:
-                z1.append(float(parts[0]))
-                z2.append(float(parts[1]))
-                f0.append(float(parts[2]))
-                QQ.append(float(parts[3]))
-                a0.append(float(parts[4]))
+                z1.append(_float(parts[0]))
+                z2.append(_float(parts[1]))
+                f0.append(_float(parts[2]))
+                QQ.append(_float(parts[3]))
+                a0.append(_float(parts[4]))
         if len(z1) != npoints:
             raise ValueError(f"Expected {npoints} points, but found {len(z1)}")
         return pd.DataFrame({"z1": z1, "z2": z2, "f0": f0, "Q": QQ, "a0": a0})
@@ -187,7 +190,7 @@ class EnvironmentReader:
         # SSP depth specification
         ssp_spec_line = _read_next_valid_line(f)
         ssp_spec_line = ssp_spec_line.replace(",", " ")
-        ssp_parts = _parse_line(ssp_spec_line) + [None] * 3
+        ssp_parts = _parse_line(ssp_spec_line, none_pad=3)
         self.env['_mesh_npts']   = _int(ssp_parts[0])
         self.env['_depth_sigma'] = _float(ssp_parts[1])
         self.env['depth_max']    = _float(ssp_parts[2])
@@ -263,7 +266,7 @@ class EnvironmentReader:
 
     def _read_bottom_boundary(self, f: TextIO, bottom_line: str) -> None:
         """Read environment file bottom boundary condition"""
-        bottom_parts = _parse_line(bottom_line) + [None] * 3
+        bottom_parts = _parse_line(bottom_line,none_pad=3)
         botopt = _unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
         self.env["bottom_boundary_condition"] = _opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
         self.env["_bathymetry"]               = _opt_lookup("Bathymetry",                botopt[1], _Maps._bathymetry)
@@ -276,7 +279,7 @@ class EnvironmentReader:
         # Bottom properties (depth, sound_speed, density, absorption)
         if self.env["bottom_boundary_condition"] == BHStrings.acousto_elastic:
             bottom_props_line = _read_next_valid_line(f)
-            bottom_props = _parse_line(bottom_props_line) + [None] * 6
+            bottom_props = _parse_line(bottom_props_line,none_pad=6)
             self.env['_bottom_depth'] = _float(bottom_props[0])
             self.env['bottom_soundspeed'] = _float(bottom_props[1])
             self.env['_bottom_soundspeed_shear'] = _float(bottom_props[2])
@@ -285,7 +288,7 @@ class EnvironmentReader:
             self.env['_bottom_attenuation_shear'] = _float(bottom_props[5])
         elif self.env["bottom_boundary_condition"] == BHStrings.grain:
             bottom_props_line = _read_next_valid_line(f)
-            bottom_props = _parse_line(bottom_props_line) + [None] * 2
+            bottom_props = _parse_line(bottom_props_line, none_pad=6)
             self.env['_bottom_depth'] = _float(bottom_props[0])
             self.env['bottom_grain_size'] = _float(bottom_props[1])
 
@@ -370,24 +373,24 @@ class EnvironmentReader:
 
         # Number of beams
         beam_num_line = _read_next_valid_line(f)
-        beam_num_parts = _parse_line(beam_num_line) + [None] * 1
+        beam_num_parts = _parse_line(beam_num_line, none_pad=1)
         self.env['beam_num'] = int(beam_num_parts[0] or 0)
         if self.env["_single_beam"]: # defensive in case there is a spurious value in here
             self.env['single_beam_index'] = _int(beam_num_parts[1])
 
         # Beam angles (beam_angle_min, beam_angle_max)
         angles_line = _read_next_valid_line(f)
-        angle_parts = _parse_line(angles_line) + [None] * 2
+        angle_parts = _parse_line(angles_line, none_pad=2)
         self.env['beam_angle_min'] = _float(angle_parts[0])
         self.env['beam_angle_max'] = _float(angle_parts[1])
 
         if self.env['_dimension'] == 3:
             # Beam bearing fan
             beam_num_line = _read_next_valid_line(f)
-            beam_num_parts = _parse_line(beam_num_line) + [None] * 1
+            beam_num_parts = _parse_line(beam_num_line, none_pad=1)
             self.env['beam_angle_num'] = int(beam_num_parts[0] or 0)
             angles_line = _read_next_valid_line(f)
-            angle_parts = _parse_line(angles_line) + [None] * 2
+            angle_parts = _parse_line(angles_line, none_pad=2)
             self.env['beam_bearing_min'] = _float(angle_parts[0])
             self.env['beam_bearing_max'] = _float(angle_parts[1])
 
@@ -408,14 +411,14 @@ class EnvironmentReader:
         if self.env['beam_type'] not in (BHStrings.gaussian_simple, BHStrings.ray):
             return None
         line = _read_next_valid_line(f)
-        parts = _parse_line(line) + [None] * 3
+        parts = _parse_line(line, none_pad=3)
         assert isinstance(parts[0],str)
         self.env['beam_width_type'] = _unquote_string(parts[0])
         self.env['beam_epsilon_multipler'] = _float(parts[1])
         self.env['beam_range_loop'] = _float(parts[2],1000)
 
         line = _read_next_valid_line(f)
-        parts = _parse_line(line) + [None] * 3
+        parts = _parse_line(line, none_pad=3)
         self.env['beam_images_num'] = _int(parts[0])
         self.env['beam_window'] = _int(parts[1])
         self.env['beam_component'] = _unquote_string(parts[2]) if parts[2] is not None else " "
@@ -489,7 +492,7 @@ def read_ssp(fname: str,
     with open(fname, 'r') as f:
         nranges = int(_read_next_valid_line(f))
         range_line = _read_next_valid_line(f)
-        ranges = np.array([float(x) for x in _parse_line(range_line)])
+        ranges = np.array([_float(x) for x in _parse_line(range_line)])
         ranges_m = ranges * 1000 # Convert ranges from km to meters (as expected by Environment())
 
         if len(ranges) != nranges:
@@ -502,7 +505,7 @@ def read_ssp(fname: str,
             line_num += 1
             line = line.replace(","," ").strip()
             if line:  # Skip empty lines
-                values = [float(x) for x in line.split()]
+                values = [_float(x) for x in line.split()]
                 if len(values) != nranges:
                     raise ValueError(f"SSP line {line_num} has {len(values)} range values, expected {nranges}")
                 ssp_data.append(values)
@@ -599,16 +602,16 @@ def read_ati_bty(fname: str) -> Tuple[NDArray[np.float64], str]:
                 break
             parts = _parse_line(line)
             if nvalues == 2 and len(parts) >= 2:
-                ranges.append(float(parts[0]))  # Range in km
-                depths.append(float(parts[1]))  # Depth in m
+                ranges.append(_float(parts[0]))  # Range in km
+                depths.append(_float(parts[1]))  # Depth in m
             elif nvalues == 7 and len(parts) == 7:
-                ranges.append(float(parts[0]))  # Range in km
-                depths.append(float(parts[1]))  # Depth in m
-                wave_speed.append(float(parts[2]))  #
-                wave_attenuation.append(float(parts[3]))  #
-                density.append(float(parts[4]))  #
-                shear_speed.append(float(parts[5]))  #
-                shear_attenuation.append(float(parts[6]))  #
+                ranges.append(_float(parts[0]))  # Range in km
+                depths.append(_float(parts[1]))  # Depth in m
+                wave_speed.append(_float(parts[2]))  #
+                wave_attenuation.append(_float(parts[3]))  #
+                density.append(_float(parts[4]))  #
+                shear_speed.append(_float(parts[5]))  #
+                shear_attenuation.append(_float(parts[6]))  #
 
         if len(ranges) != npoints:
             raise ValueError(f"Expected {npoints} altimetry/bathymetry points, but found {len(ranges)}")
@@ -670,6 +673,8 @@ def read_sbp(fname: str) -> NDArray[np.float64]:
             except EOFError:
                 break
             parts = _parse_line(line)
+            assert isinstance(parts[0],str)
+            assert isinstance(parts[1],str)
             if len(parts) >= 2:
                 angles.append(float(parts[0]))  # Range in km
                 powers.append(float(parts[1]))  # Depth in m
@@ -755,6 +760,9 @@ def read_refl_coeff(fname: str) -> NDArray[np.float64]:
             except EOFError:
                 break
             parts = _parse_line(line)
+            assert isinstance(parts[0],str)
+            assert isinstance(parts[1],str)
+            assert isinstance(parts[2],str)
             if len(parts) == 3:
                 theta.append(float(parts[0]))
                 rmagn.append(float(parts[1]))

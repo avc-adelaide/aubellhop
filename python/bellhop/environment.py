@@ -283,7 +283,7 @@ class Environment(MutableMapping[str, Any]):
         new_env = type(self)(**data)
         return new_env
 
-    def unwrap(self, *keys: str) -> list["Environment"]:
+    def unwrap(self, *keys: str) -> list[Self]:
         """Return a list of Environment copies expanded over the given keys.
 
         If multiple keys are provided, all combinations are produced.
@@ -557,17 +557,15 @@ class Environment(MutableMapping[str, Any]):
     def __setattr__(self, key: str, value: Any) -> None:
         if not hasattr(self, key):
             raise KeyError(f"Unknown environment configuration parameter: {key!r}")
-        # Generalized validation of values
         allowed = getattr(_Maps, key, None)
         if allowed is not None and value is not None and value not in set(allowed.values()):
             raise ValueError(f"Invalid value for {key!r}: {value}. Allowed: {set(allowed.values())}")
-        # coerce types
         if not (
-            value is None or
-            isinstance(value,pd.DataFrame) or
-            np.isscalar(value)
-               ):
-            if not isinstance(value[0],str):
+            value is None
+            or isinstance(value, pd.DataFrame)
+            or np.isscalar(value)
+        ):
+            if not isinstance(value[0], str):
                 value = np.asarray(value, dtype=np.float64)
         object.__setattr__(self, key, value)
 

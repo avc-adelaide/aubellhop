@@ -87,7 +87,8 @@ class Models:
         if model is not None:
             return cls.get(model)
         models = cls.list(env=env, task=task, dim=env._dimension)
-        debug and print(f'Models found: {models}')
+        if debug:
+            print(f'Models found: {models}')
         if len(models) > 0:
             return cls.get(models[0])
         raise ValueError('No suitable propagation model available')
