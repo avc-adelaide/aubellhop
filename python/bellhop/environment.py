@@ -505,7 +505,7 @@ class Environment(MutableMapping[str, Any]):
             assert self['soundspeed'].shape[0] > 3, 'soundspeed profile must have at least 4 points for spline interpolation'
         else:
             assert self['soundspeed'].shape[0] > 1, 'soundspeed profile must have at least 2 points'
-        assert self['soundspeed'].index[0] <= 0.0, 'First depth in soundspeed array must be 0 m'
+        assert self['soundspeed'].index[0] <= self._surface_min, 'First depth in soundspeed array must be ≤ to minimum surface depth'
         assert np.all(np.diff(self['soundspeed'].index) > 0), 'Soundspeed array must be strictly monotonic in depth'
         if self['_depth_max'] != self['soundspeed'].index[-1]:
             indlarger = np.argwhere(self['soundspeed'].index > self['_depth_max'])[0][0]

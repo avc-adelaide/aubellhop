@@ -73,7 +73,7 @@ class Models:
     @classmethod
     def get(cls, name: str) -> BellhopSimulator:
         """Get a model by name.
-        
+
         Parameters
         ----------
         name : str
@@ -124,7 +124,7 @@ class Models:
             return cls.get(models[0])
         raise ValueError('No suitable propagation model available')
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> None:
+    def __new__(cls, *args: Any, **kwargs: Any) -> "Models":
         raise TypeError("This utility class cannot be instantiated")
 
 Models.init()
