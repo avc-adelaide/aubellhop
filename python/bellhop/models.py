@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-from typing import Any, Self
+from typing import Any
 
 from .constants import ModelDefaults
 from .environment import Environment
 from .bellhop import BellhopSimulator
 
 """Defining the Model Registry for bellhop.py to allow multiple BellhopSimulators to be run.
+
+This model defines the class and then initialises it.
+As this is a utility class, the initialised class operates
+as a global container of methods and the `_models` register
+of `BellhopSimulator` models.
+
+See file `bellhop.py` for the class definition of `BellhopSimulator`.
 """
 
 class Models:
@@ -20,13 +27,31 @@ class Models:
 
     @classmethod
     def init(cls) -> None:
-        """Create default models."""
+        """Create default 2D and 3D models."""
         cls.new(name=ModelDefaults.name_2d, exe=ModelDefaults.exe_2d, dim=ModelDefaults.dim_2d)
         cls.new(name=ModelDefaults.name_3d, exe=ModelDefaults.exe_3d, dim=ModelDefaults.dim_3d)
 
     @classmethod
+    def reset(cls) -> None:
+        """Clear all models from the registry."""
+        cls._models.clear()
+
+    @classmethod
     def new(cls, name: str, **kwargs: Any) -> BellhopSimulator:
-        """Instantiate a new Bellhop model and add it to the registry."""
+        """Instantiate a new Bellhop model and add it to the registry.
+
+        Parameters
+        ----------
+        name : str
+            The (unique) name of the BellhopSimulator model
+        kwargs : Any
+            Arguments to pass onto the BellhopSimulator constructor
+
+        Returns
+        -------
+        BellhopSimulator
+            The defined model which was just added to the registry.
+        """
         for m in cls._models:
             if name == m.name:
                 raise ValueError(f"Bellhop model with this name ('{name}') already exists.")
@@ -36,7 +61,7 @@ class Models:
 
     @classmethod
     def list(cls, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> list[str]:
-        """List available models, maybe narrowed by env, task, and/or dimension."""
+        """List available models by name, maybe narrowed by env, task, and/or dimension."""
         if env is not None:
             env.check()
         rv: list[str] = []
@@ -47,16 +72,22 @@ class Models:
 
     @classmethod
     def get(cls, name: str) -> BellhopSimulator:
-        """Get a model by name."""
+        """Get a model by name.
+        
+        Parameters
+        ----------
+        name : str
+            The name of the BellhopSimulator model
+
+        Returns
+        -------
+        BellhopSimulator
+            The first model in the registry which matches the specified name.
+        """
         for m in cls._models:
             if m.name == name:
                 return m
         raise KeyError(f"Unknown model: '{name}'")
-
-    @classmethod
-    def reset(cls) -> None:
-        """Clear all models."""
-        cls._models.clear()
 
     @classmethod
     def select( cls,
@@ -93,7 +124,7 @@ class Models:
             return cls.get(models[0])
         raise ValueError('No suitable propagation model available')
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
+    def __new__(cls, *args: Any, **kwargs: Any) -> None:
         raise TypeError("This utility class cannot be instantiated")
 
 Models.init()
