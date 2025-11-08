@@ -27,6 +27,8 @@ class BellhopSimulator:
         User-fancing name for the model
     exe : str
         Filename of Bellhop executable
+    dim : int
+        Number of dimensions in the model (`2` or `3`)
     """
 
     def __init__(self, name: str = ModelDefaults.name_2d,
@@ -102,7 +104,9 @@ class BellhopSimulator:
             BHStrings.semicoherent: ['S', read_shd,      _File_Ext.shd],
         }
 
-    def _prepare_env_file(self, fname_base: str | None) -> Tuple[str, str]:
+    def _prepare_env_file(self, 
+                                fname_base: str | None,
+                         ) -> Tuple[str, str]:
         """Opens a file for writing the .env file, in a temp location if necessary, and delete other files with same basename.
 
         Parameters
@@ -114,7 +118,7 @@ class BellhopSimulator:
         -------
         fh : int
             File descriptor
-        fname_base : str
+    fname_base : str
             Filename base
         """
         if fname_base is not None:
@@ -130,7 +134,9 @@ class BellhopSimulator:
         self._rm_files(fname_base, not_env=True)
         return fname_base, fname
 
-    def _rm_files(self, fname_base: str, not_env: bool = False) -> None:
+    def _rm_files(self, fname_base: str,
+                        not_env: bool = False,
+                 ) -> None:
         """Remove files that would be constructed as bellhop inputs or created as bellhop outputs."""
         all_ext = [v for k, v in vars(_File_Ext).items() if not k.startswith('_')]
         if not_env:
@@ -166,7 +172,9 @@ class BellhopSimulator:
                 f"\nExtract from PRT file:\n{err}"
             )
 
-    def _check_error(self, fname_base: str) -> str | None:
+    def _check_error(self,
+                           fname_base: str,
+                    ) -> str:
         """Extracts Bellhop error text from the .prt file"""
         try:
             err = ""
@@ -179,7 +187,7 @@ class BellhopSimulator:
                         fatal = True
         except FileNotFoundError:
             pass
-        return err if err != "" else None
+        return err
 
     def _unlink(self, f: str) -> None:
         """Delete file only if it exists"""
