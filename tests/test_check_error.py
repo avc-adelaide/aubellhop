@@ -37,7 +37,7 @@ class TestCheckError:
         result = self.bellhop._check_error(nonexistent_base)
 
         # Should return None when file doesn't exist
-        assert result is None
+        assert result is ""
 
     def test_check_error_no_fatal_error(self):
         """Test normal .prt file without fatal errors."""
@@ -54,7 +54,7 @@ class TestCheckError:
         result = self.bellhop._check_error(test_base)
 
         # Should return None when no fatal error
-        assert result is None
+        assert result is ""
 
     def test_check_error_fatal_error_single_line(self):
         """Test fatal error detection with single line."""
@@ -142,7 +142,7 @@ class TestCheckError:
         result = self.bellhop._check_error(test_base)
 
         # Should return None for empty file
-        assert result is None
+        assert result is ""
 
     def test_check_error_fatal_error_partial_match(self):
         """Test that partial matches don't trigger fatal error detection."""
@@ -160,4 +160,4 @@ class TestCheckError:
         result = self.bellhop._check_error(test_base)
 
         # Should return None as no exact "*** FATAL ERROR ***" match
-        assert result is None
+        assert result is ""
