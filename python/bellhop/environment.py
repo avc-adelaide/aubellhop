@@ -94,17 +94,17 @@ class Environment(MutableMapping[str, Any]):
     name: str = 'bellhop/python default'
     _from_file: str | None = None
     dimension: str = EnvDefaults.dimension
-    _dimension: int = 2
+    _dimension: int = EnvDefaults._dimension
     frequency: float = EnvDefaults.frequency
     _num_media: int = 1 # must always = 1 in bellhop
 
     # Sound speed parameters
     soundspeed: float | Any = MiscDefaults.sound_speed  # m/s
-    soundspeed_interp: str = BHStrings.linear
+    soundspeed_interp: str = EnvDefaults.soundspeed_interp
 
     # Depth parameters
     depth: float | Any = 25.0  # m
-    depth_interp: str = BHStrings.linear
+    depth_interp: str = EnvDefaults.depth_interp
     _mesh_npts: int = 0 # ignored by bellhop
     _depth_sigma: float = 0.0 # ignored by bellhop
     depth_max: float | None = None  # m
@@ -133,7 +133,7 @@ class Environment(MutableMapping[str, Any]):
 
     # Surface parameters
     surface: Any | None = None  # surface profile
-    surface_interp: str = BHStrings.linear  # curvilinear/linear
+    surface_interp: str = EnvDefault.surface_interp  # curvilinear/linear
     surface_boundary_condition: str = BHStrings.vacuum
     surface_reflection_coefficient: Any | None = None
     surface_soundspeed: float = MiscDefaults.sound_speed # m/s
@@ -145,7 +145,7 @@ class Environment(MutableMapping[str, Any]):
     surface_min: float | None = None
 
     # Source parameters
-    source_type: str = 'default'
+    source_type: str = BHStrings.default
     source_range: float | Any = 0.0
     source_cross_range: float | Any = 0.0
     source_depth: float | Any = 5.0  # m - Any allows for np.ndarray
@@ -194,7 +194,7 @@ class Environment(MutableMapping[str, Any]):
 
     # Solution parameters
     step_size: float | None = 0.0 # (0 = auto)
-    grid_type: str = 'default'
+    grid_type: str = BHStrings.default
     task: str | None = None
     interference_mode: str | None = None # subset of `task` for providing TL interface
 
