@@ -133,7 +133,7 @@ class Environment(MutableMapping[str, Any]):
 
     # Surface parameters
     surface: Any | None = None  # surface profile
-    surface_interp: str = EnvDefault.surface_interp  # curvilinear/linear
+    surface_interp: str = EnvDefaults.surface_interp  # curvilinear/linear
     surface_boundary_condition: str = BHStrings.vacuum
     surface_reflection_coefficient: Any | None = None
     surface_soundspeed: float = MiscDefaults.sound_speed # m/s
