@@ -11,79 +11,7 @@ import pandas as pd
 from bellhop.constants import BHStrings, _Maps, _File_Ext, MiscDefaults
 from bellhop.environment import Environment
 
-def _read_next_valid_line(f: TextIO) -> str:
-    """Read the next valid text line of an input file, discarding empty content.
 
-    Args:
-        f: File handle to read from
-
-    Returns:
-        Non-empty line with comments and whitespace removed
-
-    Raises:
-        EOFError: If end of file reached without finding valid content
-    """
-    while True:
-        raw_line = f.readline()
-        if not raw_line: # EOF
-            raise EOFError("End of file reached before finding a valid line")
-        line = raw_line.split('!', 1)[0].strip()
-        if line:
-            return line
-
-def _parse_line(line: str, none_pad: int = 0) -> list[str | None]:
-    """Parse a line, removing comments, /, and whitespace, and return the parts in a list"""
-    line = line.split("!", 1)[0].split('/', 1)[0].strip()
-    line = line.replace(","," ")
-    return [*line.split(), *([None] * none_pad)]
-
-def _parse_line_int(line: str) -> int | None:
-    """Parse an integer on a line by itself. Strip spurious comma(s)."""
-    parts = _parse_line(line)
-    if parts[0] is None:
-        return None
-    return int(parts[0].strip(","))
-
-def _parse_vector(line: str) -> NDArray[np.float64] | float:
-    """Parse a vector of floats with unknown number of values. Strip commas if necessary."""
-    parts = _parse_line(line)
-    val = [float(str(p).strip(",")) for p in parts]
-    valout = np.array(val) if len(val) > 1 else val[0]
-    return valout
-
-def _unquote_string(line: str) -> str:
-    """Extract string from within single quotes, possibly with commas too."""
-    return line.strip().strip(",'")
-
-def _opt_lookup(name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
-    opt_str = _map.get(opt)
-    if opt_str is None:
-        raise ValueError(f"{name} option {opt!r} not available")
-    return opt_str
-
-def _float(x: str | None, scale: float = 1) -> float | None:
-    """Permissive float-enator with unit scaling"""
-    if x is None:
-        return None
-    return float(x.strip(",")) * scale
-
-def _int(x: Any) -> int | None:
-    """Permissive int-enator"""
-    return None if x is None else int(x.strip(","))
-
-def _prepare_filename(fname: str, ext: str, name: str) -> tuple[str,str]:
-    """Checks filename is present and file exists."""
-    if fname.endswith(ext):
-        nchar = len(ext)
-        fname_base = fname[:-nchar]
-    else:
-        fname_base = fname
-        fname = fname + ext
-
-    if not os.path.exists(fname):
-        raise FileNotFoundError(f"{name} file not found: {fname}")
-
-    return fname, fname_base
 
 
 class EnvironmentReader:
@@ -120,7 +48,7 @@ class EnvironmentReader:
 
     def _read_header(self, f: TextIO) -> None:
         """Read environment file header"""
-        self.env['name'] = _unquote_string(_read_next_valid_line(f))
+        self.env['name'] = self._unquote_string(_read_next_valid_line(f))
         self.env['frequency'] = _parse_vector(_read_next_valid_line(f))
         self.env["_num_media"] = _parse_line_int(_read_next_valid_line(f))
 
@@ -129,13 +57,13 @@ class EnvironmentReader:
 
         # Line 4: Top boundary options
         topopt_line = _read_next_valid_line(f)
-        topopt = _unquote_string(topopt_line) + "      "
-        self.env["soundspeed_interp"]          = _opt_lookup("Interpolation",          topopt[0], _Maps.soundspeed_interp)
-        self.env["surface_boundary_condition"] = _opt_lookup("Top boundary condition", topopt[1], _Maps.surface_boundary_condition)
-        self.env["attenuation_units"]          = _opt_lookup("Attenuation units",      topopt[2], _Maps.attenuation_units)
-        self.env["volume_attenuation"]         = _opt_lookup("Volume attenuation",     topopt[3], _Maps.volume_attenuation)
-        self.env["_altimetry"]                 = _opt_lookup("Altimetry",              topopt[4], _Maps._altimetry)
-        self.env["_single_beam"]               = _opt_lookup("Single beam",            topopt[5], _Maps._single_beam)
+        topopt = self._unquote_string(topopt_line) + "      "
+        self.env["soundspeed_interp"]          = self._opt_lookup("Interpolation",          topopt[0], _Maps.soundspeed_interp)
+        self.env["surface_boundary_condition"] = self._opt_lookup("Top boundary condition", topopt[1], _Maps.surface_boundary_condition)
+        self.env["attenuation_units"]          = self._opt_lookup("Attenuation units",      topopt[2], _Maps.attenuation_units)
+        self.env["volume_attenuation"]         = self._opt_lookup("Volume attenuation",     topopt[3], _Maps.volume_attenuation)
+        self.env["_altimetry"]                 = self._opt_lookup("Altimetry",              topopt[4], _Maps._altimetry)
+        self.env["_single_beam"]               = self._opt_lookup("Single beam",            topopt[5], _Maps._single_beam)
         if self.env["_altimetry"] == BHStrings.from_file:
             self.env["surface"], self.env["surface_interp"] = read_ati(self.fname_base)
 
@@ -267,9 +195,9 @@ class EnvironmentReader:
     def _read_bottom_boundary(self, f: TextIO, bottom_line: str) -> None:
         """Read environment file bottom boundary condition"""
         bottom_parts = _parse_line(bottom_line,none_pad=3)
-        botopt = _unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
-        self.env["bottom_boundary_condition"] = _opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
-        self.env["_bathymetry"]               = _opt_lookup("Bathymetry",                botopt[1], _Maps._bathymetry)
+        botopt = self._unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
+        self.env["bottom_boundary_condition"] = self._opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
+        self.env["_bathymetry"]               = self._opt_lookup("Bathymetry",                botopt[1], _Maps._bathymetry)
         self.env['bottom_roughness']       = _float(bottom_parts[1])
         self.env['bottom_beta']            = _float(bottom_parts[2])
         self.env['bottom_transition_freq'] = _float(bottom_parts[3])
@@ -354,7 +282,7 @@ class EnvironmentReader:
 
     def _parse_task(self, task_line: str) -> None:
         """Parse the 'task' line."""
-        task_code = _unquote_string(task_line) + "     "
+        task_code = self._unquote_string(task_line) + "     "
         self.env['task']        = _Maps.task.get(task_code[0])
         self.env['beam_type']   = _Maps.beam_type.get(task_code[1])
         self.env['_sbp_file']   = _Maps._sbp_file.get(task_code[2])
@@ -413,7 +341,7 @@ class EnvironmentReader:
         line = _read_next_valid_line(f)
         parts = _parse_line(line, none_pad=3)
         assert isinstance(parts[0],str)
-        self.env['beam_width_type'] = _unquote_string(parts[0])
+        self.env['beam_width_type'] = self._unquote_string(parts[0])
         self.env['beam_epsilon_multipler'] = _float(parts[1])
         self.env['beam_range_loop'] = _float(parts[2],1000)
 
@@ -421,7 +349,18 @@ class EnvironmentReader:
         parts = _parse_line(line, none_pad=3)
         self.env['beam_images_num'] = _int(parts[0])
         self.env['beam_window'] = _int(parts[1])
-        self.env['beam_component'] = _unquote_string(parts[2]) if parts[2] is not None else " "
+            self.env['beam_component'] = self._unquote_string(parts[2]) if parts[2] is not None else " "
+    
+    def _opt_lookup(self, name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
+        opt_str = _map.get(opt)
+        if opt_str is None:
+            raise ValueError(f"{name} option {opt!r} not available")
+        return opt_str
+
+    def _unquote_string(line: str) -> str:
+        """Extract string from within single quotes, possibly with commas too."""
+        return line.strip().strip(",'")
+
 
 def read_ssp(fname: str,
              depths: list[float] | NDArray[np.float64] | pd.DataFrame | None = None
@@ -889,6 +828,46 @@ def read_rays(fname: str) -> pd.DataFrame:
             }))
     return pd.concat(rays)
 
+def _read_next_valid_line(f: TextIO) -> str:
+    """Read the next valid text line of an input file, discarding empty content.
+
+    Args:
+        f: File handle to read from
+
+    Returns:
+        Non-empty line with comments and whitespace removed
+
+    Raises:
+        EOFError: If end of file reached without finding valid content
+    """
+    while True:
+        raw_line = f.readline()
+        if not raw_line: # EOF
+            raise EOFError("End of file reached before finding a valid line")
+        line = raw_line.split('!', 1)[0].strip()
+        if line:
+            return line
+
+def _parse_line(line: str, none_pad: int = 0) -> list[str | None]:
+    """Parse a line, removing comments, /, and whitespace, and return the parts in a list"""
+    line = line.split("!", 1)[0].split('/', 1)[0].strip()
+    line = line.replace(","," ")
+    return [*line.split(), *([None] * none_pad)]
+
+def _parse_line_int(line: str) -> int | None:
+    """Parse an integer on a line by itself. Strip spurious comma(s)."""
+    parts = _parse_line(line)
+    if parts[0] is None:
+        return None
+    return int(parts[0].strip(","))
+
+def _parse_vector(line: str) -> NDArray[np.float64] | float:
+    """Parse a vector of floats with unknown number of values. Strip commas if necessary."""
+    parts = _parse_line(line)
+    val = [float(str(p).strip(",")) for p in parts]
+    valout = np.array(val) if len(val) > 1 else val[0]
+    return valout
+
 def _ensure_file_exists(fname: str) -> Path:
     path = Path(fname)
     if not path.exists():
@@ -904,3 +883,27 @@ def _read_array(f: TextIO, types: tuple[Any, ...], dtype: type = str) -> tuple[A
         else:
             p[j] = dtype(p[j])
     return tuple(p)
+
+def _float(x: str | None, scale: float = 1) -> float | None:
+    """Permissive float-enator with unit scaling"""
+    if x is None:
+        return None
+    return float(x.strip(",")) * scale
+
+def _int(x: Any) -> int | None:
+    """Permissive int-enator"""
+    return None if x is None else int(x.strip(","))
+
+def _prepare_filename(fname: str, ext: str, name: str) -> tuple[str,str]:
+    """Checks filename is present and file exists."""
+    if fname.endswith(ext):
+        nchar = len(ext)
+        fname_base = fname[:-nchar]
+    else:
+        fname_base = fname
+        fname = fname + ext
+
+    if not os.path.exists(fname):
+        raise FileNotFoundError(f"{name} file not found: {fname}")
+
+    return fname, fname_base
