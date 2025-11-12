@@ -11,6 +11,27 @@ from .constants import ModelDefaults, BHStrings, _File_Ext
 from .environment import Environment
 from .readers import read_shd, read_arrivals, read_rays
 
+"""Provides BellhopSimulator class for interacting with bellhop models.
+
+This class is instantiated within `models.py` and supports the standard 
+`bellhop.exe` and `bellhop3d.exe` Fortran interfaces.
+
+New classes could be written to replicate the interfaces if
+further models wished to be tested with different internals.
+
+Instances of BellhopSimulator are used as follows in `compute.py`:
+
+    >>> model_fn = Models.select(this_env, this_task, this_model, debug)
+    >>> fname_base = model_fn.write_env(this_env, this_task, fname_base)
+    >>> model_fn.run(this_task, fname_base, debug=debug),
+
+In the code above `model_fn` is the instance. `Models` is a utility
+cass which contains a global registry of BellhopSimulator instances.
+Internally `Models.select` uses `model_fn.supports()` to
+identify the BellhopSimulator model (instance) to use.
+
+"""
+
 class BellhopSimulator:
     """
     Interface to the Bellhop underwater acoustics ray tracing propagation model.
