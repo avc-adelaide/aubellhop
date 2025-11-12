@@ -9,14 +9,44 @@ from .environment import Environment
 from .models import Models
 
 """Computing wrappers for bellhop.py.
+
+These functions make use of the `Models` registry, selecting appropriate `BellhopSimulator` models (or loading explicitly request ones):
+
+* `compute(env, ...)` — writes the environment to file and then executes an appropriate Bellhop model;
+
+* `compute_from_file(model, filename)` uses specified model with pre-existing environment file.
+
+The `compute()` function allows calculation with multiple environments, tasks, and models, and returns the results in a dictionary of metadata and results.
+
+Simpler once-off wrapper functions are also provided for convenience (`compute_arrivals()` etc.).
+
 """
 
 def compute_from_file(
-                      model: Any,
+                      model: str,
                       fname: str,
                       debug: bool = False
                      ) -> pd.DataFrame:
-    """Compute Bellhop model directly from existing .env file."""
+    """Compute Bellhop model directly from existing .env file.
+    
+    Parameters
+    ----------
+    model: str
+        Name of model to run that has been defined in the `Models` registry.
+    fname: str
+        Filename of environment file (with or w/o extension).
+    debug : bool
+        Whether to print diagnostics to the console.
+    
+    Returns
+    -------
+    results : dict
+        Dictionary of metadata and results.
+  
+    Notes
+    -----
+    The environment file is parsed simply to read the specified task; the bellhop executable is run on the original file "in place" in the filesystem. A copy of the parsed environment file is stored in the metadata.
+    """
 
     ext = _File_Ext.env
     if fname.endswith(ext):
@@ -37,6 +67,7 @@ def compute_from_file(
              "results": model_fn.run(task, fname_base, rm_files=False, debug=debug),
              "env": env_tmp.copy(),
            }
+
 
 def compute(
             env: Environment | list[Environment],
