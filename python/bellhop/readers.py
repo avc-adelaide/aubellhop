@@ -11,7 +11,26 @@ import pandas as pd
 from bellhop.constants import BHStrings, _Maps, _File_Ext, MiscDefaults
 from bellhop.environment import Environment
 
+"""Reader functions for bellhop.py
 
+This file provides a collection of reading methods for both input
+and output Bellhop files. 
+
+Reading the environment file has substantial logic when relies on
+the state of the environment information it is passed. Therefore, this is
+managed by class `EnvironmentReader()`, used internally by the `Environment`
+class via its class method `Environment.from_file()`.
+
+Subsequent files (ssp, bty, ati, brc, trc) are read automatically, but public
+interfaces are provided for these for the purposes of mix and matching data
+if desired.
+
+Finally, readers are also provides for output files for rays, arrivals, and
+binary shd files. Again, these are used automatically by `bellhop.py` after
+executing a computation, but public methods are provides to help with
+testing and verification.
+
+"""
 
 
 class EnvironmentReader:
