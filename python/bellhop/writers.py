@@ -12,7 +12,11 @@ File writing class methods for BELLHOP.PY.
 These files are the input files passed directly into the `bellhop(3d).exe` binaries.
 
 The `EnvironmentWriter` class provides encapsulation of methods. It is not intended
-to be user-facing.
+to be user-facing. It is the end of the chain for env writing:
+
+    ~~bellhop.py~~         ~~environment.py~~   ~~writers.py~~
+    model_fn.write_env() → env.to_file()      → EnvironmentWriter().write()
+
 """
 
 class EnvironmentWriter:

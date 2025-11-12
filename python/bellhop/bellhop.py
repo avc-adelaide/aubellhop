@@ -30,6 +30,13 @@ cass which contains a global registry of BellhopSimulator instances.
 Internally `Models.select` uses `model_fn.supports()` to
 identify the BellhopSimulator model (instance) to use.
 
+Writing the environment file appears circuitous:
+
+    ~~bellhop.py~~         ~~environment.py~~   ~~writers.py~~
+    model_fn.write_env() → env.to_file()      → EnvironmentWriter().write()
+
+These indirections are partially for modularity and partly for
+encapsulation. 
 """
 
 class BellhopSimulator:
