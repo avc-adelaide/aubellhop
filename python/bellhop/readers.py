@@ -734,118 +734,17 @@ def read_refl_coeff(fname: str) -> NDArray[np.float64]:
         # Return as [range, depth] pairs
         return np.column_stack([theta, rmagn, rphas])
 
-
 def read_arrivals(fname: str) -> pd.DataFrame:
     """Read Bellhop arrivals file and parse data into a high level data structure"""
-    path = _ensure_file_exists(fname)
-    with path.open('rt') as f:
-        hdr = f.readline()
-        if hdr.find('2D') >= 0:
-            freq = _read_array(f, (float,))
-            source_depth_info = _read_array(f, (int,), float)
-            source_depth_count = source_depth_info[0]
-            source_depth = source_depth_info[1:]
-            assert source_depth_count == len(source_depth)
-            receiver_depth_info = _read_array(f, (int,), float)
-            receiver_depth_count = receiver_depth_info[0]
-            receiver_depth = receiver_depth_info[1:]
-            assert receiver_depth_count == len(receiver_depth)
-            receiver_range_info = _read_array(f, (int,), float)
-            receiver_range_count = receiver_range_info[0]
-            receiver_range = receiver_range_info[1:]
-            assert receiver_range_count == len(receiver_range)
-#             else: # worry about 3D later
-#                 freq, source_depth_count, receiver_depth_count, receiver_range_count = _read_array(hdr, (float, int, int, int))
-#                 source_depth = _read_array(f, (float,)*source_depth_count)
-#                 receiver_depth = _read_array(f, (float,)*receiver_depth_count)
-#                 receiver_range = _read_array(f, (float,)*receiver_range_count)
-        arrivals: list[pd.DataFrame] = []
-        for j in range(source_depth_count):
-            f.readline()
-            for k in range(receiver_depth_count):
-                for m in range(receiver_range_count):
-                    count = int(f.readline())
-                    for n in range(count):
-                        data = _read_array(f, (float, float, float, float, float, float, int, int))
-                        arrivals.append(pd.DataFrame({
-                            'source_depth_ndx': [j],
-                            'receiver_depth_ndx': [k],
-                            'receiver_range_ndx': [m],
-                            'source_depth': [source_depth[j]],
-                            'receiver_depth': [receiver_depth[k]],
-                            'receiver_range': [receiver_range[m]],
-                            'arrival_number': [n],
-                            # 'arrival_amplitude': [data[0]*np.exp(1j * data[1]* np.pi/180)],
-                            'arrival_amplitude': [data[0] * np.exp( -1j * (np.deg2rad(data[1]) + freq[0] * 2 * np.pi * (data[3] * 1j +  data[2])))],
-                            'time_of_arrival': [data[2]],
-                            'complex_time_of_arrival': [data[2] + 1j*data[3]],
-                            'angle_of_departure': [data[4]],
-                            'angle_of_arrival': [data[5]],
-                            'surface_bounces': [data[6]],
-                            'bottom_bounces': [data[7]]
-                        }, index=[len(arrivals)+1]))
-    return pd.concat(arrivals)
-
+    return BellhopOutputReader.read_arrivals(fname)
 
 def read_shd(fname: str) -> pd.DataFrame:
     """Read Bellhop shd file and parse data into a high level data structure"""
-    path = _ensure_file_exists(fname)
-    with path.open('rb') as f:
-        recl, = _unpack('i', f.read(4))
-        # _title = str(f.read(80))
-        f.seek(4*recl, 0)
-        ptype = f.read(10).decode('utf8').strip()
-        assert ptype == 'rectilin', f'Invalid file format (expecting {ptype} == "rectilin")'
-        f.seek(8*recl, 0)
-        nfreq, ntheta, nsx, nsy, nsd, nrd, nrr, atten = _unpack('iiiiiiif', f.read(32))
-        assert nfreq == 1, 'Invalid file format (expecting nfreq == 1)'
-        assert ntheta == 1, 'Invalid file format (expecting ntheta == 1)'
-        assert nsd == 1, 'Invalid file format (expecting nsd == 1)'
-        f.seek(32*recl, 0)
-        pos_r_depth = _unpack('f'*nrd, f.read(4*nrd))
-        f.seek(36*recl, 0)
-        pos_r_range = _unpack('f'*nrr, f.read(4*nrr))
-        pressure = np.zeros((nrd, nrr), dtype=np.complex128)
-        for ird in range(nrd):
-            recnum = 10 + ird
-            f.seek(recnum*4*recl, 0)
-            temp = np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
-            pressure[ird,:] = temp[::2] + 1j*temp[1::2]
-    return pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
-
+    return BellhopOutputReader.read_shd(fname)
 
 def read_rays(fname: str) -> pd.DataFrame:
     """Read Bellhop rays file and parse data into a high level data structure"""
-    path = _ensure_file_exists(fname)
-    with path.open('rt') as f:
-        hdr = f.readline()
-        if hdr.find('BELLHOP-') >= 0:
-            _dim = 2
-        elif hdr.find('BELLHOP3D-') >= 0:
-            _dim = 3
-        f.readline() # freq
-        f.readline() # 1  1 1
-        f.readline() # 50 50
-        f.readline() # 0.0
-        f.readline() # 25.0
-        f.readline() # 'xyz'
-        rays = []
-        while True:
-            s = f.readline()
-            if s is None or len(s.strip()) == 0:
-                break
-            a = float(s)
-            pts, sb, bb = _read_array(f, (int, int, int))
-            ray = np.empty((pts, _dim))
-            for k in range(pts):
-                ray[k,:] = _read_array(f, (float,))
-            rays.append(pd.DataFrame({
-                'angle_of_departure': [a],
-                'surface_bounces': [sb],
-                'bottom_bounces': [bb],
-                'ray': [ray]
-            }))
-    return pd.concat(rays)
+    return BellhopOutputReader.read_rays(fname)
 
 def _read_next_valid_line(f: TextIO) -> str:
     """Read the next valid text line of an input file, discarding empty content.
@@ -887,22 +786,6 @@ def _parse_vector(line: str) -> NDArray[np.float64] | float:
     valout = np.array(val) if len(val) > 1 else val[0]
     return valout
 
-def _ensure_file_exists(fname: str) -> Path:
-    path = Path(fname)
-    if not path.exists():
-        raise RuntimeError(f"Bellhop did not generate expected output file: {path}")
-    return path
-
-def _read_array(f: TextIO, types: tuple[Any, ...], dtype: type = str) -> tuple[Any, ...]:
-    """Wrapper around readline() to read in a 1D array of data"""
-    p = f.readline().split()
-    for j in range(len(p)):
-        if len(types) > j:
-            p[j] = types[j](p[j])
-        else:
-            p[j] = dtype(p[j])
-    return tuple(p)
-
 def _float(x: str | None, scale: float = 1) -> float | None:
     """Permissive float-enator with unit scaling"""
     if x is None:
@@ -926,3 +809,137 @@ def _prepare_filename(fname: str, ext: str, name: str) -> tuple[str,str]:
         raise FileNotFoundError(f"{name} file not found: {fname}")
 
     return fname, fname_base
+
+class BellhopOutputReader:
+    """Read and parse Bellhop output files."""
+        
+    @staticmethod
+    def read_arrivals(fname: str) -> pd.DataFrame:
+        """Read Bellhop arrivals file and parse data into a high level data structure"""
+        path = BellhopOutputReader._ensure_file_exists(fname)
+        with path.open('rt') as f:
+            hdr = f.readline()
+            if hdr.find('2D') >= 0:
+                freq = BellhopOutputReader._read_array(f, (float,))
+                source_depth_info = BellhopOutputReader._read_array(f, (int,), float)
+                source_depth_count = source_depth_info[0]
+                source_depth = source_depth_info[1:]
+                assert source_depth_count == len(source_depth)
+                receiver_depth_info = BellhopOutputReader._read_array(f, (int,), float)
+                receiver_depth_count = receiver_depth_info[0]
+                receiver_depth = receiver_depth_info[1:]
+                assert receiver_depth_count == len(receiver_depth)
+                receiver_range_info = BellhopOutputReader._read_array(f, (int,), float)
+                receiver_range_count = receiver_range_info[0]
+                receiver_range = receiver_range_info[1:]
+                assert receiver_range_count == len(receiver_range)
+    #             else: # worry about 3D later
+    #                 freq, source_depth_count, receiver_depth_count, receiver_range_count = _read_array(hdr, (float, int, int, int))
+    #                 source_depth = _read_array(f, (float,)*source_depth_count)
+    #                 receiver_depth = _read_array(f, (float,)*receiver_depth_count)
+    #                 receiver_range = _read_array(f, (float,)*receiver_range_count)
+            arrivals: list[pd.DataFrame] = []
+            for j in range(source_depth_count):
+                f.readline()
+                for k in range(receiver_depth_count):
+                    for m in range(receiver_range_count):
+                        count = int(f.readline())
+                        for n in range(count):
+                            data = BellhopOutputReader._read_array(f, (float, float, float, float, float, float, int, int))
+                            arrivals.append(pd.DataFrame({
+                                'source_depth_ndx': [j],
+                                'receiver_depth_ndx': [k],
+                                'receiver_range_ndx': [m],
+                                'source_depth': [source_depth[j]],
+                                'receiver_depth': [receiver_depth[k]],
+                                'receiver_range': [receiver_range[m]],
+                                'arrival_number': [n],
+                                # 'arrival_amplitude': [data[0]*np.exp(1j * data[1]* np.pi/180)],
+                                'arrival_amplitude': [data[0] * np.exp( -1j * (np.deg2rad(data[1]) + freq[0] * 2 * np.pi * (data[3] * 1j +  data[2])))],
+                                'time_of_arrival': [data[2]],
+                                'complex_time_of_arrival': [data[2] + 1j*data[3]],
+                                'angle_of_departure': [data[4]],
+                                'angle_of_arrival': [data[5]],
+                                'surface_bounces': [data[6]],
+                                'bottom_bounces': [data[7]]
+                            }, index=[len(arrivals)+1]))
+        return pd.concat(arrivals)
+
+    @staticmethod
+    def read_shd(fname: str) -> pd.DataFrame:
+        """Read Bellhop shd file and parse data into a high level data structure"""
+        path = BellhopOutputReader._ensure_file_exists(fname)
+        with path.open('rb') as f:
+            recl, = _unpack('i', f.read(4))
+            # _title = str(f.read(80))
+            f.seek(4*recl, 0)
+            ptype = f.read(10).decode('utf8').strip()
+            assert ptype == 'rectilin', f'Invalid file format (expecting {ptype} == "rectilin")'
+            f.seek(8*recl, 0)
+            nfreq, ntheta, nsx, nsy, nsd, nrd, nrr, atten = _unpack('iiiiiiif', f.read(32))
+            assert nfreq == 1, 'Invalid file format (expecting nfreq == 1)'
+            assert ntheta == 1, 'Invalid file format (expecting ntheta == 1)'
+            assert nsd == 1, 'Invalid file format (expecting nsd == 1)'
+            f.seek(32*recl, 0)
+            pos_r_depth = _unpack('f'*nrd, f.read(4*nrd))
+            f.seek(36*recl, 0)
+            pos_r_range = _unpack('f'*nrr, f.read(4*nrr))
+            pressure = np.zeros((nrd, nrr), dtype=np.complex128)
+            for ird in range(nrd):
+                recnum = 10 + ird
+                f.seek(recnum*4*recl, 0)
+                temp = np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
+                pressure[ird,:] = temp[::2] + 1j*temp[1::2]
+        return pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
+    
+    @staticmethod
+    def read_rays(fname: str) -> pd.DataFrame:
+        """Read Bellhop rays file and parse data into a high level data structure"""
+        path = BellhopOutputReader._ensure_file_exists(fname)
+        with path.open('rt') as f:
+            hdr = f.readline()
+            if hdr.find('BELLHOP-') >= 0:
+                _dim = 2
+            elif hdr.find('BELLHOP3D-') >= 0:
+                _dim = 3
+            f.readline() # freq
+            f.readline() # 1  1 1
+            f.readline() # 50 50
+            f.readline() # 0.0
+            f.readline() # 25.0
+            f.readline() # 'xyz'
+            rays = []
+            while True:
+                s = f.readline()
+                if s is None or len(s.strip()) == 0:
+                    break
+                a = float(s)
+                pts, sb, bb = BellhopOutputReader._read_array(f, (int, int, int))
+                ray = np.empty((pts, _dim))
+                for k in range(pts):
+                    ray[k,:] = _read_array(f, (float,))
+                rays.append(pd.DataFrame({
+                    'angle_of_departure': [a],
+                    'surface_bounces': [sb],
+                    'bottom_bounces': [bb],
+                    'ray': [ray]
+                }))
+        return pd.concat(rays)
+
+    @staticmethod
+    def _ensure_file_exists(fname: str) -> Path:
+        path = Path(fname)
+        if not path.exists():
+            raise RuntimeError(f"Bellhop did not generate expected output file: {path}")
+        return path
+
+    @staticmethod
+    def _read_array(f: TextIO, types: tuple[Any, ...], dtype: type = str) -> tuple[Any, ...]:
+        """Wrapper around readline() to read in a 1D array of data"""
+        p = f.readline().split()
+        for j in range(len(p)):
+            if len(types) > j:
+                p[j] = types[j](p[j])
+            else:
+                p[j] = dtype(p[j])
+        return tuple(p)
