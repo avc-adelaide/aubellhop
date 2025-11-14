@@ -734,18 +734,6 @@ def read_refl_coeff(fname: str) -> NDArray[np.float64]:
         # Return as [range, depth] pairs
         return np.column_stack([theta, rmagn, rphas])
 
-def read_arrivals(fname: str) -> pd.DataFrame:
-    """Read Bellhop arrivals file and parse data into a high level data structure"""
-    return BellhopOutputReader.read_arrivals(fname)
-
-def read_shd(fname: str) -> pd.DataFrame:
-    """Read Bellhop shd file and parse data into a high level data structure"""
-    return BellhopOutputReader.read_shd(fname)
-
-def read_rays(fname: str) -> pd.DataFrame:
-    """Read Bellhop rays file and parse data into a high level data structure"""
-    return BellhopOutputReader.read_rays(fname)
-
 def _read_next_valid_line(f: TextIO) -> str:
     """Read the next valid text line of an input file, discarding empty content.
 
@@ -810,26 +798,50 @@ def _prepare_filename(fname: str, ext: str, name: str) -> tuple[str,str]:
 
     return fname, fname_base
 
+################################
+
+def read_arrivals(fname: str) -> pd.DataFrame:
+    """Read Bellhop arrivals file and parse data into a high level data structure"""
+    reader = BellhopOutputReader(fname)
+    return reader.read_arrivals()
+
+def read_shd(fname: str) -> pd.DataFrame:
+    """Read Bellhop shd file and parse data into a high level data structure"""
+    reader = BellhopOutputReader(fname)
+    return reader.read_shd()
+
+def read_rays(fname: str) -> pd.DataFrame:
+    """Read Bellhop rays file and parse data into a high level data structure"""
+    reader = BellhopOutputReader(fname)
+    return reader.read_rays()
+
 class BellhopOutputReader:
     """Read and parse Bellhop output files."""
-        
-    @staticmethod
-    def read_arrivals(fname: str) -> pd.DataFrame:
+
+    def __init__(self, filename: str):
+        """Initialize reader with filename.
+
+        Args:
+            filename: Path to file (with extension)
+        """
+        self.filename = filename
+        self.filepath = self._ensure_file_exists(filename)
+
+    def read_arrivals(self) -> pd.DataFrame:
         """Read Bellhop arrivals file and parse data into a high level data structure"""
-        path = BellhopOutputReader._ensure_file_exists(fname)
-        with path.open('rt') as f:
+        with self.filepath.open('rt') as f:
             hdr = f.readline()
             if hdr.find('2D') >= 0:
-                freq = BellhopOutputReader._read_array(f, (float,))
-                source_depth_info = BellhopOutputReader._read_array(f, (int,), float)
+                freq = self._read_array(f, (float,))
+                source_depth_info = self._read_array(f, (int,), float)
                 source_depth_count = source_depth_info[0]
                 source_depth = source_depth_info[1:]
                 assert source_depth_count == len(source_depth)
-                receiver_depth_info = BellhopOutputReader._read_array(f, (int,), float)
+                receiver_depth_info = self._read_array(f, (int,), float)
                 receiver_depth_count = receiver_depth_info[0]
                 receiver_depth = receiver_depth_info[1:]
                 assert receiver_depth_count == len(receiver_depth)
-                receiver_range_info = BellhopOutputReader._read_array(f, (int,), float)
+                receiver_range_info = self._read_array(f, (int,), float)
                 receiver_range_count = receiver_range_info[0]
                 receiver_range = receiver_range_info[1:]
                 assert receiver_range_count == len(receiver_range)
@@ -845,7 +857,7 @@ class BellhopOutputReader:
                     for m in range(receiver_range_count):
                         count = int(f.readline())
                         for n in range(count):
-                            data = BellhopOutputReader._read_array(f, (float, float, float, float, float, float, int, int))
+                            data = self._read_array(f, (float, float, float, float, float, float, int, int))
                             arrivals.append(pd.DataFrame({
                                 'source_depth_ndx': [j],
                                 'receiver_depth_ndx': [k],
@@ -865,11 +877,9 @@ class BellhopOutputReader:
                             }, index=[len(arrivals)+1]))
         return pd.concat(arrivals)
 
-    @staticmethod
-    def read_shd(fname: str) -> pd.DataFrame:
+    def read_shd(self) -> pd.DataFrame:
         """Read Bellhop shd file and parse data into a high level data structure"""
-        path = BellhopOutputReader._ensure_file_exists(fname)
-        with path.open('rb') as f:
+        with self.filepath.open('rb') as f:
             recl, = _unpack('i', f.read(4))
             # _title = str(f.read(80))
             f.seek(4*recl, 0)
@@ -892,11 +902,9 @@ class BellhopOutputReader:
                 pressure[ird,:] = temp[::2] + 1j*temp[1::2]
         return pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
     
-    @staticmethod
-    def read_rays(fname: str) -> pd.DataFrame:
+    def read_rays(self) -> pd.DataFrame:
         """Read Bellhop rays file and parse data into a high level data structure"""
-        path = BellhopOutputReader._ensure_file_exists(fname)
-        with path.open('rt') as f:
+        with self.filepath.open('rt') as f:
             hdr = f.readline()
             if hdr.find('BELLHOP-') >= 0:
                 _dim = 2
@@ -914,7 +922,7 @@ class BellhopOutputReader:
                 if s is None or len(s.strip()) == 0:
                     break
                 a = float(s)
-                pts, sb, bb = BellhopOutputReader._read_array(f, (int, int, int))
+                pts, sb, bb = self._read_array(f, (int, int, int))
                 ray = np.empty((pts, _dim))
                 for k in range(pts):
                     ray[k,:] = _read_array(f, (float,))
@@ -926,15 +934,13 @@ class BellhopOutputReader:
                 }))
         return pd.concat(rays)
 
-    @staticmethod
-    def _ensure_file_exists(fname: str) -> Path:
-        path = Path(fname)
+    def _ensure_file_exists(self, filename) -> Path:
+        path = Path(filename)
         if not path.exists():
             raise RuntimeError(f"Bellhop did not generate expected output file: {path}")
         return path
 
-    @staticmethod
-    def _read_array(f: TextIO, types: tuple[Any, ...], dtype: type = str) -> tuple[Any, ...]:
+    def _read_array(self, f: TextIO, types: tuple[Any, ...], dtype: type = str) -> tuple[Any, ...]:
         """Wrapper around readline() to read in a 1D array of data"""
         p = f.readline().split()
         for j in range(len(p)):
