@@ -369,7 +369,7 @@ class EnvironmentReader:
         self.env['beam_images_num'] = _int(parts[0])
         self.env['beam_window'] = _int(parts[1])
             self.env['beam_component'] = self._unquote_string(parts[2]) if parts[2] is not None else " "
-    
+
     def _opt_lookup(self, name: str, opt: str, _map: dict[str, BHStrings]) -> str | None:
         opt_str = _map.get(opt)
         if opt_str is None:
