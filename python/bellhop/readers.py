@@ -925,7 +925,7 @@ class BellhopOutputReader:
                 pts, sb, bb = self._read_array(f, (int, int, int))
                 ray = np.empty((pts, _dim))
                 for k in range(pts):
-                    ray[k,:] = _read_array(f, (float,))
+                    ray[k,:] = self._read_array(f, (float,))
                 rays.append(pd.DataFrame({
                     'angle_of_departure': [a],
                     'surface_bounces': [sb],
