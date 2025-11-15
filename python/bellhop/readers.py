@@ -376,7 +376,7 @@ class EnvironmentReader:
             raise ValueError(f"{name} option {opt!r} not available")
         return opt_str
 
-    def _unquote_string(line: str) -> str:
+    def _unquote_string(self, line: str) -> str:
         """Extract string from within single quotes, possibly with commas too."""
         return line.strip().strip(",'")
 
