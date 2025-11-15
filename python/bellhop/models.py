@@ -1,11 +1,3 @@
-from __future__ import annotations
-
-from typing import Any
-
-from .constants import ModelDefaults
-from .environment import Environment
-from .bellhop import BellhopSimulator
-
 """Defining the Model Registry for bellhop.py to allow multiple BellhopSimulators to be run.
 
 This model defines the class and then initialises it.
@@ -15,6 +7,15 @@ of `BellhopSimulator` models.
 
 See file `bellhop.py` for the class definition of `BellhopSimulator`.
 """
+
+
+from __future__ import annotations
+
+from typing import Any
+
+from .constants import ModelDefaults
+from .environment import Environment
+from .bellhop import BellhopSimulator
 
 class Models:
     """Registry for BellhopSimulator models.
