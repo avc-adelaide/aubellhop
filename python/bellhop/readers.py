@@ -765,7 +765,7 @@ def _parse_line_int(line: str) -> int | None:
     parts = _parse_line(line)
     if parts[0] is None:
         return None
-    return int(parts[0].strip(","))
+    return int(parts[0])
 
 def _parse_vector(line: str) -> NDArray[np.float64] | float:
     """Parse a vector of floats with unknown number of values. Strip commas if necessary."""
@@ -934,7 +934,7 @@ class BellhopOutputReader:
                 }))
         return pd.concat(rays)
 
-    def _ensure_file_exists(self, filename) -> Path:
+    def _ensure_file_exists(self, filename: str) -> Path:
         path = Path(filename)
         if not path.exists():
             raise RuntimeError(f"Bellhop did not generate expected output file: {path}")

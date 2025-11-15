@@ -14,6 +14,7 @@ This is the Python API documentation for BELLHOP, an underwater acoustic propaga
    const
    defaults
    readers
+   writers
    plot
    api
 
