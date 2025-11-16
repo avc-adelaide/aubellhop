@@ -3,18 +3,18 @@ import bellhop as bh
 import bellhop.pyplot as bhp
 import numpy as np
 
-def test_pyplot_env():
-    """Test pyplot_env function with default environment. Just check that there are no execution errors.
+def test_pyplot_env2d():
+    """Test pyplot_env2d function with default environment. Just check that there are no execution errors.
     """
     env = bh.Environment()
-    bhp.pyplot_env(env)
+    bhp.pyplot_env2d(env)
 
 
-def test_pyplot_env_complex():
-    """Test pyplot_env function with complex environment. Just check that there are no execution errors.
+def test_pyplot_env2d_complex():
+    """Test pyplot_env2d function with complex environment. Just check that there are no execution errors.
     """
     env = bh.Environment(depth=[[0, 40], [100, 30], [500, 35], [700, 20], [1000, 45]])
-    bhp.pyplot_env(env)
+    bhp.pyplot_env2d(env)
 
 
 def test_pyplot_ssp():

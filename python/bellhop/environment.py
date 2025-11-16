@@ -153,6 +153,7 @@ class Environment(MutableMapping[str, Any]):
     source_nrange: int | None = None
     source_ncrossrange: int | None = None
     source_directionality: Any | None = None  # [(deg, dB)...]
+    _source_num: int = 0
 
     # Receiver parameters
     receiver_depth: float | Any = 10.0  # m - Any allows for np.ndarray
@@ -161,6 +162,7 @@ class Environment(MutableMapping[str, Any]):
     receiver_ndepth: int | None = None
     receiver_nrange: int | None = None
     receiver_nbearing: int | None = None
+    _receiver_num: int = 0
 
     # Beam settings
     beam_type: str = BHStrings.default
@@ -423,6 +425,16 @@ class Environment(MutableMapping[str, Any]):
             self['soundspeed_interp'] == BHStrings.quadrilateral
 
         self.bottom_attenuation = self._float_or_default('bottom_attenuation', EnvDefaults.bottom_attenuation)
+
+        self.source_ndepth = self.source_ndepth or np.size(self.source_depth)
+        self.source_nrange = self.source_nrange or np.size(self.source_range)
+        self.source_ncrossrange = self.source_ncrossrange or np.size(self.source_cross_range)
+        self._source_num = self.source_ndepth * self.source_nrange * self.source_ncrossrange
+
+        self.receiver_ndepth      = self.receiver_ndepth      or np.size(self.receiver_depth)
+        self.receiver_nrange      = self.receiver_nrange      or np.size(self.receiver_range)
+        self.receiver_nbearing    = self.receiver_nbearing    or np.size(self.receiver_bearing)
+        self._receiver_num        = self.receiver_ndepth * self.receiver_nrange * self.receiver_nbearing
 
         # Beam angle ranges default to half-space if source is left-most, otherwise full-space:
         if self['beam_angle_min'] is None:

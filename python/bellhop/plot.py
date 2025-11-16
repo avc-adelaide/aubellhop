@@ -232,6 +232,7 @@ def plot_rays(rays: pd.DataFrame, env: Environment | None = None, invert_colors:
     >>> bh.plot_rays(rays, width=1000)
     """
     rays = rays.sort_values('bottom_bounces', ascending=False)
+    dim = rays["ray"].iloc[0][0].shape[0]
 
     # some edge cases to worry about here: rays.bottom_bounces could be all zeros?
     max_amp = np.max(np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0
@@ -248,11 +249,12 @@ def plot_rays(rays: pd.DataFrame, env: Environment | None = None, invert_colors:
 
     oh = _plt.hold()
     for _, row in rays.iterrows():
-        rr = float( (row.bottom_bounces + 1) / (max_amp + 1) )
+        rr = float( row.bottom_bounces / (max_amp + 1) ) # avoid rr = 1 == 100% white
         c = 1.0 - rr if invert_colors else rr
         cmap = _pyplt.get_cmap("gray")
         col_str = _mplc.to_hex(cmap(c))
-        _plt.plot(row.ray[:,0]/divisor, -row.ray[:,1], color=col_str, xlabel='Range '+xunits, ylabel='Depth (m)', **kwargs)
+        ax_ind = dim - 1
+        _plt.plot(row.ray[:,0]/divisor, -row.ray[:,ax_ind], color=col_str, xlabel='Range '+xunits, ylabel='Depth (m)', **kwargs)
     if env is not None:
         plot_env(env,title=None)
     _plt.hold(oh if oh is not None else False)

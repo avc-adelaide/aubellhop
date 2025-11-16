@@ -63,20 +63,53 @@ import bellhop as bh
 import bellhop.plot as bhp
 
 env2d = bh.Environment(name="Example Bellhop2D",dimension="2D",beam_angle_min=-45,beam_angle_max=45).check()
-rays = bh.compute_rays(env2d)
+rays2d = bh.compute_eigenrays(env2d)
 print(env2d)
-bhp.plot_rays(rays,env=env2d)
+bhp.plot_rays(rays2d,env=env2d)
 ```
 
-### Minimal example 3D
+### Minimal example 3D (bokeh)
+
+Only a 2D projection can be plotted (essentially, y-axis ignored):
 
 ```{python}
 import bellhop as bh
 import bellhop.plot as bhp
 
 env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45).check()
-rays = bh.compute_rays(env3d)
-bhp.plot_rays(rays,env=env3d)
+rays3d = bh.compute_eigenrays(env3d) 
+bhp.plot_rays(rays3d,env=env3d)
+```
+
+
+
+### Minimal example 2D (matplotlib)
+
+```{python}
+import bellhop as bh
+import bellhop.pyplot as bhp
+
+env2d = bh.Environment(name="Example Bellhop2D",dimension="2D",beam_angle_min=-45,beam_angle_max=45,beam_num=10_000).check()
+rays2d = bh.compute_eigenrays(env2d)
+
+bhp.pyplot_rays(rays2d,env=env2d)
+```
+
+### Minimal example 3D (matplotlib)
+
+```{python}
+import matplotlib.pyplot as plt
+import bellhop as bh
+import bellhop.pyplot as bhp
+
+env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45,beam_num=10_000).check()
+rays3d = bh.compute_eigenrays(env3d) 
+
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
+bhp.pyplot_rays(rays3d,env=env3d,ax=ax)
+plt.show(fig)
+plt.close(fig)
 ```
 
 
