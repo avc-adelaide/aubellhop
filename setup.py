@@ -24,8 +24,17 @@ class FortranBuildExt(build_ext):
         root_dir = Path(__file__).parent.absolute()
         fortran_dir = root_dir / "fortran"
         
-        # Check for gfortran
-        if shutil.which("gfortran") is None:
+        # Check for gfortran (including versioned variants on macOS)
+        gfortran_path = shutil.which("gfortran")
+        if gfortran_path is None:
+            # Try to find versioned gfortran (gfortran-15, gfortran-14, etc.)
+            for version in range(20, 10, -1):  # Check versions 20 down to 11
+                versioned_gfortran = f"gfortran-{version}"
+                gfortran_path = shutil.which(versioned_gfortran)
+                if gfortran_path is not None:
+                    break
+        
+        if gfortran_path is None:
             raise RuntimeError(
                 "gfortran compiler not found. Please install gfortran to build this package.\n"
                 "On Ubuntu/Debian: sudo apt-get install gfortran\n"
@@ -33,12 +42,17 @@ class FortranBuildExt(build_ext):
                 "On Windows with MSYS2: pacman -S mingw-w64-x86_64-gcc-fortran"
             )
         
+        # Set FC environment variable for make
+        build_env = os.environ.copy()
+        build_env['FC'] = os.path.basename(gfortran_path)
+        
         # Build using the Makefile
         print("Building Fortran executables...")
+        print(f"Using Fortran compiler: {gfortran_path}")
         try:
-            subprocess.check_call(["make", "clean"], cwd=root_dir)
-            subprocess.check_call(["make"], cwd=root_dir)
-            subprocess.check_call(["make", "install"], cwd=root_dir)
+            subprocess.check_call(["make", "clean"], cwd=root_dir, env=build_env)
+            subprocess.check_call(["make"], cwd=root_dir, env=build_env)
+            subprocess.check_call(["make", "install"], cwd=root_dir, env=build_env)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to build Fortran executables: {e}")
         
