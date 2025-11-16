@@ -54,8 +54,8 @@ Changelog = "https://github.com/avc-adelaide/bellhoppe/blob/master/CHANGES.md"
 ####### BUILD #######
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 
 ####### RUFF #######
@@ -178,4 +178,18 @@ include = [
 exclude = [
   "/docs/*",
 ]
+
+
+####### SETUPTOOLS #######
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.packages.find]
+where = ["python"]
+include = ["bellhop*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+bellhop = ["bin/*"]
 

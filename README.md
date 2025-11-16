@@ -3,6 +3,7 @@
 ## Documentation
 
 - [Compilation and installation](https://avc-adelaide.github.io/bellhoppe/page/installation.html)
+- [PyPI publishing guide](docs/PYPI_PUBLISHING.md) - Guide for building and publishing wheels with pre-compiled binaries
 - [Main Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
 - [bellhop.py tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
 - [Python API documentation](https://avc-adelaide.github.io/bellhoppe/media/python/)
@@ -12,6 +13,22 @@
 
 [![Test Suite](https://github.com/avc-adelaide/bellhoppe/actions/workflows/check.yml/badge.svg)](https://github.com/avc-adelaide/bellhop/actions/workflows/check.yml)
 [![Code Lint](https://github.com/avc-adelaide/bellhoppe/actions/workflows/lint.yml/badge.svg)](https://github.com/avc-adelaide/bellhoppe/actions/workflows/lint.yml)
+
+## Installation
+
+### From PyPI (Coming Soon)
+
+Once published, you can install bellhop with pre-compiled binaries:
+
+```bash
+pip install bellhop
+```
+
+This includes pre-built Fortran executables for Linux, macOS, and Windows, so you don't need to compile anything yourself.
+
+### From Source
+
+See the [compilation and installation guide](https://avc-adelaide.github.io/bellhoppe/page/installation.html) for building from source.
 
 
 ## Background
@@ -30,6 +47,7 @@
     * Updated Fortran source code with automated documentation using FORD and lint checking using `fortitude`
     * Addition of explicit regression and unit test files using `pytest`
     * Continuous integration through Github for all documentation, linting, test suite, and code coverage
+    * PyPI packaging with pre-compiled binaries for easy installation across Linux, macOS, and Windows
 
 
 ## Impressum
