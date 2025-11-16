@@ -14,6 +14,7 @@ ifeq ($(FC),gfortran)
               -Wno-tabs -Wintrinsic-shadow -Wline-truncation \
               -std=gnu -frecursive -O2 -ffast-math -funroll-all-loops \
               -fomit-frame-pointer -march=native -mtune=native
+    LDFLAGS ?=
 endif
 
 # Executables to build
@@ -45,7 +46,7 @@ all: $(EXECUTABLES)
 	@echo "************************************"
 	@echo " "
 
-# Install executables  
+# Install executables
 install:
 	mkdir -p ../bin
 	for f in $(EXECUTABLES) ; do \
@@ -70,10 +71,10 @@ clean:
 
 # Main executable targets
 bellhop.exe: $(BELLHOP_OBJECTS)
-	$(FC) -o $@ $(FFLAGS) $(BELLHOP_OBJECTS)
+	$(FC) $(LDFLAGS) -o $@ $(FFLAGS) $(BELLHOP_OBJECTS)
 
 bellhop3d.exe: $(BELLHOP3D_OBJECTS)
-	$(FC) -o $@ $(FFLAGS) $(BELLHOP3D_OBJECTS)
+	$(FC) $(LDFLAGS) -o $@ $(FFLAGS) $(BELLHOP3D_OBJECTS)
 
 # Minimal dependency constraints - gfortran handles most dependencies automatically
 # Only specify dependencies that cannot be detected due to build order issues

@@ -19,6 +19,13 @@ GCOV := $(shell command -v gcov-15 2>/dev/null || command -v gcov)
 # Detect architecture
 UNAME_M := $(shell uname -m)
 
+# Detect macOS SDK path
+ifeq ($(shell uname),Darwin)
+    SDK := $(shell xcrun --show-sdk-path)
+else
+    SDK :=
+endif
+
 # Base flags (common to all)
 FFLAGS_BASE = -g -Waliasing -Wampersand -Wsurprising -Wintrinsics-std \
                  -Wno-tabs -Wintrinsic-shadow -Wline-truncation \
@@ -31,21 +38,27 @@ FFLAGS_OPTIM = -O2 -ffast-math -funroll-all-loops -fomit-frame-pointer
 FFLAGS_COVERAGE = -fprofile-arcs -ftest-coverage -fcheck=all
 
 # Arch-specific flags
-ifeq ($(UNAME_M),x86_64) # Windows/Intel/Linux Intel
+ifeq ($(UNAME_M),x86_64)
     FFLAGS_ARCH = -march=native -mtune=native
-else ifeq ($(UNAME_M),arm64) # Apple Silicon
+    LDFLAGS_ARCH =
+else ifeq ($(UNAME_M),arm64)
     FFLAGS_ARCH = -mcpu=apple-m2
-else ifeq ($(UNAME_M),aarch64) # Linux ARM
+    LDFLAGS_ARCH = -arch arm64 -isysroot $(SDK)
+else ifeq ($(UNAME_M),aarch64)
     FFLAGS_ARCH = -march=armv8.5-a
+    LDFLAGS_ARCH =
 else
     $(warning Unknown architecture $(UNAME_M), using generic flags)
     FFLAGS_ARCH =
+    LDFLAGS_ARCH =
 endif
 
-
-# Combine
+# Combine flags
 FFLAGS = $(FFLAGS_BASE) $(FFLAGS_OPTIM) $(FFLAGS_ARCH)
+LDFLAGS = $(LDFLAGS_ARCH)
+
 export FFLAGS
+export LDFLAGS
 
 
 
