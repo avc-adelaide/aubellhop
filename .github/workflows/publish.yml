@@ -43,7 +43,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install gcc
-          brew install gfortran
+          brew link gcc --force
 
       - name: Install gfortran (Windows)
         if: runner.os == 'Windows'
