@@ -1,24 +1,12 @@
 # The BELLHOP underwater acoustics ray tracing tool
 
-## Documentation
-
-- [Compilation and installation](https://avc-adelaide.github.io/bellhoppe/page/installation.html)
-- [PyPI publishing guide](docs/PYPI_PUBLISHING.md) - Guide for building and publishing wheels with pre-compiled binaries
-- [Main Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
-- [bellhop.py tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
-- [Python API documentation](https://avc-adelaide.github.io/bellhoppe/media/python/)
-- [Fortran Test Coverage](https://avc-adelaide.github.io/bellhoppe/media/coverage/_coverage/coverage-index.html)
-- [Python Test Coverage](https://avc-adelaide.github.io/bellhoppe/media/coverage/_coverage_python/index.html)
-- [Github repository link](https://github.com/avc-adelaide/bellhoppe) (what you are reading now)
-
+[![PyPI](https://img.shields.io/pypi/v/aubellhop)](https://pypi.org/project/aubellhop/)
 [![Test Suite](https://github.com/avc-adelaide/bellhoppe/actions/workflows/check.yml/badge.svg)](https://github.com/avc-adelaide/bellhop/actions/workflows/check.yml)
 [![Code Lint](https://github.com/avc-adelaide/bellhoppe/actions/workflows/lint.yml/badge.svg)](https://github.com/avc-adelaide/bellhoppe/actions/workflows/lint.yml)
 
 ## Installation
 
-### From PyPI (Coming Soon)
-
-Once published, you can install bellhop with pre-compiled binaries:
+You can (hopefully) install bellhop with pre-compiled binaries:
 
 ```bash
 pip install bellhop
@@ -26,9 +14,14 @@ pip install bellhop
 
 This includes pre-built Fortran executables for Linux, macOS, and Windows, so you don't need to compile anything yourself.
 
-### From Source
+See the [compilation and installation guide](https://avc-adelaide.github.io/bellhoppe/page/installation.html) for building from source if you wish to edit the code or the prebuilt binaries don't work for you.
 
-See the [compilation and installation guide](https://avc-adelaide.github.io/bellhoppe/page/installation.html) for building from source.
+## Documentation
+
+- [Main Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
+- [bellhop.py tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
+- [Python API documentation](https://avc-adelaide.github.io/bellhoppe/media/python/)
+- [Github repository link](https://github.com/avc-adelaide/bellhoppe)
 
 
 ## Background

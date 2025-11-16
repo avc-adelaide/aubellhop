@@ -21,6 +21,7 @@ The BELLHOP code base includes extensive historic documentation from the origina
 Acoustics Toolbox project and subsequent development efforts:
 
 ### User guides
+- **[Compilation and installation](page/installation.html)** - If you need/want to build from source
 - **[Getting started](page/index.html)** - Overview of both Fortran and Python interfaces
 - **[bellhop.py tutorials](media/quarto/index.html)** — Detailed "howto" documentation for `bellhop.py`
 - **[bellhop.py API reference](media/python/index.html)** - API interface to Bellhop using Python
@@ -41,14 +42,16 @@ Acoustics Toolbox project and subsequent development efforts:
 - **[BELLHOP3D User Guide (PDF)](media/Bellhop3D%20User%20Guide%202016_7_25.pdf)** - Comprehensive PDF guide for 3D modeling
 - **[Technical Report HLS-2010-1](media/HLS-2010-1.pdf)** - Detailed technical documentation
 
-### Additional material
+### Coverage documentation
+- **[Coverage details](page/coverage.html)**
 - **[Fortran Coverage](media/coverage/_coverage/coverage-index.html)** - Code coverage analysis for Fortran acoustic simulation components
 - **[Python Coverage](media/coverage/_coverage_python/index.html)** - Code coverage analysis for Python API and utilities
 
-### Repository / development documentation
-- [Compilation and installation](page/installation.html)
-- [Technical information](page/technical.html)
-- [Coverage details](page/coverage.html)
+### Changelogs
+- **[AUBELLHOP Changes](page/CHANGES.html)**
+- **[University of California Changes](page/changes_uc.html)**
+- **[Acoustics Toolbox Changes](page/changes_at.html)**
+
+### Miscellaneous
+- [Repository information](page/technical.html)
 - [Compiler notes from original Makefile](page/compiler.html)
-- [University of California Changes](page/CHANGES.html)
-- [Acoustics Toolbox Changes](page/at_changes.html)
