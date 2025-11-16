@@ -42,7 +42,8 @@ jobs:
       - name: Install gfortran (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install gcc gfortran
+          brew install gcc
+          brew install gfortran
 
       - name: Install gfortran (Windows)
         if: runner.os == 'Windows'
@@ -81,7 +82,8 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: |
             yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
           CIBW_BEFORE_BUILD_MACOS: |
-            brew install gcc gfortran || true
+            brew install gcc || true
+            brew install gfortran || true
           CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
