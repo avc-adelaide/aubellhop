@@ -39,17 +39,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gfortran
 
-      - name: Install gfortran (macOS)
-        if: runner.os == 'macOS'
+      # macOS ARM (Apple Silicon)
+      - name: Install gfortran (macOS ARM)
+        if: runner.os == 'macOS' && runner.arch == 'ARM64'
         run: |
-              echo $PATH
-              echo $GITHUB_PATH
-              echo "$(brew --prefix)/bin" >> $GITHUB_PATH
-              echo "$(brew --prefix)/sbin" >> $GITHUB_PATH
-              brew install gcc
-              brew link gcc --force --overwrite || true
-              which gfortran || true
-              gfortran --version || true
+          brew install gcc
+
+      # macOS Intel (x86_64)
+      - name: Install gfortran (macOS Intel)
+        if: runner.os == 'macOS' && runner.arch == 'X64'
+        run: |
+          brew tap fxcoudert/gfortran
+          brew install gfortran
 
       - name: Install gfortran (Windows)
         if: runner.os == 'Windows'
@@ -77,7 +78,7 @@ jobs:
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
 
-      - name: Build wheels (Linux/macOS)
+      - name: Build wheels (Linux or macOS)
         if: runner.os != 'Windows'
         uses: pypa/cibuildwheel@v2.22
         env:
