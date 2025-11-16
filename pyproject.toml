@@ -2,7 +2,7 @@
 ####### PROJECT #######
 
 [project]
-name = "bellhop"
+name = "aubellhop"
 version = "0.1"
 
 description = "Bellhop underwater acoustic propagation model"
