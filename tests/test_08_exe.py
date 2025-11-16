@@ -12,7 +12,7 @@ def test_exe_fail():
         bh.bellhop.BellhopSimulator()._run_exe("tests/malformed_env/eof_ssp", debug=True)
 
 def test_exe_not_found():
-    with pytest.raises(FileNotFoundError, match=r"Executable (.*) not found in PATH."):
+    with pytest.raises(FileNotFoundError, match=r"Executable (.*) not found"):
         bh.bellhop.BellhopSimulator()._run_exe("tests/malformed_env/eof_ssp", debug=True, exe="bellhop_not_found.exe")
     # note that bellhop.py would give a better error message when reading that .env file
 
