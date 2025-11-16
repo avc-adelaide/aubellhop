@@ -42,8 +42,12 @@ jobs:
       - name: Install gfortran (macOS)
         if: runner.os == 'macOS'
         run: |
+          echo "$(brew --prefix)/bin" >> $GITHUB_PATH
+          echo "$(brew --prefix)/sbin" >> $GITHUB_PATH
           brew install gcc
-          brew link gcc --force
+          brew link gcc --force --overwrite
+          which gfortran
+          gfortran --version
 
       - name: Install gfortran (Windows)
         if: runner.os == 'Windows'
@@ -80,12 +84,14 @@ jobs:
           CIBW_ARCHS_LINUX: x86_64
           CIBW_ARCHS_MACOS: x86_64 arm64
           CIBW_BEFORE_BUILD_LINUX: |
-            yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
+              yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
           CIBW_BEFORE_BUILD_MACOS: |
-            brew install gcc
-            # Create unversioned gfortran symlink
-            ln -s "$(brew --prefix)/bin/gfortran-"* "$(brew --prefix)/bin/gfortran" || true
-            export PATH="$(brew --prefix)/bin:$PATH"
+              echo "$(brew --prefix)/bin" >> $GITHUB_PATH
+              echo "$(brew --prefix)/sbin" >> $GITHUB_PATH
+              brew install gcc
+              brew link gcc --force --overwrite
+              which gfortran
+              gfortran --version
           CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
