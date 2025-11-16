@@ -86,9 +86,13 @@ jobs:
           CIBW_SKIP: "*-musllinux* *-manylinux_i686 *-win32"
           CIBW_ARCHS_LINUX: x86_64
           CIBW_ARCHS_MACOS: arm64
+          MACOSX_DEPLOYMENT_TARGET: 15.0
           CIBW_BEFORE_BUILD_LINUX: |
               yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
           CIBW_BEFORE_BUILD_MACOS: |
+              # Get the macOS SDK version used by Homebrew GCC
+              SDK_VER=$(xcrun --show-sdk-version)
+              echo "Detected macOS SDK version: $SDK_VER"
               ARCH=$(uname -m)
               echo "Building for architecture: $ARCH"
               BREW_PREFIX=/opt/homebrew
