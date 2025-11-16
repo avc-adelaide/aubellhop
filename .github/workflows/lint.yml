@@ -13,11 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
-      run: pip install hatch fortitude-lint ruff
+      run: pip install hatch fortitude-lint ruff uv
     - name: Ruff
-      run: make lintp
+      run: hatch run make lintp
     - name: Type checking
-      run: make typep
+      run: hatch run make typep
     - name: Fortitude
-      run: hatch run lintf
+      run: hatch run make lintf
 
