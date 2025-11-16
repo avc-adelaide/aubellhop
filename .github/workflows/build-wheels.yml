@@ -81,7 +81,7 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: |
             yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
           CIBW_BEFORE_BUILD_MACOS: |
-            brew install gcc || true
+            brew install gcc gfortran || true
           CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
