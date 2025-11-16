@@ -7,7 +7,7 @@ version = "0.1"
 
 description = "Bellhop underwater acoustic propagation model"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = "GPL-3.0-or-later"
 
 dependencies = [
     "matplotlib",
@@ -27,19 +27,7 @@ maintainers = [
 ]
 
 classifiers = [
-  # How mature is this project? Common values are
-  #   3 - Alpha
-  #   4 - Beta
-  #   5 - Production/Stable
-  "Development Status :: 4 - Beta",
-
-  # Indicate who your project is intended for
-  # "Intended Audience :: Developers",
-  # "Topic :: Software Development :: Build Tools",
-
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-
-  # Specify the Python versions you support here.
+  "Development Status :: 4 - Beta", #   5 - Production/Stable
   "Programming Language :: Python :: 3.12",
 ]
 
