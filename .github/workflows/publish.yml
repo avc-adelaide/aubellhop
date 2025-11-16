@@ -30,25 +30,38 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Install gfortran on different platforms
-      - name: Install gfortran (Ubuntu)
+      # Cache pip packages
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Cache MSYS2 packages for Windows
+      - name: Cache MSYS2 (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/cache@v3
+        with:
+          path: C:\msys64\var\cache\pacman\pkg
+          key: msys2-${{ hashFiles('**/pyproject.toml') }}
+
+      # Install gfortran / compilers
+      - name: Install compilers (Linux)
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gfortran
+          if ! command -v gfortran >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y gfortran
+          fi
 
-      # macOS ARM (Apple Silicon)
-      - name: Install gfortran (macOS ARM)
-        if: runner.os == 'macOS' && runner.arch == 'ARM64'
+      - name: Install compilers (macOS)
+        if: runner.os == 'macOS'
         run: |
-          brew install gcc
-
-      # macOS Intel (x86_64)
-      - name: Install gfortran (macOS Intel)
-        if: runner.os == 'macOS' && runner.arch == 'X64'
-        run: |
-          brew tap fxcoudert/gfortran
-          brew install gfortran
+          if ! command -v gfortran >/dev/null; then
+            brew install gcc
+          fi
 
       - name: Install gfortran (Windows)
         if: runner.os == 'Windows'
