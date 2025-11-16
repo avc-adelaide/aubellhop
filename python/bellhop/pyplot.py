@@ -9,6 +9,7 @@ import pandas as pd
 
 import matplotlib.pyplot as _pyplt
 import matplotlib.colors as _mplc
+from matplotlib.axes import Axes
 
 from .constants import BHStrings
 from .environment import Environment
@@ -139,12 +140,12 @@ def pyplot_env3d(env: Environment, surface_color: str = 'dodgerblue', bottom_col
     xrange_unit = ' (m)'
     yrange_unit = ' (m)'
     if max_x - min_x > 10000:
-        divisor = 1000
+        xdivisor = 1000
         min_x /= xdivisor
         max_x /= xdivisor
         xrange_unit = ' (km)'
     if max_y - min_y > 10000:
-        xdivisor = 1000
+        ydivisor = 1000
         min_y /= ydivisor
         max_y /= ydivisor
         yrange_unit = ' (km)'
@@ -293,7 +294,7 @@ def pyplot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwar
         _pyplt.xlabel('Arrival time (s)')
         _pyplt.ylabel(ylabel)
 
-def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool = False, ax: Any | None = None, **kwargs: Any) -> None:
+def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool = False, ax: Any | None = None, **kwargs: Any) -> Axes:
     """Plots ray paths with matplotlib
 
     Parameters
@@ -310,7 +311,8 @@ def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool =
     Notes
     -----
     If environment definition is provided, it is overlayed over this plot using default
-    parameters for `bellhop.plot_env()`.
+    parameters for `bellhop.plot_env()`. Without an environment file, no axis labels etc
+    are provided, you are in charge of that.
 
     Examples
     --------
@@ -322,24 +324,26 @@ def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool =
     if env is not None:
         env.check()
 
-    if ax is None:
-        fig = _pyplt.figure()
-        ax = fig.add_subplot()
-
     rays = rays.sort_values('bottom_bounces', ascending=False)
     dim = rays["ray"].iloc[0][0].shape[0]
+
+    if ax is None:
+        fig = _pyplt.figure()
+        if dim == 2:
+            ax = fig.add_subplot()
+        elif dim == 3:
+            ax = fig.add_subplot(projection='3d')
+    assert(isinstance(ax, Axes))
 
     max_amp = np.max(np.abs(rays.bottom_bounces)) if len(rays.bottom_bounces) > 0 else 0
     if max_amp <= 0:
         max_amp = 1
     divisor = 1
-    xlabel = 'Range (m)'
     r = []
     for _, row in rays.iterrows():
         r += list(row.ray[:, 0])
     if max(r) - min(r) > 10000:
         divisor = 1000
-        xlabel = 'Range (km)'
     for _, row in rays.iterrows():
         rr = float( row.bottom_bounces / (max_amp + 1) ) # avoid rr = 1 == 100% white
         c = 1.0 - rr if invert_colors else rr
@@ -355,20 +359,13 @@ def pyplot_rays(rays: Any, env: Environment | None = None, invert_colors: bool =
                 ax.plot(row.ray[:, 0] / divisor, row.ray[:, 1], row.ray[:, 2], **kwargs)
             else:
                 ax.plot(row.ray[:, 0] / divisor, row.ray[:, 1], row.ray[:, 2], color=col_str, **kwargs)
-    if env is None:
-        if env._dimension == 2:
-            _pyplt.xlabel(xlabel)
-            _pyplt.ylabel('Depth (m)')
-            ax.yaxis.set_inverted(True)
-        elif env._dimension == 3:
-            _pyplt.xlabel(xlabel)
-            _pyplt.zlabel('Depth (m)')
-            ax.yaxis.set_inverted(True)
-    else:
-        if env._dimension == 2:
+    if env is not None:
+        if dim == 2:
             pyplot_env2d(env,ax=ax)
-        elif env._dimension == 3:
+        elif dim == 3:
             pyplot_env3d(env,ax=ax)
+
+    return ax
 
 def pyplot_transmission_loss(tloss: Any, env: Environment | None = None, **kwargs: Any) -> None:
     """Plots transmission loss with matplotlib.
