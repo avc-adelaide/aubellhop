@@ -89,14 +89,14 @@ jobs:
           CIBW_BEFORE_BUILD_LINUX: |
               yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
           CIBW_BEFORE_BUILD_MACOS: |
-              echo $PATH
-              echo $GITHUB_PATH
-              echo "$(brew --prefix)/bin" >> $GITHUB_PATH
-              echo "$(brew --prefix)/sbin" >> $GITHUB_PATH
-              brew install gcc
-              brew link gcc --force --overwrite || true
-              which gfortran || true
-              gfortran --version || true
+              if [ "$(uname -m)" = "arm64" ]; then
+                  brew install gcc
+              else
+                  brew tap fxcoudert/gfortran
+                  brew install gfortran
+              fi
+              which gfortran
+              gfortran --version
           CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
