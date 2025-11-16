@@ -49,6 +49,9 @@ build/
 dist/
 *.egg-info/
 *.pyc
+*.whl
+wheelhouse/
+.eggs/
 
 # Temporary files
 *~

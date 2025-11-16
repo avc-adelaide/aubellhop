@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import subprocess
 import shutil
+from pathlib import Path
 
 import tempfile
 from typing import Any, Dict, Tuple
@@ -38,6 +39,36 @@ Writing the environment file appears circuitous:
 These indirections are partially for modularity and partly for
 encapsulation. 
 """
+
+
+def _find_executable(exe_name: str) -> str | None:
+    """Find the bellhop executable.
+    
+    First checks the package's bin directory (for installed wheels),
+    then falls back to searching PATH.
+    
+    Parameters
+    ----------
+    exe_name : str
+        Name of the executable (e.g., 'bellhop.exe')
+    
+    Returns
+    -------
+    str | None
+        Path to the executable, or None if not found
+    """
+    # Try package bin directory first (for installed wheels)
+    try:
+        package_dir = Path(__file__).parent
+        package_bin = package_dir / "bin" / exe_name
+        if package_bin.exists() and os.access(package_bin, os.X_OK):
+            return str(package_bin)
+    except Exception:
+        pass
+    
+    # Fall back to PATH
+    return shutil.which(exe_name)
+
 
 class BellhopSimulator:
     """
@@ -78,7 +109,7 @@ class BellhopSimulator:
            and task is supported by the model."""
         if env is not None:
             dim = dim or env._dimension
-        which_bool = shutil.which(exe or self.exe) is not None
+        which_bool = _find_executable(exe or self.exe) is not None
         task_bool = (task is None) or (task in self.taskmap)
         dim_bool = (dim is None) or (dim == self.dim)
         return (which_bool and task_bool and dim_bool)
@@ -179,9 +210,12 @@ class BellhopSimulator:
                 ) -> None:
         """Run the executable and raise exceptions if there are errors."""
 
-        exe_path = shutil.which(exe or self.exe)
+        exe_path = _find_executable(exe or self.exe)
         if exe_path is None:
-            raise FileNotFoundError(f"Executable ({exe_path}) not found in PATH.")
+            raise FileNotFoundError(
+                f"Executable '{exe or self.exe}' not found in package bin directory or PATH.\n"
+                f"Please ensure the package is installed correctly or bellhop executables are in your PATH."
+            )
 
         runcmd = [exe_path, fname_base] + args.split()
         if debug:

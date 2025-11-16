@@ -1,0 +1,18 @@
+# Include all Fortran source files and Makefiles for building from source
+recursive-include fortran *.f90 Makefile
+include Makefile
+include LICENSE
+include README.md
+
+# Include test files
+recursive-include tests *.py
+recursive-include examples *.env *.ati *.bty *.ssp *.sbp *.trc *.brc
+
+# Exclude build artifacts
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude *.so
+global-exclude *.o
+global-exclude *.mod
+global-exclude *.exe
