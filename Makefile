@@ -120,13 +120,19 @@ test:
 
 doc: docs
 
-docs:
+docf:
 	@echo "Generating Fortran/FORD documentation..."
-	$(HATCH) docf
+	cd docs; ford index.md # config set in fpm.toml
+
+docp:
 	@echo "Generating Python/Sphinx documentation..."
-	$(HATCH) docp
+	sphinx-build docs/python docs/_build/media/python
+
+docq:
 	@echo "Generating Python/Quarto tutorials..."
-	$(HATCH) docq
+	quarto render docs/quarto --to html
+
+docs: docf docp docq
 	@echo "Documentation generated in ./doc/ directory"
 	@echo "Open ./doc/index.html in a web browser to view"
 
@@ -136,13 +142,20 @@ cov:
 	@echo "Generating Python coverage report..."
 	$(HATCH) covp
 
-lint:
-	@echo "Running ruff Python linter..."
-	$(HATCH) lintp
-	@echo "Running mypy Python type checker..."
-	$(HATCH) typep
-	@echo "Running fortitude Fortran linter..."
-	$(HATCH) lintf
+lint: lintp typep lintf
+	@echo "Lint and type checking complete."
+
+lintp:
+	@echo "Linting with RUFF..."
+	ruff check python/bellhop/
+
+typep:
+	@echo "Type checking with TY..."
+	uvx ty check python/bellhop --exclude python/bellhop/plotutils.py
+
+lintf:
+	@echo "Linting fortran with FORTITUDE..."
+	fortitude check --output-format concise --line-length 129 --ignore PORT011,C121,C003
 
 ###### COVERAGE ######
 

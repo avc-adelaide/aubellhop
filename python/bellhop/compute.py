@@ -26,9 +26,9 @@ def compute_from_file(
                       model: str,
                       fname: str,
                       debug: bool = False
-                     ) -> pd.DataFrame:
+                     ) -> dict[str, Any]:
     """Compute Bellhop model directly from existing .env file.
-    
+
     Parameters
     ----------
     model: str
@@ -37,12 +37,12 @@ def compute_from_file(
         Filename of environment file (with or w/o extension).
     debug : bool
         Whether to print diagnostics to the console.
-    
+
     Returns
     -------
     results : dict
         Dictionary of metadata and results.
-  
+
     Notes
     -----
     The environment file is parsed simply to read the specified task; the bellhop executable is run on the original file "in place" in the filesystem. A copy of the parsed environment file is stored in the metadata.

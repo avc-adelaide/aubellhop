@@ -277,7 +277,7 @@ class Environment(MutableMapping[str, Any]):
         from dataclasses import asdict
         return asdict(self)
 
-    def copy(self) -> Self:
+    def copy(self) -> "Environment":
         """Return a shallow copy of the environment."""
         # Copy all fields
         data = {f.name: getattr(self, f.name) for f in fields(self)}
