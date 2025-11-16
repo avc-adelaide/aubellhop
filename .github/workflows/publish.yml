@@ -93,7 +93,8 @@ jobs:
         if: runner.os != 'Windows'
         uses: pypa/cibuildwheel@v2.22
         env:
-          CIBW_BUILD: cp312-*
+          CIBW_BUILD: |
+            cp312-* cp313-*
           CIBW_SKIP: "*-musllinux* *-manylinux_i686 *-win32"
           CIBW_ARCHS_LINUX: x86_64
           CIBW_ARCHS_MACOS: arm64

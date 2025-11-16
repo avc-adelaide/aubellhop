@@ -64,11 +64,13 @@ export LDFLAGS
 
 ####### TARGETS #######
 
-.PHONY: all install clean test doc docs cov lint \
+.PHONY: all build install clean test doc docs cov lint \
         coverage-clean coverage-build coverage-install coverage-test \
         coverage-report coverage-html coverage-full
 
-all:
+all: build install wheel
+
+build:
 	(cd fortran;	make -k all)
 	@echo " "
 	@echo "*************************"
@@ -88,6 +90,10 @@ install: all
 	@echo "Python installation is site-specific, you may need something like:"
 	@echo "    pip install -e ."
 	@echo "***************************************"
+
+wheel: install
+	mkdir -p python/bellhop/bin
+	cp bin/*.exe python/bellhop/bin
 
 clean: coverage-clean
 	-rm -f bin/*.exe
