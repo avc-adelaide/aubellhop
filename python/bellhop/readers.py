@@ -8,7 +8,7 @@ from numpy.typing import NDArray
 
 import numpy as np
 import pandas as pd
-from bellhop.constants import BHStrings, _Maps, FileExt, MiscDefaults
+from bellhop.constants import BHStrings, FlagMaps, FileExt, MiscDefaults
 from bellhop.environment import Environment
 
 """Reader functions for bellhop.py
@@ -77,12 +77,12 @@ class EnvironmentReader:
         # Line 4: Top boundary options
         topopt_line = _read_next_valid_line(f)
         topopt = self._unquote_string(topopt_line) + "      "
-        self.env["soundspeed_interp"]          = self._opt_lookup("Interpolation",          topopt[0], _Maps.soundspeed_interp)
-        self.env["surface_boundary_condition"] = self._opt_lookup("Top boundary condition", topopt[1], _Maps.surface_boundary_condition)
-        self.env["attenuation_units"]          = self._opt_lookup("Attenuation units",      topopt[2], _Maps.attenuation_units)
-        self.env["volume_attenuation"]         = self._opt_lookup("Volume attenuation",     topopt[3], _Maps.volume_attenuation)
-        self.env["_altimetry"]                 = self._opt_lookup("Altimetry",              topopt[4], _Maps._altimetry)
-        self.env["_single_beam"]               = self._opt_lookup("Single beam",            topopt[5], _Maps._single_beam)
+        self.env["soundspeed_interp"]          = self._opt_lookup("Interpolation",          topopt[0], FlagMaps.soundspeed_interp)
+        self.env["surface_boundary_condition"] = self._opt_lookup("Top boundary condition", topopt[1], FlagMaps.surface_boundary_condition)
+        self.env["attenuation_units"]          = self._opt_lookup("Attenuation units",      topopt[2], FlagMaps.attenuation_units)
+        self.env["volume_attenuation"]         = self._opt_lookup("Volume attenuation",     topopt[3], FlagMaps.volume_attenuation)
+        self.env["_altimetry"]                 = self._opt_lookup("Altimetry",              topopt[4], FlagMaps._altimetry)
+        self.env["_single_beam"]               = self._opt_lookup("Single beam",            topopt[5], FlagMaps._single_beam)
         if self.env["_altimetry"] == BHStrings.from_file:
             self.env["surface"], self.env["surface_interp"] = read_ati(self.fname_base)
 
@@ -215,8 +215,8 @@ class EnvironmentReader:
         """Read environment file bottom boundary condition"""
         bottom_parts = _parse_line(bottom_line,none_pad=3)
         botopt = self._unquote_string(cast(str,bottom_parts[0])) + "  " # cast() => I promise this is a str :)
-        self.env["bottom_boundary_condition"] = self._opt_lookup("Bottom boundary condition", botopt[0], _Maps.bottom_boundary_condition)
-        self.env["_bathymetry"]               = self._opt_lookup("Bathymetry",                botopt[1], _Maps._bathymetry)
+        self.env["bottom_boundary_condition"] = self._opt_lookup("Bottom boundary condition", botopt[0], FlagMaps.bottom_boundary_condition)
+        self.env["_bathymetry"]               = self._opt_lookup("Bathymetry",                botopt[1], FlagMaps._bathymetry)
         self.env['bottom_roughness']       = _float(bottom_parts[1])
         self.env['bottom_beta']            = _float(bottom_parts[2])
         self.env['bottom_transition_freq'] = _float(bottom_parts[3])
@@ -302,15 +302,15 @@ class EnvironmentReader:
     def _parse_task(self, task_line: str) -> None:
         """Parse the 'task' line."""
         task_code = self._unquote_string(task_line) + "     "
-        self.env['task']        = _Maps.task.get(task_code[0])
-        self.env['beam_type']   = _Maps.beam_type.get(task_code[1])
-        self.env['_sbp_file']   = _Maps._sbp_file.get(task_code[2])
-        self.env['source_type'] = _Maps.source_type.get(task_code[3])
-        self.env['grid_type']   = _Maps.grid_type.get(task_code[4])
+        self.env['task']        = FlagMaps.task.get(task_code[0])
+        self.env['beam_type']   = FlagMaps.beam_type.get(task_code[1])
+        self.env['_sbp_file']   = FlagMaps._sbp_file.get(task_code[2])
+        self.env['source_type'] = FlagMaps.source_type.get(task_code[3])
+        self.env['grid_type']   = FlagMaps.grid_type.get(task_code[4])
         if self.env['_dimension'] == 2:
             self.env['dimension'] = BHStrings.two_d
         else:
-            self.env['dimension'] = _Maps.dimension.get(task_code[5])
+            self.env['dimension'] = FlagMaps.dimension.get(task_code[5])
 
         if self.env["_sbp_file"] == BHStrings.from_file:
             self.env["source_directionality"] = read_sbp(self.fname_base)
@@ -594,7 +594,7 @@ def read_ati_bty(fname: str) -> tuple[NDArray[np.float64], str]:
                          shear_speed_array,
                          shear_attenuation_array,
                         ]
-        return np.column_stack(val_array), _Maps.depth_interp[interp_type]
+        return np.column_stack(val_array), FlagMaps.depth_interp[interp_type]
 
 
 def read_sbp(fname: str) -> NDArray[np.float64]:

@@ -103,15 +103,15 @@ class BHStrings(str, Enum):
 
 
 
-class _Maps:
+class FlagMaps:
     """Mappings from Bellhop single-char input file options to readable Python options
 
     These are also defined with reverse mappings in the form:
 
-    >>> _Maps.soundspeed_interp["S"]
+    >>> FlagMaps.soundspeed_interp["S"]
     "spline"
 
-    >>> _Maps.soundspeed_interp_rev["spline"]
+    >>> FlagMaps.soundspeed_interp_rev["spline"]
     "S"
 
     """

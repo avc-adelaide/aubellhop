@@ -4,7 +4,7 @@ from typing import Any, TextIO
 import numpy as np
 import pandas as pd
 from .environment import Environment
-from .constants import BHStrings, _Maps
+from .constants import BHStrings, FlagMaps
 
 """
 File writing class methods for BELLHOP.PY.
@@ -106,12 +106,12 @@ class EnvironmentWriter:
     def _write_env_surface_depth(self, fh: TextIO) -> None:
         """Writes surface boundary and depth lines of env file."""
 
-        svp_interp = _Maps.soundspeed_interp_rev[self.env['soundspeed_interp']]
-        svp_boundcond = _Maps.surface_boundary_condition_rev[self.env['surface_boundary_condition']]
-        svp_attenuation_units = _Maps.attenuation_units_rev[self.env['attenuation_units']]
-        svp_volume_attenuation = _Maps.volume_attenuation_rev[self.env['volume_attenuation']]
-        svp_alti = _Maps._altimetry_rev[self.env['_altimetry']]
-        svp_singlebeam = _Maps._single_beam_rev[self.env['_single_beam']]
+        svp_interp = FlagMaps.soundspeed_interp_rev[self.env['soundspeed_interp']]
+        svp_boundcond = FlagMaps.surface_boundary_condition_rev[self.env['surface_boundary_condition']]
+        svp_attenuation_units = FlagMaps.attenuation_units_rev[self.env['attenuation_units']]
+        svp_volume_attenuation = FlagMaps.volume_attenuation_rev[self.env['volume_attenuation']]
+        svp_alti = FlagMaps._altimetry_rev[self.env['_altimetry']]
+        svp_singlebeam = FlagMaps._single_beam_rev[self.env['_single_beam']]
 
         # Line 4
         comment = "SSP parameters: Interp / Top Boundary Cond / Attenuation Units / Volume Attenuation)"
@@ -166,8 +166,8 @@ class EnvironmentWriter:
 
     def _write_env_bottom(self, fh: TextIO) -> None:
         """Writes bottom boundary lines of env file."""
-        bot_bc = _Maps.bottom_boundary_condition_rev[self.env['bottom_boundary_condition']]
-        dp_flag = _Maps._bathymetry_rev[self.env['_bathymetry']]
+        bot_bc = FlagMaps.bottom_boundary_condition_rev[self.env['bottom_boundary_condition']]
+        dp_flag = FlagMaps._bathymetry_rev[self.env['_bathymetry']]
         bot_str = self._quoted_opt(bot_bc,dp_flag)
         comment = "BOT_Boundary_cond / BOT_Roughness"
         self._print_env_line(fh,f"{bot_str} {self.env['bottom_roughness']}",comment)
@@ -206,10 +206,10 @@ class EnvironmentWriter:
 
     def _write_env_task(self, fh: TextIO, taskcode: str) -> None:
         """Writes task lines of env file."""
-        beamtype = _Maps.beam_type_rev[self.env['beam_type']]
+        beamtype = FlagMaps.beam_type_rev[self.env['beam_type']]
         beampattern = " " if self.env['source_directionality'] is None else "*"
-        txtype = _Maps.source_type_rev[self.env['source_type']]
-        gridtype = _Maps.grid_type_rev[self.env['grid_type']]
+        txtype = FlagMaps.source_type_rev[self.env['source_type']]
+        gridtype = FlagMaps.grid_type_rev[self.env['grid_type']]
         runtype_str = self._quoted_opt(taskcode, beamtype, beampattern, txtype, gridtype)
         self._print_env_line(fh,f"{runtype_str}","RUN TYPE")
 
@@ -291,7 +291,7 @@ class EnvironmentWriter:
         """
         with open(filename, 'wt') as f:
             format_flag = "S" if depth.shape[1] == 2 else "L"
-            f.write(f"'{_Maps.depth_interp_rev[interp]}{format_flag}'\n")
+            f.write(f"'{FlagMaps.depth_interp_rev[interp]}{format_flag}'\n")
             f.write(str(depth.shape[0])+"\n")
             if depth.shape[1] == 2:
                 for j in range(depth.shape[0]):

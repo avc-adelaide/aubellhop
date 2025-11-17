@@ -12,7 +12,7 @@ import numpy as np
 from numpy.typing import NDArray
 import pandas as pd
 
-from .constants import BHStrings, _Maps, EnvDefaults, MiscDefaults
+from .constants import BHStrings, FlagMaps, EnvDefaults, MiscDefaults
 
 """
 Environment configuration for BELLHOP.
@@ -569,7 +569,7 @@ class Environment(MutableMapping[str, Any]):
     def __setattr__(self, key: str, value: Any) -> None:
         if not hasattr(self, key):
             raise KeyError(f"Unknown environment configuration parameter: {key!r}")
-        allowed = getattr(_Maps, key, None)
+        allowed = getattr(FlagMaps, key, None)
         if allowed is not None and value is not None and value not in set(allowed.values()):
             raise ValueError(f"Invalid value for {key!r}: {value}. Allowed: {set(allowed.values())}")
         if not (
