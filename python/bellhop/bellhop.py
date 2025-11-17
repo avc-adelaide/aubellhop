@@ -4,6 +4,7 @@ import os
 import subprocess
 import shutil
 from pathlib import Path
+from importlib.resources import files
 
 import tempfile
 from typing import Any, Dict, Tuple
@@ -57,16 +58,15 @@ def _find_executable(exe_name: str) -> str | None:
     str | None
         Path to the executable, or None if not found
     """
-    # Try package bin directory first (for installed wheels)
+    pkg_name = __package__.split(".")[0]
     try:
-        package_dir = Path(__file__).parent
-        package_bin = package_dir / "bin" / exe_name
-        if package_bin.exists() and os.access(package_bin, os.X_OK):
-            return str(package_bin)
+        pkg_bin = files(pkg_name).joinpath("bin", exe_name)
+        if pkg_bin.is_file() and os.access(pkg_bin, os.X_OK):
+            return str(pkg_bin)
     except Exception:
         pass
-    
-    # Fall back to PATH
+
+    # Fall back to PATH lookup
     return shutil.which(exe_name)
 
 
