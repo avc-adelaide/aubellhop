@@ -3,7 +3,6 @@ from __future__ import annotations
 import os
 import subprocess
 import shutil
-from pathlib import Path
 from importlib.resources import files
 
 import tempfile
@@ -15,7 +14,7 @@ from .readers import read_shd, read_arrivals, read_rays
 
 """Provides BellhopSimulator class for interacting with bellhop models.
 
-This class is instantiated within `models.py` and supports the standard 
+This class is instantiated within `models.py` and supports the standard
 `bellhop.exe` and `bellhop3d.exe` Fortran interfaces.
 
 New classes could be written to replicate the interfaces if
@@ -38,36 +37,8 @@ Writing the environment file appears circuitous:
     model_fn.write_env() → env.to_file()      → EnvironmentWriter().write()
 
 These indirections are partially for modularity and partly for
-encapsulation. 
+encapsulation.
 """
-
-
-def _find_executable(exe_name: str) -> str | None:
-    """Find the bellhop executable.
-    
-    First checks the package's bin directory (for installed wheels),
-    then falls back to searching PATH.
-    
-    Parameters
-    ----------
-    exe_name : str
-        Name of the executable (e.g., 'bellhop.exe')
-    
-    Returns
-    -------
-    str | None
-        Path to the executable, or None if not found
-    """
-    pkg_name = __package__.split(".")[0]
-    try:
-        pkg_bin = files(pkg_name).joinpath("bin", exe_name)
-        if pkg_bin.is_file() and os.access(pkg_bin, os.X_OK):
-            return str(pkg_bin)
-    except Exception:
-        pass
-
-    # Fall back to PATH lookup
-    return shutil.which(exe_name)
 
 
 class BellhopSimulator:
@@ -109,8 +80,8 @@ class BellhopSimulator:
            and task is supported by the model."""
         if env is not None:
             dim = dim or env._dimension
-        which_bool = _find_executable(exe or self.exe) is not None
-        task_bool = (task is None) or (task in self.taskmap)
+        which_bool = self._find_executable(exe or self.exe) is not None
+        task_bool = (task is None) or (task in self._taskmap)
         dim_bool = (dim is None) or (dim == self.dim)
         return (which_bool and task_bool and dim_bool)
 
@@ -122,11 +93,11 @@ class BellhopSimulator:
         """
         Writes the environment to .env file prior to running the model.
 
-        Uses the `taskmap` data structure to relate input flags to
+        Uses the `_taskmap` data structure to relate input flags to
         processng stages, in particular how to select specific "tasks"
         to be executed.
         """
-        task_flag, load_task_data, task_ext = self.taskmap[task]
+        task_flag, load_task_data, task_ext = self._taskmap[task]
         fname_base, fname = self._prepare_env_file(fname_base)
         with open(fname, "w") as fh:
             env.to_file(fh, fname_base, task_flag)
@@ -141,7 +112,7 @@ class BellhopSimulator:
         """
         High-level interface function which runs the model.
         """
-        task_flag, load_task_data, task_ext = self.taskmap[task]
+        task_flag, load_task_data, task_ext = self._taskmap[task]
         self._run_exe(fname_base)
         results = load_task_data(fname_base + task_ext)
         if rm_files:
@@ -152,7 +123,7 @@ class BellhopSimulator:
         return results
 
     @property
-    def taskmap(self) -> Dict[Any, list[Any]]:
+    def _taskmap(self) -> Dict[Any, list[Any]]:
         """Dictionary which maps tasks to execution functions and their parameters"""
         return {
             BHStrings.arrivals:     ['A', read_arrivals, _File_Ext.arr],
@@ -163,7 +134,33 @@ class BellhopSimulator:
             BHStrings.semicoherent: ['S', read_shd,      _File_Ext.shd],
         }
 
-    def _prepare_env_file(self, 
+    def _find_executable(self, exe_name: str) -> str | None:
+        """Find the bellhop executable.
+
+        First checks the package's bin directory (for installed wheels),
+        then falls back to searching PATH.
+
+        Parameters
+        ----------
+        exe_name : str
+            Name of the executable (e.g., 'bellhop.exe')
+
+        Returns
+        -------
+        str | None
+            Path to the executable, or None if not found
+        """
+        pkg_name = (__package__ or "unknown").split(".")[0]
+        try:
+            pkg_bin = files(pkg_name).joinpath("bin", exe_name)
+            if pkg_bin.is_file() and os.access(pkg_bin, os.X_OK):
+                return str(pkg_bin)
+        except Exception:
+            pass
+
+        return shutil.which(exe_name)
+
+    def _prepare_env_file(self,
                                 fname_base: str | None,
                          ) -> Tuple[str, str]:
         """Opens a file for writing the .env file, in a temp location if necessary, and delete other files with same basename.
@@ -210,7 +207,7 @@ class BellhopSimulator:
                 ) -> None:
         """Run the executable and raise exceptions if there are errors."""
 
-        exe_path = _find_executable(exe or self.exe)
+        exe_path = self._find_executable(exe or self.exe)
         if exe_path is None:
             raise FileNotFoundError(
                 f"Executable '{exe or self.exe}' not found in package bin directory or PATH.\n"
