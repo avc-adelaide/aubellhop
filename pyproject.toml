@@ -3,7 +3,7 @@
 
 [project]
 name = "aubellhop"
-version = "0.1"
+dynamic = ["version"]
 
 description = "Bellhop underwater acoustic propagation model"
 readme = "README.md"
@@ -31,7 +31,6 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
 ]
 
-
 [project.urls]
 Homepage = "https://github.com/avc-adelaide/bellhoppe"
 Documentation = "https://avc-adelaide.github.io/bellhoppe/"
@@ -45,6 +44,8 @@ Changelog = "https://github.com/avc-adelaide/bellhoppe/blob/master/CHANGES.md"
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools_scm]
+write_to = "python/bellhop/_version.py"
 
 ####### RUFF #######
 
