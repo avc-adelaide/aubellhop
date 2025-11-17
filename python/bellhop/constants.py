@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 
-class _File_Ext:
+class FileExt:
     """Strings to define file extensions.
 
     Using this class avoids typos in the source.

@@ -4,7 +4,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .constants import BHStrings, EnvDefaults, _File_Ext
+from .constants import BHStrings, EnvDefaults, FileExt
 from .environment import Environment
 from .models import Models
 
@@ -48,7 +48,7 @@ def compute_from_file(
     The environment file is parsed simply to read the specified task; the bellhop executable is run on the original file "in place" in the filesystem. A copy of the parsed environment file is stored in the metadata.
     """
 
-    ext = _File_Ext.env
+    ext = FileExt.env
     if fname.endswith(ext):
         nchar = len(ext)
         fname_base = fname[:-nchar]

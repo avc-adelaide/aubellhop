@@ -8,7 +8,7 @@ from importlib.resources import files
 import tempfile
 from typing import Any, Dict, Tuple
 
-from .constants import ModelDefaults, BHStrings, _File_Ext
+from .constants import ModelDefaults, BHStrings, FileExt
 from .environment import Environment
 from .readers import read_shd, read_arrivals, read_rays
 
@@ -126,12 +126,12 @@ class BellhopSimulator:
     def _taskmap(self) -> Dict[Any, list[Any]]:
         """Dictionary which maps tasks to execution functions and their parameters"""
         return {
-            BHStrings.arrivals:     ['A', read_arrivals, _File_Ext.arr],
-            BHStrings.eigenrays:    ['E', read_rays,     _File_Ext.ray],
-            BHStrings.rays:         ['R', read_rays,     _File_Ext.ray],
-            BHStrings.coherent:     ['C', read_shd,      _File_Ext.shd],
-            BHStrings.incoherent:   ['I', read_shd,      _File_Ext.shd],
-            BHStrings.semicoherent: ['S', read_shd,      _File_Ext.shd],
+            BHStrings.arrivals:     ['A', read_arrivals, FileExt.arr],
+            BHStrings.eigenrays:    ['E', read_rays,     FileExt.ray],
+            BHStrings.rays:         ['R', read_rays,     FileExt.ray],
+            BHStrings.coherent:     ['C', read_shd,      FileExt.shd],
+            BHStrings.incoherent:   ['I', read_shd,      FileExt.shd],
+            BHStrings.semicoherent: ['S', read_shd,      FileExt.shd],
         }
 
     def _find_executable(self, exe_name: str) -> str | None:
@@ -178,13 +178,13 @@ class BellhopSimulator:
             Filename base
         """
         if fname_base is not None:
-            fname = os.path.abspath(fname_base + _File_Ext.env)
+            fname = os.path.abspath(fname_base + FileExt.env)
             os.makedirs(os.path.dirname(fname), exist_ok=True)
             open(fname, "w").close()
         else:
-            tmp = tempfile.NamedTemporaryFile(suffix=_File_Ext.env, delete=False, mode="w")
+            tmp = tempfile.NamedTemporaryFile(suffix=FileExt.env, delete=False, mode="w")
             fname = tmp.name
-            fname_base = fname[: -len(_File_Ext.env)]
+            fname_base = fname[: -len(FileExt.env)]
             tmp.close()
 
         self._rm_files(fname_base, not_env=True)
@@ -194,9 +194,9 @@ class BellhopSimulator:
                         not_env: bool = False,
                  ) -> None:
         """Remove files that would be constructed as bellhop inputs or created as bellhop outputs."""
-        all_ext = [v for k, v in vars(_File_Ext).items() if not k.startswith('_')]
+        all_ext = [v for k, v in vars(FileExt).items() if not k.startswith('_')]
         if not_env:
-            all_ext.remove(_File_Ext.env)
+            all_ext.remove(FileExt.env)
         for ext in all_ext:
             self._unlink(fname_base + ext)
 
@@ -238,7 +238,7 @@ class BellhopSimulator:
         try:
             err = ""
             fatal = False
-            with open(fname_base + _File_Ext.prt, 'rt') as f:
+            with open(fname_base + FileExt.prt, 'rt') as f:
                 for s in f:
                     if fatal and len(s.strip()) > 0:
                         err += '[FATAL] ' + s.strip() + '\n'

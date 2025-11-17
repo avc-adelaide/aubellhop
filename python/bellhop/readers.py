@@ -8,13 +8,13 @@ from numpy.typing import NDArray
 
 import numpy as np
 import pandas as pd
-from bellhop.constants import BHStrings, _Maps, _File_Ext, MiscDefaults
+from bellhop.constants import BHStrings, _Maps, FileExt, MiscDefaults
 from bellhop.environment import Environment
 
 """Reader functions for bellhop.py
 
 This file provides a collection of reading methods for both input
-and output Bellhop files. 
+and output Bellhop files.
 
 Reading the environment file has substantial logic when relies on
 the state of the environment information it is passed. Therefore, this is
@@ -51,7 +51,7 @@ class EnvironmentReader:
             fname: Path to .env file (with or without extension)
         """
         self.env = env
-        self.fname, self.fname_base = _prepare_filename(fname, _File_Ext.env, "Environment")
+        self.fname, self.fname_base = _prepare_filename(fname, FileExt.env, "Environment")
 
     def read(self) -> Environment:
         """Do the reading..."""
@@ -446,7 +446,7 @@ def read_ssp(fname: str,
         1500 1500 1548.52 1530.29 1526.69 1517.78 1509.49 1504.30 1501.38 1500.14 1500.12 1501.02 1502.57 1504.62 1507.02 1509.69 1512.55 1515.56 1518.67 1521.85 1525.10 1528.38 1531.70 1535.04 1538.39 1541.76 1545.14 1548.52 1551.91 1551.91
     """
 
-    fname, _ = _prepare_filename(fname, _File_Ext.ssp, "SSP")
+    fname, _ = _prepare_filename(fname, FileExt.ssp, "SSP")
     with open(fname, 'r') as f:
         nranges = int(_read_next_valid_line(f))
         range_line = _read_next_valid_line(f)
@@ -485,12 +485,12 @@ def read_ssp(fname: str,
 
 def read_bty(fname: str) -> tuple[NDArray[np.float64], str]:
     """Read a bathymetry file used by Bellhop."""
-    fname, _ = _prepare_filename(fname, _File_Ext.bty, "BTY")
+    fname, _ = _prepare_filename(fname, FileExt.bty, "BTY")
     return read_ati_bty(fname)
 
 def read_ati(fname: str) -> tuple[NDArray[np.float64], str]:
     """Read an altimetry file used by Bellhop."""
-    fname, _ = _prepare_filename(fname, _File_Ext.ati, "ATI")
+    fname, _ = _prepare_filename(fname, FileExt.ati, "ATI")
     return read_ati_bty(fname)
 
 def read_ati_bty(fname: str) -> tuple[NDArray[np.float64], str]:
@@ -615,7 +615,7 @@ def read_sbp(fname: str) -> NDArray[np.float64]:
         Numpy array with [angle, power] pairs
     """
 
-    fname, _ = _prepare_filename(fname, _File_Ext.sbp, "SBP")
+    fname, _ = _prepare_filename(fname, FileExt.sbp, "SBP")
     with open(fname, 'r') as f:
 
         # Read number of points
@@ -647,14 +647,14 @@ def read_brc(fname: str) -> NDArray[np.float64]:
     """Read a BRC file and return array of reflection coefficients.
 
     See `read_refl_coeff` for documentation, but use this function for extension checkking."""
-    fname, _ = _prepare_filename(fname, _File_Ext.brc, "BRC")
+    fname, _ = _prepare_filename(fname, FileExt.brc, "BRC")
     return read_refl_coeff(fname)
 
 def read_trc(fname: str) -> NDArray[np.float64]:
     """Read a TRC file and return array of reflection coefficients.
 
     See `read_refl_coeff` for documentation, but use this function for extension checkking."""
-    fname, _ = _prepare_filename(fname, _File_Ext.trc, "TRC")
+    fname, _ = _prepare_filename(fname, FileExt.trc, "TRC")
     return read_refl_coeff(fname)
 
 def read_refl_coeff(fname: str) -> NDArray[np.float64]:
@@ -901,7 +901,7 @@ class BellhopOutputReader:
                 temp = np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
                 pressure[ird,:] = temp[::2] + 1j*temp[1::2]
         return pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
-    
+
     def read_rays(self) -> pd.DataFrame:
         """Read Bellhop rays file and parse data into a high level data structure"""
         with self.filepath.open('rt') as f:
