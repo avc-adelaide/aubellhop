@@ -1,17 +1,4 @@
-from __future__ import annotations
-
-import os
-from struct import unpack as _unpack
-from pathlib import Path
-from typing import Any, TextIO, cast
-from numpy.typing import NDArray
-
-import numpy as np
-import pandas as pd
-from bellhop.constants import BHStrings, FlagMaps, FileExt, MiscDefaults
-from bellhop.environment import Environment
-
-"""Reader functions for bellhop.py
+"""Reader functions for bellhop.py.
 
 This file provides a collection of reading methods for both input
 and output Bellhop files.
@@ -31,6 +18,19 @@ executing a computation, but public methods are provides to help with
 testing and verification.
 
 """
+
+from __future__ import annotations
+
+import os
+from struct import unpack as _unpack
+from pathlib import Path
+from typing import Any, TextIO, cast
+from numpy.typing import NDArray
+
+import numpy as np
+import pandas as pd
+from bellhop.constants import BHStrings, FlagMaps, FileExt, MiscDefaults
+from bellhop.environment import Environment
 
 
 class EnvironmentReader:

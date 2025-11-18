@@ -1,13 +1,3 @@
-from __future__ import annotations
-
-from typing import Any
-import numpy as np
-import pandas as pd
-
-from .constants import BHStrings, EnvDefaults, FileExt
-from .environment import Environment
-from .models import Models
-
 """Computing wrappers for bellhop.py.
 
 These functions make use of the `Models` registry, selecting appropriate `BellhopSimulator` models (or loading explicitly request ones):
@@ -21,6 +11,16 @@ The `compute()` function allows calculation with multiple environments, tasks, a
 Simpler once-off wrapper functions are also provided for convenience (`compute_arrivals()` etc.).
 
 """
+
+from __future__ import annotations
+
+from typing import Any
+import numpy as np
+import pandas as pd
+
+from .constants import BHStrings, EnvDefaults, FileExt
+from .environment import Environment
+from .models import Models
 
 def compute_from_file(
                       model: str,

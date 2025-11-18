@@ -1,17 +1,3 @@
-from __future__ import annotations
-
-import os
-import subprocess
-import shutil
-from importlib.resources import files
-
-import tempfile
-from typing import Any, Dict, Tuple
-
-from .constants import ModelDefaults, BHStrings, FileExt
-from .environment import Environment
-from .readers import read_shd, read_arrivals, read_rays
-
 """Provides BellhopSimulator class for interacting with bellhop models.
 
 This class is instantiated within `models.py` and supports the standard
@@ -39,6 +25,20 @@ Writing the environment file appears circuitous:
 These indirections are partially for modularity and partly for
 encapsulation.
 """
+
+from __future__ import annotations
+
+import os
+import subprocess
+import shutil
+from importlib.resources import files
+
+import tempfile
+from typing import Any, Dict, Tuple
+
+from .constants import ModelDefaults, BHStrings, FileExt
+from .environment import Environment
+from .readers import read_shd, read_arrivals, read_rays
 
 
 class BellhopSimulator:

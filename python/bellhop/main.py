@@ -1,3 +1,16 @@
+"""BELLHOP.PY: Python interface for the Bellhop underwater acoustic propagation models.
+
+This toolbox uses the Bellhop acoustic propagation model. For this model
+to work, the complete bellhop.py package must be built and installed
+and `bellhop.exe` should be in your PATH.
+
+Copyright (c) 2025-, Will Robertson
+Copyright (c) 2018-2025, Mandar Chitre
+
+This file was originally part of arlpy, released under Simplified BSD License.
+It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
+"""
+
 from __future__ import annotations
 
 # this format to explicitly mark the functions as public:
@@ -22,19 +35,6 @@ from bellhop.compute import compute_eigenrays as compute_eigenrays
 from bellhop.compute import compute_arrivals as compute_arrivals
 from bellhop.compute import compute_transmission_loss as compute_transmission_loss
 from bellhop.compute import arrivals_to_impulse_response as arrivals_to_impulse_response
-
-"""Underwater acoustic propagation modeling toolbox.
-
-This toolbox uses the Bellhop acoustic propagation model. For this model
-to work, the complete bellhop.py package must be built and installed
-and `bellhop.exe` should be in your PATH.
-
-Copyright (c) 2025-, Will Robertson
-Copyright (c) 2018-2025, Mandar Chitre
-
-This file was originally part of arlpy, released under Simplified BSD License.
-It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-"""
 
 ### Export module names for auto-importing in __init__.py
 

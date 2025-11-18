@@ -1,3 +1,6 @@
+"""Plotting functions for bellhop.py.
+"""
+
 from __future__ import annotations
 
 from typing import Any
@@ -16,18 +19,6 @@ from .plotutils import figure as figure
 
 import bellhop.plotutils as _plt
 
-##############################################################################
-#
-# Copyright (c) 2025-, Will Robertson
-# Copyright (c) 2018-2025, Mandar Chitre
-#
-# This file was originally part of arlpy, released under Simplified BSD License.
-# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-#
-##############################################################################
-
-"""Plotting functions for the underwater acoustic propagation modeling toolbox.
-"""
 
 def plot_env(env: Environment,
              surface_color: str = 'dodgerblue',

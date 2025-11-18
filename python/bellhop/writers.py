@@ -1,13 +1,4 @@
-from __future__ import annotations
-
-from typing import Any, TextIO
-import numpy as np
-import pandas as pd
-from .environment import Environment
-from .constants import BHStrings, FlagMaps
-
-"""
-File writing class methods for BELLHOP.PY.
+"""File writing class methods for bellhop.py.
 
 These files are the input files passed directly into the `bellhop(3d).exe` binaries.
 
@@ -18,6 +9,15 @@ to be user-facing. It is the end of the chain for env writing:
     model_fn.write_env() → env.to_file()      → EnvironmentWriter().write()
 
 """
+
+from __future__ import annotations
+
+from typing import Any, TextIO
+import numpy as np
+import pandas as pd
+from .environment import Environment
+from .constants import BHStrings, FlagMaps
+
 
 class EnvironmentWriter:
     """Bellhop file-writer class which creates the `.env` and related input files."""

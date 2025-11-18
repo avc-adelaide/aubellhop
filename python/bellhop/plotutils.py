@@ -1,3 +1,5 @@
+"""Easy-to-use plotting utilities for bellhop.py based on `Bokeh <http://bokeh.pydata.org>`_."""
+
 from __future__ import annotations
 
 from typing import Any, List, Tuple
@@ -10,18 +12,6 @@ import bokeh.models as _bmodels
 import bokeh.resources as _bres
 import bokeh.io as _bio
 import scipy.signal as _sig
-
-##############################################################################
-#
-# Copyright (c) 2025-, Will Robertson
-# Copyright (c) 2018-2025, Mandar Chitre
-#
-# This file was originally part of arlpy, released under Simplified BSD License.
-# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-#
-##############################################################################
-
-"""Easy-to-use plotting utilities based on `Bokeh <http://bokeh.pydata.org>`_."""
 
 
 light_palette = ['mediumblue', 'crimson', 'forestgreen', 'gold', 'darkmagenta', 'olive', 'palevioletred', 'yellowgreen',

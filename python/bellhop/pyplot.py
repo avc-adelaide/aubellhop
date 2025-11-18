@@ -1,3 +1,6 @@
+"""Plotting functions using Matplotlib for bellhop.py.
+"""
+
 from __future__ import annotations
 
 from typing import Any
@@ -14,18 +17,6 @@ from matplotlib.axes import Axes
 from .constants import BHStrings
 from .environment import Environment
 
-##############################################################################
-#
-# Copyright (c) 2025-, Will Robertson
-# Copyright (c) 2018-2025, Mandar Chitre
-#
-# This file was originally part of arlpy, released under Simplified BSD License.
-# It has been relicensed in this repository to be compatible with the Bellhop licence (GPL).
-#
-##############################################################################
-
-"""Plotting functions for the underwater acoustic propagation modeling toolbox.
-"""
 
 def pyplot_env2d(env: Environment, surface_color: str = 'dodgerblue', bottom_color: str = 'peru', source_color: str = 'orangered', receiver_color: str = 'midnightblue',
                receiver_plot: bool | None = None, ax: Any | None = None, **kwargs: Any) -> None:

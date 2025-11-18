@@ -1,3 +1,13 @@
+"""Constants and defaults for bellhop.py.
+
+This file contains various dataclasses and wrapper classes for storing:
+
+* List of all external file types and their extensions
+* String constants used throughout the codebase for autocomplete and error-checking
+* Mappngs between Bellhop character "flags" and their user-level option name
+* Default settings for various Bellhop classes
+"""
+
 from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
