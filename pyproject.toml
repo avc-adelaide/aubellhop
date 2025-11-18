@@ -41,7 +41,7 @@ Changelog = "https://github.com/avc-adelaide/bellhoppe/blob/master/CHANGES.md"
 ####### BUILD #######
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
