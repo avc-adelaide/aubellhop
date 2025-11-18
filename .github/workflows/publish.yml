@@ -81,7 +81,8 @@ jobs:
         uses: pypa/cibuildwheel@v2.22
         env:
           CIBW_PLATFORM: windows
-          CIBW_BUILD: cp312-win_amd64
+          CIBW_BUILD: |
+            cp312-* cp313-* cp314-*
           CIBW_SKIP: "*-win32 *-win_arm64"
           CIBW_BEFORE_BUILD_WINDOWS: |
             C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc make"
@@ -96,7 +97,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.22
         env:
           CIBW_BUILD: |
-            cp312-* cp313-*
+            cp312-* cp313-* cp314-*
           CIBW_SKIP: "*-musllinux* *-manylinux_i686 *-win32"
           CIBW_ARCHS_LINUX: x86_64
           CIBW_ARCHS_MACOS: arm64

@@ -102,3 +102,4 @@ test_results.csv
 
 # quarto
 .quarto*
+python/bellhop/_version.py
