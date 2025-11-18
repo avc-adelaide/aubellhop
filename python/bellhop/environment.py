@@ -399,21 +399,21 @@ class Environment(MutableMapping[str, Any]):
 
         if not isinstance(self['soundspeed'], pd.DataFrame):
             if np.size(self['soundspeed']) == 1:
-                speed = [float(self["soundspeed"]), float(self["soundspeed"])]
-                depth = [self._surface_min, self._depth_max]
-                self["soundspeed"] = pd.DataFrame(speed, columns=["speed"], index=depth)
+                speed = np.array([float(self["soundspeed"]), float(self["soundspeed"])])
+                depth = np.array([self._surface_min, self._depth_max])
+                self["soundspeed"] = pd.DataFrame(speed, columns=pd.Index(["speed"]), index=depth)
                 self["soundspeed"].index.name = "depth"
             elif self['soundspeed'].shape[0] == 1 and self['soundspeed'].shape[1] == 2:
                 # only one depth/soundspeed pair specified -- does this happen??
                 speed = [float(self["soundspeed"][0,1]), float(self["soundspeed"][0,1])]
                 d1 = float(min([self._surface_min, self["soundspeed"][0,0]]))
                 d2 = float(max([self["soundspeed"][0,0], self._depth_max]))
-                self["soundspeed"] = pd.DataFrame(speed, columns=["speed"], index=[d1, d2])
+                self["soundspeed"] = pd.DataFrame(speed, columns=pd.Index(["speed"]), index=pd.Index([d1, d2]))
                 self["soundspeed"].index.name = "depth"
             elif self['soundspeed'].ndim == 2 and self['soundspeed'].shape[1] == 2:
                 depth = self['soundspeed'][:,0]
                 speed = self['soundspeed'][:,1]
-                self["soundspeed"] = pd.DataFrame(speed, columns=["speed"], index=depth)
+                self["soundspeed"] = pd.DataFrame(speed, columns=pd.Index(["speed"]), index=depth)
                 self["soundspeed"].index.name = "depth"
             else:
                 raise TypeError("For an NDArray, soundspeed must be defined as a Nx2 array of [depth,soundspeed].  Use a DataFrame with 'depth' index for a 2D soundspeed profile.")

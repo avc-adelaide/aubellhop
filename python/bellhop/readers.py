@@ -206,7 +206,7 @@ class EnvironmentReader:
                 "density": ssp_density,
                 "attenuation": ssp_atten,
                 "shear_attenuation": ssp_att_shear
-            }, index=ssp_depth)
+            }, index=pd.Index(ssp_depth))
         df = df.iloc[:, :(sound_speed_param_count-1)]  # Keep only the max number of columns read
         df.index.name = "depth"
         return df
@@ -479,7 +479,7 @@ def read_ssp(fname: str,
             raise ValueError("Wrong number of depths found in sound speed data file"
                              f" (expected {ndepths}, found {ssp_array.shape[0]})")
 
-        df = pd.DataFrame(ssp_array, index=depths, columns=ranges_m)
+        df = pd.DataFrame(ssp_array, index=pd.Index(depths), columns=ranges_m)
         df.index.name = "depth"
         return df
 
@@ -874,7 +874,7 @@ class BellhopOutputReader:
                                 'angle_of_arrival': [data[5]],
                                 'surface_bounces': [data[6]],
                                 'bottom_bounces': [data[7]]
-                            }, index=[len(arrivals)+1]))
+                            }, index=pd.Index([len(arrivals)+1])))
         return pd.concat(arrivals)
 
     def read_shd(self) -> pd.DataFrame:
@@ -900,7 +900,7 @@ class BellhopOutputReader:
                 f.seek(recnum*4*recl, 0)
                 temp = np.array(_unpack('f'*2*nrr, f.read(2*nrr*4)))
                 pressure[ird,:] = temp[::2] + 1j*temp[1::2]
-        return pd.DataFrame(pressure, index=pos_r_depth, columns=pos_r_range)
+        return pd.DataFrame(pressure, index=pd.Index(pos_r_depth), columns=pd.Index(pos_r_range))
 
     def read_rays(self) -> pd.DataFrame:
         """Read Bellhop rays file and parse data into a high level data structure"""
