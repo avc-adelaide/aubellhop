@@ -9,7 +9,7 @@
 You can (hopefully) install bellhop with pre-compiled binaries:
 
 ```bash
-pip install bellhop
+pip install aubellhop
 ```
 
 This includes pre-built Fortran executables for Linux, macOS, and Windows, so you don't need to compile anything yourself.
@@ -18,10 +18,11 @@ See the [compilation and installation guide](https://avc-adelaide.github.io/bell
 
 ## Documentation
 
-- [Main Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
+- [Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
 - [bellhop.py tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
 - [Python API documentation](https://avc-adelaide.github.io/bellhoppe/media/python/)
-- [Github repository link](https://github.com/avc-adelaide/bellhoppe)
+- [Github package repository](https://github.com/avc-adelaide/bellhoppe)
+- [PyPi package site](https://pypi.org/project/aubellhop/)
 
 
 ## Background
