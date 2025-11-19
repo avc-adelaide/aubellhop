@@ -36,6 +36,8 @@ from bellhop.compute import compute_arrivals as compute_arrivals
 from bellhop.compute import compute_transmission_loss as compute_transmission_loss
 from bellhop.compute import arrivals_to_impulse_response as arrivals_to_impulse_response
 
+from bellhop.demo import demo as demo
+
 ### Export module names for auto-importing in __init__.py
 
 __all__ = [
