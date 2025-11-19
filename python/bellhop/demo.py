@@ -6,9 +6,6 @@ for acoustic propagation calculations.
 
 from __future__ import annotations
 
-import os
-from typing import Any
-
 import pandas as pd
 
 from .environment import Environment
@@ -171,7 +168,7 @@ print("\\nDemo complete!")
     with open(demo_filename, 'w') as f:
         f.write(demo_code)
     
-    print(f"Demo script written successfully!")
+    print("Demo script written successfully!")
     print()
     print("To run the demo script again:")
     print(f"  python3 {demo_filename}")
