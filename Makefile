@@ -18,6 +18,7 @@ GCOV := $(shell command -v gcov-15 2>/dev/null || command -v gcov)
 
 # Detect architecture
 UNAME_M := $(shell uname -m)
+UNAME_S := $(shell uname -s)
 
 # Detect macOS SDK path
 ifeq ($(shell uname),Darwin)
@@ -32,21 +33,29 @@ FFLAGS_BASE = -g -Waliasing -Wampersand -Wsurprising -Wintrinsics-std \
                  -std=gnu -frecursive
 
 # Optimisation flags (common, but not used for coverage)
-FFLAGS_OPTIM = -O2 -ffast-math -funroll-all-loops -fomit-frame-pointer
+FFLAGS_OPTIM = -O2 # -ffast-math -funroll-all-loops -fomit-frame-pointer
 
 # Coverage flags (for GCOV code coverage analysis)
 FFLAGS_COVERAGE = -fprofile-arcs -ftest-coverage -fcheck=all
 
-# Arch-specific flags
 ifeq ($(UNAME_M),x86_64)
-    FFLAGS_ARCH = -march=native -mtune=native
-    LDFLAGS_ARCH =
-else ifeq ($(UNAME_M),arm64)
-    FFLAGS_ARCH = -mcpu=apple-m2
+    FFLAGS_ARCH = -march=x86-64 -mtune=generic
+    ifeq ($(UNAME_S),Darwin)
+        LDFLAGS_ARCH = -arch x86_64 -isysroot $(SDK)
+    else ifeq ($(UNAME_S),Linux)
+        LDFLAGS_ARCH =
+    else ifeq ($(UNAME_S),Windows_NT)
+        LDFLAGS_ARCH = -static-libgcc -static-libgfortran
+    endif
+
+else ifeq ($(UNAME_M),arm64) # macOS ARM
+    FFLAGS_ARCH = -march=armv8-a
     LDFLAGS_ARCH = -arch arm64 -isysroot $(SDK)
-else ifeq ($(UNAME_M),aarch64)
-    FFLAGS_ARCH = -march=armv8.5-a
+
+else ifeq ($(UNAME_M),aarch64) # Linux ARM
+    FFLAGS_ARCH = -march=armv8-a
     LDFLAGS_ARCH =
+
 else
     $(warning Unknown architecture $(UNAME_M), using generic flags)
     FFLAGS_ARCH =
