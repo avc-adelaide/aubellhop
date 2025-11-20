@@ -7,6 +7,7 @@ title: AUBELLHOP CHANGELOG
 * Intermediate releases mostly just debugging how to get everything reliably into PyPi
 * Compilation steps (Makefile flags) improved for more cross-platform and cross-architecture compatibility for the binary releases
 * Add `bellhop.demo()` function to get up and running more easily from a fresh install from PyPi
+* Building and checking now performed on Python versions 3.12 to 3.14
 
 ## [0.1] - 2025-11-17
 
