@@ -1,0 +1,43 @@
+---
+title: "Bellhop.py reading files"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+
+## File reading functions
+
+While `bellhop.py` takes care of all file reading and writing procedures internally,
+it can be useful when dealing with legacy Bellhop files or for testing different engines
+to be able to directly read the various files used by Bellhop.
+
+These fall into three classes:
+
+1.  The environment file (`.env`) — special case
+2.  Supplementary input files (`.ssp`, `.ati`, `.bty`, `.trc`, `.brc`, `.sbp`) — text-based arrays of data to augment the environment file
+3.  The output files (`.arr`, `.ray`, `.shd`)
+
+### Reading environment files
+
+See [Bellhop.py environment configuration](environ.qmd) for full detail about the `Environment` class and its `.from_input()` class method.
+
+
+### Reading input files
+
+### Reading output files
+
+
+```{python}
+#| label: fig-shd
+#| fig-cap: "Reading a `.shd` binary output file and plotting the results."
+
+import bellhop as bh
+import bellhop.plot as bhp
+
+shd_data = bh.read_shd("../../tests/MunkB_geo_rot/MunkB_geo_rot.shd")
+
+print(shd_data)
+
+```
