@@ -6,7 +6,6 @@ format:
 jupyter: python3
 ---
 
-
 ## File reading functions
 
 While `bellhop.py` takes care of all file reading and writing procedures internally,
@@ -26,18 +25,28 @@ See [Bellhop.py environment configuration](environ.qmd) for full detail about th
 
 ### Reading input files
 
+[TODO]
+
+
 ### Reading output files
 
+Transmission loss files are stored in binary `.shd` files.
 
 ```{python}
 #| label: fig-shd
 #| fig-cap: "Reading a `.shd` binary output file and plotting the results."
 
-import bellhop as bh
-import bellhop.plot as bhp
+from bellhop.readers import read_shd
+import matplotlib.pyplot as plt
 
-shd_data = bh.read_shd("../../tests/MunkB_geo_rot/MunkB_geo_rot.shd")
+df = read_shd("../../tests/MunkB_geo_rot/MunkB_geo_rot.shd")
+X, Y = np.meshgrid(df.columns.values, df.index.values)
+Z1 = df.values
 
-print(shd_data)
-
+plt.figure()
+plt.pcolormesh(X, Y, abs(Z1), shading='nearest')
+plt.colorbar(label='TL (abs)')
+plt.xlabel('Range, m')
+plt.ylabel('Depth, m')
+plt.show()
 ```
