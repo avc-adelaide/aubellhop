@@ -36,6 +36,7 @@ Transmission loss files are stored in binary `.shd` files.
 #| label: fig-shd
 #| fig-cap: "Reading a `.shd` binary output file and plotting the results."
 
+import numpy as np
 from bellhop.readers import read_shd
 import matplotlib.pyplot as plt
 
