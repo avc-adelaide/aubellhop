@@ -97,10 +97,9 @@ class BellhopSimulator:
         processng stages, in particular how to select specific "tasks"
         to be executed.
         """
-        task_flag, load_task_data, task_ext = self._taskmap[task]
         fname_base, fname = self._prepare_env_file(fname_base)
         with open(fname, "w") as fh:
-            env.to_file(fh, fname_base, task_flag)
+            env.to_file(fh, fname_base, task_rev[task])
 
         return fname_base
 
@@ -112,7 +111,7 @@ class BellhopSimulator:
         """
         High-level interface function which runs the model.
         """
-        task_flag, load_task_data, task_ext = self._taskmap[task]
+        load_task_data, task_ext = self._taskmap[task]
         self._run_exe(fname_base)
         results = load_task_data(fname_base + task_ext)
         if rm_files:
@@ -126,12 +125,12 @@ class BellhopSimulator:
     def _taskmap(self) -> Dict[Any, list[Any]]:
         """Dictionary which maps tasks to execution functions and their parameters"""
         return {
-            BHStrings.arrivals:     ['A', read_arrivals, FileExt.arr],
-            BHStrings.eigenrays:    ['E', read_rays,     FileExt.ray],
-            BHStrings.rays:         ['R', read_rays,     FileExt.ray],
-            BHStrings.coherent:     ['C', read_shd,      FileExt.shd],
-            BHStrings.incoherent:   ['I', read_shd,      FileExt.shd],
-            BHStrings.semicoherent: ['S', read_shd,      FileExt.shd],
+            BHStrings.arrivals:     [read_arrivals, FileExt.arr],
+            BHStrings.eigenrays:    [read_rays,     FileExt.ray],
+            BHStrings.rays:         [read_rays,     FileExt.ray],
+            BHStrings.coherent:     [read_shd,      FileExt.shd],
+            BHStrings.incoherent:   [read_shd,      FileExt.shd],
+            BHStrings.semicoherent: [read_shd,      FileExt.shd],
         }
 
     def _find_executable(self, exe_name: str) -> str | None:
