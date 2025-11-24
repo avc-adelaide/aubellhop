@@ -1,5 +1,6 @@
 import pytest
 import bellhop as bh
+from bellhop.readers import read_shd
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt
@@ -19,7 +20,7 @@ env["depth"] = bty
 env["depth_interp"] = interp_bty
 
 tl = bh.compute_transmission_loss(env,fname_base="tests/Dickins/DickinsB_output",debug=True)
-tl_exp = bh.read_shd("tests/Dickins/DickinsB.shd")
+tl_exp = read_shd("tests/Dickins/DickinsB.shd")
 
 def test_DickensB():
     """Test using a Bellhop example that ENV file parameters are being picked up properly.
