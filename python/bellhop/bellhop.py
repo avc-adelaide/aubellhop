@@ -28,6 +28,7 @@ encapsulation.
 
 from __future__ import annotations
 
+import sys
 import os
 import subprocess
 import shutil
@@ -212,6 +213,21 @@ class BellhopSimulator:
                 f"Executable '{exe or self.exe}' not found in package bin directory or PATH.\n"
                 f"Please ensure the package is installed correctly or bellhop executables are in your PATH."
             )
+
+        # Check macOS Gatekeeper / signature only on Darwin
+        if sys.platform == "darwin":
+            try:
+                check = subprocess.run(
+                    ["spctl", "--assess", "--verbose=4", exe_path],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+                )
+                if "rejected" in check.stdout or "rejected" in check.stderr:
+                    print(f"Warning: {exe_path} is rejected by Gatekeeper. Trying ad-hoc codesign...")
+                    subprocess.run(["codesign", "--force", "--sign", "-", exe_path], check=True)
+            except FileNotFoundError:
+                # spctl not found (e.g., not macOS), ignore
+                pass
+
 
         runcmd = [exe_path, fname_base] + args.split()
         if debug:
