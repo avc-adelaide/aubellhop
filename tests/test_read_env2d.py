@@ -68,7 +68,7 @@ def test_read_env_round_trip():
         fname_base = os.path.join(temp_dir, "test_env")
 
         # Create the Bellhop model and generate the env file
-        from aubellhop.bellhop import aubellhopSimulator
+        from aubellhop.bellhop import BellhopSimulator
         model = BellhopSimulator()
         fname_base, fname = model._prepare_env_file(fname_base)
         task_flag = "R"

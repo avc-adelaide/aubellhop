@@ -15,7 +15,7 @@ from typing import Any
 
 from .constants import ModelDefaults
 from .environment import Environment
-from .bellhop import aubellhopSimulator
+from .bellhop import BellhopSimulator
 
 class Models:
     """Registry for BellhopSimulator models.

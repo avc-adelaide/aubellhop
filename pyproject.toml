@@ -47,7 +47,7 @@ requires = ["setuptools>=61.0", "wheel", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "python/bellhop/_version.py"
+write_to = "python/aubellhop/_version.py"
 
 ####### RUFF #######
 
