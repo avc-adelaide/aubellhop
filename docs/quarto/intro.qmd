@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py introduction"
+title: "AUBELLHOP introduction"
 format:
   html:
     code-fold: true
@@ -20,8 +20,8 @@ The rays are coloured according to their total number of bounces to give a visua
 #| label: fig-basic-rays
 #| fig-cap: "A ray plot from an underwater sound source (constant depth and speed of sound)."
 
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env = bh.Environment()
 erays = bh.compute_eigenrays(env)
@@ -37,8 +37,8 @@ An example of these are shown in @fig-basic-arr.
 #| label: fig-basic-arr
 #| fig-cap: "Arrivals plot from an underwater sound source (constant depth and speed of sound)."
 
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env = bh.Environment()
 arr = bh.compute_arrivals(env)
@@ -58,8 +58,8 @@ The default settings are to calculate transmission loss assuming coherent interf
 #| fig-cap: "A transmission loss plot from a 1000 Hz underwater sound source (constant depth and speed of sound)."
 
 import numpy as np
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env = bh.Environment(
     frequency=1000,

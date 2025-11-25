@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py introduction"
+title: "AUBELLHOP: introduction"
 format:
   html:
     code-fold: true
@@ -40,8 +40,8 @@ Option                           Description
 
 Attenuation units are defined using the following options:
 
-Bellhop char  Bellhop.py option string
-------------  ------------------------
+Bellhop char  `aubellhop` option string
+------------  -------------------------
 `N`           `"nepers per meter"`
 `F`           `"frequency dependent"`
 `M`           `"db per meter"`
@@ -65,8 +65,8 @@ Surface profiles should be defined with the highest point at $z=0$ to ensure cor
 #| label: fig-surf-sine
 #| fig-cap: "Sinusoidal surface example with 100 m period and 1.0 m peak-to-peak amplitude."
 
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 import numpy as np
 
 env = bh.Environment()
@@ -220,8 +220,8 @@ Tabulated reflection coefficient data isn't used in this example but would furth
 #| label: fig-ice-rays
 #| fig-cap: "A ray plot from an underwater sound source with a surface ice profile (constant depth and speed of sound)."
 
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 ice_data = np.column_stack((dist_m, alti_ice))
 env = bh.Environment(

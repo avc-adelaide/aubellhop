@@ -152,7 +152,7 @@ covp = [
 ]
 debug = [
     "install-dev",
-    "echo PWD: `pwd`; echo PATH: $PATH; python -c 'import bellhop; print(\"bellhop:\", bellhop.__file__)'"
+    "echo PWD: `pwd`; echo PATH: $PATH; python -c 'import aubellhop; print(\"bellhop:\", bellhop.__file__)'"
 ]
 
 [tool.hatch.build.targets.sdist]

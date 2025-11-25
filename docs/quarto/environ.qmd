@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py environment configuration"
+title: "AUBELLHOP environment configuration"
 format:
   html:
     code-fold: true
@@ -7,7 +7,7 @@ jupyter: python3
 ---
 
 Each Bellhop simulation is driven by its so-called environment configuration file.
-This is created by `bellhop.py` based on the setup of the respective `Environment` class.
+This is created by `aubellhop` based on the setup of the respective `Environment` class.
 
 This page outlines how to create, edit, and manage instances of the `Environment` class.
 The [environment parameters](environ-fields.qmd) page details each of the options available.
@@ -16,7 +16,7 @@ The [environment parameters](environ-fields.qmd) page details each of the option
 
 The Python front-end to Bellhop provides a "default" environment to allow quick setup for demonstration purposes:
 ```
-import bellhop as bh
+import aubellhop as bh
 env = bh.Environment()
 assert isinstance(env, Environment)
 ```
@@ -66,7 +66,7 @@ env['frequency'] = 500 # also okay
 ```
 Parameters can be queried in the same way:
 ```{python}
-import bellhop as bh
+import aubellhop as bh
 env = bh.Environment()
 
 env.frequency = 600

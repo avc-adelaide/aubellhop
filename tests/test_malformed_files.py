@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import os
 
 def test_malformed_ati_count_mismatch():

@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py 3D models"
+title: "AUBELLHOP: 3D models"
 format:
   html:
     code-fold: true
@@ -25,8 +25,8 @@ Bellhop3D differs from Bellhop (2D) in roughly four ways:
 
 Load Bellhop and check the standard models available out of the box:
 ```{python}
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 print(bh.Models.list())
 ```
 
@@ -59,8 +59,8 @@ print(output[1]['results'].iloc[1,:]['ray'])
 ### Minimal example 2D
 
 ```{python}
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env2d = bh.Environment(name="Example Bellhop2D",dimension="2D",beam_angle_min=-45,beam_angle_max=45).check()
 rays2d = bh.compute_eigenrays(env2d)
@@ -73,11 +73,11 @@ bhp.plot_rays(rays2d,env=env2d)
 Only a 2D projection can be plotted (essentially, y-axis ignored):
 
 ```{python}
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45).check()
-rays3d = bh.compute_eigenrays(env3d) 
+rays3d = bh.compute_eigenrays(env3d)
 bhp.plot_rays(rays3d,env=env3d)
 ```
 
@@ -86,8 +86,8 @@ bhp.plot_rays(rays3d,env=env3d)
 ### Minimal example 2D (matplotlib)
 
 ```{python}
-import bellhop as bh
-import bellhop.pyplot as bhp
+import aubellhop as bh
+import aubellhop.pyplot as bhp
 
 env2d = bh.Environment(name="Example Bellhop2D",dimension="2D",beam_angle_min=-45,beam_angle_max=45,beam_num=10_000).check()
 rays2d = bh.compute_eigenrays(env2d)
@@ -99,11 +99,11 @@ bhp.pyplot_rays(rays2d,env=env2d)
 
 ```{python}
 import matplotlib.pyplot as plt
-import bellhop as bh
-import bellhop.pyplot as bhp
+import aubellhop as bh
+import aubellhop.pyplot as bhp
 
 env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45,beam_num=10_000).check()
-rays3d = bh.compute_eigenrays(env3d) 
+rays3d = bh.compute_eigenrays(env3d)
 
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')

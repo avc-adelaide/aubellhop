@@ -1,4 +1,4 @@
-"""Computing wrappers for bellhop.py.
+"""Computing wrappers for aubellhop.
 
 These functions make use of the `Models` registry, selecting appropriate `BellhopSimulator` models (or loading explicitly request ones):
 
@@ -108,14 +108,14 @@ def compute(
     Examples
     --------
     Single task based on reading a complete `.env` file:
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment.from_file("...")
     >>> output = bh.compute(env)
     >>> assert output['task'] == "arrivals"
     >>> bh.plot_arrivals(output['results'])
 
     Multiple tasks:
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> output, ind_df = bh.compute(env,task=["arrivals", "eigenrays"])
     >>> bh.plot_arrivals(output[0]['results'])
@@ -182,7 +182,7 @@ def compute_arrivals(env: Environment, model: Any | None = None, debug: bool = F
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> arrivals = bh.compute_arrivals(env)
     >>> bh.plot_arrivals(arrivals)
@@ -218,7 +218,7 @@ def compute_eigenrays(env: Environment, source_depth_ndx: int = 0, receiver_dept
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> rays = bh.compute_eigenrays(env)
     >>> bh.plot_rays(rays, width=1000)
@@ -258,7 +258,7 @@ def compute_rays(env: Environment, source_depth_ndx: int = 0, model: Any | None 
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> rays = bh.compute_rays(env)
     >>> bh.plot_rays(rays, width=1000)
@@ -296,7 +296,7 @@ def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode:
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> tloss = bh.compute_transmission_loss(env, mode="incoherent")
     >>> bh.plot_transmission_loss(tloss, width=1000)
@@ -335,7 +335,7 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> arrivals = bh.compute_arrivals(env)
     >>> ir = bh.arrivals_to_impulse_response(arrivals, fs=192000)

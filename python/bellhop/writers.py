@@ -1,4 +1,4 @@
-"""File writing class methods for bellhop.py.
+"""File writing class methods for aubellhop.
 
 These files are the input files passed directly into the `bellhop(3d).exe` binaries.
 

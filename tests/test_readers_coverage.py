@@ -8,7 +8,7 @@ This test file specifically targets the previously uncovered lines in readers.py
 """
 
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import tempfile
 import os
 
@@ -134,7 +134,7 @@ def test_read_ssp_points_value_error_recovery():
         assert len(env['soundspeed']) == 2  # Two SSP points before 'A' line
 
         # The 'A' line should have been put back and processed as bottom boundary
-        from bellhop.constants import BHStrings
+        from aubellhop.constants import BHStrings
         assert env['bottom_boundary_condition'] == BHStrings.acousto_elastic  # 'A' maps to acousto_elastic
     finally:
         os.unlink(fname)

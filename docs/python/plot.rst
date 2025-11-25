@@ -7,18 +7,18 @@ Plotting Reference
 Plotting functions (bokeh)
 --------------------------
 
-.. automodule:: bellhop.plot
+.. automodule:: aubellhop.plot
    :members:
 
 Plotting utilities (bokeh)
 --------------------------
 
-.. automodule:: bellhop.plotutils
+.. automodule:: aubellhop.plotutils
    :members:
 
 Plotting functions (matplotlib)
 --------------------------------
 
-.. automodule:: bellhop.pyplot
+.. automodule:: aubellhop.pyplot
    :members:
 

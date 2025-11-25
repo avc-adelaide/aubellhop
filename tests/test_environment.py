@@ -1,6 +1,6 @@
 import pytest
-import bellhop as bh
-from bellhop.constants import EnvDefaults
+import aubellhop as bh
+from aubellhop.constants import EnvDefaults
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt

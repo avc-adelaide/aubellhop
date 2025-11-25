@@ -19,7 +19,7 @@ See the [compilation and installation guide](https://avc-adelaide.github.io/bell
 ## Documentation
 
 - [Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
-- [bellhop.py tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
+- [aubellhop tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
 - [Python API documentation](https://avc-adelaide.github.io/bellhoppe/media/python/)
 - [Github package repository](https://github.com/avc-adelaide/bellhoppe)
 - [PyPi package site](https://pypi.org/project/aubellhop/)

@@ -8,9 +8,9 @@ manual checking.
 
 import pytest
 import numpy as np
-import bellhop as bh
-from bellhop.environment import Environment
-from bellhop.constants import BHStrings
+import aubellhop as bh
+from aubellhop.environment import Environment
+from aubellhop.constants import BHStrings
 
 
 class TestEnvironmentValidation:

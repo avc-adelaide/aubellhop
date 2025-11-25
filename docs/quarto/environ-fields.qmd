@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py environment configuration options"
+title: "AUBELLHOP: environment configuration options"
 format:
   html:
     code-fold: true
@@ -7,7 +7,7 @@ jupyter: python3
 ---
 
 Each Bellhop simulation is driven by its so-called environment configuration file.
-This is created by `bellhop.py` based on the setup of the respective `Environment` class.
+This is created by `aubellhop` based on the setup of the respective `Environment` class.
 This page details each of the fields/options that can be set in the class.
 
 See the [environment configuration page](environ.qmd) for general methods of setting up the class.
@@ -49,7 +49,7 @@ and `2.0` in the cross range direction.
     simulation_cross_range_min: float
 ```
 For "degenerate" cases with bearing angle approaching zero
-and maximum cross range approaching zero, beams may 
+and maximum cross range approaching zero, beams may
 exit the simulation boundary due to numerical issues.
-The value calculated for the cross range extent may 
+The value calculated for the cross range extent may
 capped at a minimum. By default this is 10 m.

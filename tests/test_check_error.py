@@ -1,5 +1,5 @@
 """
-Tests for the _check_error() function in bellhop.py
+Tests for the _check_error() function in aubellhop.
 
 This module tests all three branches of the _check_error() function:
 1. FileNotFoundError handling when .prt file doesn't exist
@@ -11,7 +11,7 @@ import pytest
 import tempfile
 import os
 from pathlib import Path
-from bellhop.bellhop import BellhopSimulator
+from aubellhop.bellhop import aubellhopSimulator
 
 
 class TestCheckError:

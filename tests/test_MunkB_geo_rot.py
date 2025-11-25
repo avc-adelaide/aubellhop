@@ -1,6 +1,6 @@
 import pytest
-import bellhop as bh
-from bellhop.readers import read_shd
+import aubellhop as bh
+from aubellhop.readers import read_shd
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt

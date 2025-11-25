@@ -1,4 +1,4 @@
-"""The 'Model Registry' for bellhop.py to allow multiple BellhopSimulators to be run.
+"""The 'Model Registry' for aubellhop to allow multiple BellhopSimulators to be run.
 
 This model defines the class and then initialises it.
 As this is a utility class, the initialised class operates
@@ -15,7 +15,7 @@ from typing import Any
 
 from .constants import ModelDefaults
 from .environment import Environment
-from .bellhop import BellhopSimulator
+from .bellhop import aubellhopSimulator
 
 class Models:
     """Registry for BellhopSimulator models.

@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py computation options"
+title: "AUBELLHOP: computation options"
 format:
   html:
     code-fold: true
@@ -47,8 +47,8 @@ a feature to re-use data from prior runs (which would seem like it should).
 When more than one task is provided, the output data is returned as a list of dictionaries:
 
 ```{python}
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env = bh.Environment()
 output, _ = bh.compute(env,task=["eigenrays","arrivals"])
@@ -71,8 +71,8 @@ When undertaking sensitivity studies it is very common to run multiple Bellhop s
 The `compute()` function allows multiple environments to be passsed directly to do this automatically:
 
 ```{python}
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env1 = bh.Environment()
 env2 = env1.copy()
@@ -92,7 +92,7 @@ For researchers developing new Bellhop variants (for instance, [`bellhopcuda`](h
 This style of execution is harder to demonstrate in a minimal example, but would be constructed with an approach such as:
 
 ```{python}
-import bellhop as bh
+import aubellhop as bh
 import pandas.testing as pdt
 
 if "bellhopcuda" not in bh.Models.list():
@@ -113,8 +113,8 @@ Because the ordering is potentially uncertain, `compute`
 also returns a DataFrame of result indices:
 
 ```{python}
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 env = bh.Environment()
 output, ind_df = bh.compute(env,task=["arrivals", "eigenrays"])
 print(ind_df)

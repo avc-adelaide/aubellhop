@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import pandas as pd
 
 
@@ -14,5 +14,5 @@ def test_exe_fail():
 def test_exe_not_found():
     with pytest.raises(FileNotFoundError, match=r"Executable (.*) not found"):
         bh.bellhop.BellhopSimulator()._run_exe("tests/malformed_env/eof_ssp", debug=True, exe="bellhop_not_found.exe")
-    # note that bellhop.py would give a better error message when reading that .env file
+    # note that aubellhop would give a better error message when reading that .env file
 
