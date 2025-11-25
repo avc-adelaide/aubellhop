@@ -1,4 +1,4 @@
-"""Easy-to-use plotting utilities for bellhop.py based on `Bokeh <http://bokeh.pydata.org>`_."""
+"""Easy-to-use plotting utilities for aubellhop based on `Bokeh <http://bokeh.pydata.org>`_."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt

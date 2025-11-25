@@ -1,6 +1,6 @@
 """
     Test all 2D Bellhop examples from the acoustics toolbox and verify
-    that bellhop.py can read the .env files and produce the same results as
+    that aubellhop can read the .env files and produce the same results as
     running bellhop.exe directly.
 
     This is too slow to include in the standard test suite.
@@ -12,7 +12,7 @@ import time
 import csv
 import pytest
 import pandas.testing as pdt
-import bellhop as bh
+import aubellhop as bh
 import random
 
 # CSV file for timing and pass/fail results
@@ -101,7 +101,7 @@ at_files = [
     "examples/Ellipse/EllipseTLGB.env",
 #    "examples/Ellipse/EllipseTLGeom.env",
     "examples/Ellipse/Ellipse.env",
-#    "examples/SBCX/sbcx_Arr_bin.env", # binary arrivals not implemented in bellhop.py
+#    "examples/SBCX/sbcx_Arr_bin.env", # binary arrivals not implemented in aubellhop
 #    "examples/SBCX/sbcx_Arr_asc.env",
 #    "examples/SBCX/sbcx.env",
     "examples/Dickins/DickinsFlatB.env",

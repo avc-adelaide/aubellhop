@@ -1,4 +1,4 @@
-"""Plotting functions for bellhop.py.
+"""Plotting functions for aubellhop.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from .environment import Environment
 from .constants import BHStrings
 from .plotutils import figure as figure
 
-import bellhop.plotutils as _plt
+import aubellhop.plotutils as _plt
 
 
 def plot_env(env: Environment,
@@ -55,7 +55,7 @@ def plot_env(env: Environment,
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment(depth=[[0, 40], [100, 30], [500, 35], [700, 20], [1000,45]])
     >>> bh.plot_env(env)
     """
@@ -133,7 +133,7 @@ def plot_ssp(env: Environment, **kwargs: Any) -> None:
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment(soundspeed=[[ 0, 1540], [10, 1530], [20, 1532], [25, 1533], [30, 1535]])
     >>> bh.plot_ssp(env)
     """
@@ -172,7 +172,7 @@ def plot_arrivals(arrivals: Any, dB: bool = False, color: str = 'blue', **kwargs
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> arrivals = bh.compute_arrivals(env)
     >>> bh.plot_arrivals(arrivals)
@@ -217,7 +217,7 @@ def plot_rays(rays: pd.DataFrame, env: Environment | None = None, invert_colors:
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> rays = bh.compute_eigenrays(env)
     >>> bh.plot_rays(rays, width=1000)
@@ -269,7 +269,7 @@ def plot_transmission_loss(tloss: Any, env: Environment | None = None, **kwargs:
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> import numpy as np
     >>> env = bh.Environment(
             receiver_depth=np.arange(0, 25),

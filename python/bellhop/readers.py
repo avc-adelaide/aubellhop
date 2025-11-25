@@ -1,4 +1,4 @@
-"""Reader functions for bellhop.py.
+"""Reader functions for aubellhop.
 
 This file provides a collection of reading methods for both input
 and output Bellhop files.
@@ -13,7 +13,7 @@ interfaces are provided for these for the purposes of mix and matching data
 if desired.
 
 Finally, readers are also provides for output files for rays, arrivals, and
-binary shd files. Again, these are used automatically by `bellhop.py` after
+binary shd files. Again, these are used automatically by `aubellhop` after
 executing a computation, but public methods are provides to help with
 testing and verification.
 
@@ -29,8 +29,8 @@ from numpy.typing import NDArray
 
 import numpy as np
 import pandas as pd
-from bellhop.constants import BHStrings, FlagMaps, FileExt, MiscDefaults
-from bellhop.environment import Environment
+from aubellhop.constants import BHStrings, FlagMaps, FileExt, MiscDefaults
+from aubellhop.environment import Environment
 
 
 class EnvironmentReader:
@@ -425,7 +425,7 @@ def read_ssp(fname: str,
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> # Single-profile file
     >>> ssp1 = bh.read_ssp("single_profile.ssp")  # Returns numpy array
     >>> env = bh.Environment()
@@ -518,7 +518,7 @@ def read_ati_bty(fname: str) -> tuple[NDArray[np.float64], str]:
 
     **Examples:**
 
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> bty,bty_interp = bh.read_bty("tests/MunkB_geo_rot/MunkB_geo_rot.bty")
     >>> env = bh.Environment()
     >>> env["depth"] = bty
@@ -686,7 +686,7 @@ def read_refl_coeff(fname: str) -> NDArray[np.float64]:
 
     Examples
     --------
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> brc = bh.read_refl_coeff("tests/MunkB_geo_rot/MunkB_geo_rot.brc")
     >>> env = bh.Environment()
     >>> env["bottom_reflection_coefficient"] = brc

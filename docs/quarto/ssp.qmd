@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py sound speed profiles"
+title: "AUBELLHOP: sound speed profiles"
 format:
   html:
     code-fold: true
@@ -22,8 +22,8 @@ In this example, a constant depth is specified (although not used until Bellhop 
 #| label: fig-basic-ssp
 #| fig-cap: "Sound speed profile versus depth."
 
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 ssp = [[0, 1540], [10, 1530], [20, 1532], [25, 1533], [30, 1535]]
 env = bh.Environment(
@@ -44,8 +44,8 @@ Note that the visualisation of the sound speeds shown below is performed indepen
 #| fig-cap: "Sound speed profile versus depth."
 
 import pandas as pd
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 ssp = pd.DataFrame({
         'depth':[0, 10, 20, 30],
@@ -82,7 +82,7 @@ Note that the `A`, for "analytic", option is not provided, as this requires Fort
 ### Loading NOAA data
 
 Rather than cobble together artifical examples, we use the [data extracted from the NOAA World Ocean Atlas by Brian Dushaw](https://staff.washington.edu/dushaw/WOA/).
-The data has been included in the bellhop.py repository (it is not too large), and the code below adapted from Brian's Matlab examples.
+The data has been included in the `aubellhop` repository (it is not too large), and the code below adapted from Brian's Matlab examples.
 
 First of all load the data:
 
@@ -166,7 +166,7 @@ Finally, convert into a Pandas DataFrame and visualise one last time in this for
 
 ```{python}
 #| label: fig-ssp-2d-quad
-#| fig-cap: "Worldwide sound speed profile for constant longitude (NOAA World Ocean Atlas) — converted to distance for use by `bellhop.py`."
+#| fig-cap: "Worldwide sound speed profile for constant longitude (NOAA World Ocean Atlas) — converted to distance for use by `aubellhop.`."
 
 import pandas as pd
 
@@ -209,8 +209,8 @@ For a final check, plot families of SSP against range using the in-built plottin
 #| label: fig-ssp-quad
 #| fig-cap: "Sound profile visualisation in 2D."
 
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 svp.columns = distance_km * 1000.0
 env = bh.Environment(

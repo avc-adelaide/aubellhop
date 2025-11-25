@@ -10,7 +10,7 @@ Overview
 .. code-block:: text
 
    ┌───────────────────────────────────────────────┐
-   │ import bellhop as bh                          │
+   │ import aubellhop as bh                          │
    ├───────────────────────────────────────────────┤
    │ env = bh.Environment(...)                     │
    │    → create new Environment instance          │

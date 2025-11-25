@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py reading files"
+title: "AUBELLHOP reading files"
 format:
   html:
     code-fold: true
@@ -8,7 +8,7 @@ jupyter: python3
 
 ## File reading functions
 
-While `bellhop.py` takes care of all file reading and writing procedures internally,
+While `aubellhop` takes care of all file reading and writing procedures internally,
 it can be useful when dealing with legacy Bellhop files or for testing different engines
 to be able to directly read the various files used by Bellhop.
 
@@ -20,7 +20,7 @@ These fall into three classes:
 
 ### Reading environment files
 
-See [Bellhop.py environment configuration](environ.qmd) for full detail about the `Environment` class and its `.from_input()` class method.
+See [`aubellhop` environment configuration](environ.qmd) for full detail about the `Environment` class and its `.from_input()` class method.
 
 
 ### Reading input files
@@ -37,7 +37,7 @@ Transmission loss files are stored in binary `.shd` files.
 #| fig-cap: "Reading a `.shd` binary output file and plotting the results."
 
 import numpy as np
-from bellhop.readers import read_shd
+from aubellhop.readers import read_shd
 import matplotlib.pyplot as plt
 
 df = read_shd("../../tests/MunkB_geo_rot/MunkB_geo_rot.shd")

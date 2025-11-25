@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import numpy as np
 import pandas as pd
 import pandas.testing as pdt
@@ -68,7 +68,7 @@ def test_read_env_round_trip():
         fname_base = os.path.join(temp_dir, "test_env")
 
         # Create the Bellhop model and generate the env file
-        from bellhop.bellhop import BellhopSimulator
+        from aubellhop.bellhop import aubellhopSimulator
         model = BellhopSimulator()
         fname_base, fname = model._prepare_env_file(fname_base)
         task_flag = "R"

@@ -1,4 +1,4 @@
-"""Constants and defaults for bellhop.py.
+"""Constants and defaults for aubellhop.
 
 This file contains various dataclasses and wrapper classes for storing:
 

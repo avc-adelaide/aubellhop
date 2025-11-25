@@ -1,7 +1,7 @@
-import bellhop as bh
+import aubellhop as bh
 import numpy as np
-import bellhop.environment as _env
-from bellhop.constants import MiscDefaults
+import aubellhop.environment as _env
+from aubellhop.constants import MiscDefaults
 
 def test_negative_receiver_ranges():
     """Test that BELLHOP produces arrivals for negative receiver ranges."""

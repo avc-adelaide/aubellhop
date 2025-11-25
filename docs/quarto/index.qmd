@@ -1,5 +1,5 @@
 ---
-title: "Bellhop.py tutorials"
+title: "AUBELLHOP tutorials"
 format:
   html:
     code-fold: true

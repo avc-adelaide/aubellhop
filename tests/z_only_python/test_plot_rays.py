@@ -1,6 +1,6 @@
 import pytest
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 import numpy as np
 import bokeh.plotting
 import os

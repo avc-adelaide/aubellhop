@@ -12,18 +12,18 @@ from pathlib import Path
 def test_import():
     """Test that bellhop can be imported."""
     try:
-        import bellhop
+        import aubellhop
         print("✓ bellhop imported successfully")
         return True
     except ImportError as e:
-        print(f"✗ Failed to import bellhop: {e}")
+        print(f"✗ Failed to import aubellhop: {e}")
         return False
 
 
 def test_executables():
     """Test that executables can be found."""
     try:
-        from bellhop.bellhop import _find_executable
+        from aubellhop.bellhop import _find_executable
         
         bellhop_exe = _find_executable('bellhop.exe')
         bellhop3d_exe = _find_executable('bellhop3d.exe')
@@ -57,7 +57,7 @@ def test_executables():
 def test_models():
     """Test that models can be loaded."""
     try:
-        from bellhop.models import Models
+        from aubellhop.models import Models
         
         model = Models.get('bellhop')
         if not model.supports():

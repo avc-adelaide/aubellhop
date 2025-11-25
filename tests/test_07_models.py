@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import numpy as np
 
 def test_models():

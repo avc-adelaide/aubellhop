@@ -1,4 +1,4 @@
-"""Environment configuration for bellhop.py.
+"""Environment configuration for aubellhop.
 
 This module provides dataclass-based environment configuration with automatic validation,
 replacing manual option checking with field validators.
@@ -51,14 +51,14 @@ class Environment(MutableMapping[str, Any]):
 
     To see all the parameters available and their default values:
 
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment()
     >>> print(env)
 
     The environment parameters may be changed by passing keyword arguments
     or modified later using dictionary notation:
 
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment(depth=40, soundspeed=1540)
     >>> print(env)
     >>> env.depth = 25
@@ -68,13 +68,13 @@ class Environment(MutableMapping[str, Any]):
     The default environment has a constant sound speed.
     A depth dependent sound speed profile be provided as a Nx2 array of (depth, sound speed):
 
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment(depth=20,
     >>>         soundspeed=[[0,1540], [5,1535], [10,1535], [20,1530]])
 
     A range-and-depth dependent sound speed profile can be provided as a Pandas frame:
 
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> import pandas as pd
     >>> ssp2 = pd.DataFrame({
     >>>       0: [1540, 1530, 1532, 1533],     # profile at 0 m range
@@ -86,7 +86,7 @@ class Environment(MutableMapping[str, Any]):
     The default environment has a constant water depth. A range dependent bathymetry
     can be provided as a Nx2 array of (range, water depth):
 
-    >>> import bellhop as bh
+    >>> import aubellhop as bh
     >>> env = bh.Environment(depth=[[0,20], [300,10], [500,18], [1000,15]])
     """
 
@@ -218,7 +218,7 @@ class Environment(MutableMapping[str, Any]):
     @classmethod
     def from_file(cls, fname: str) -> "Environment":
         """Create an Environment from an .env file."""
-        from bellhop.readers import EnvironmentReader
+        from aubellhop.readers import EnvironmentReader
         env = EnvironmentReader(cls(), fname).read()
         env._from_file = fname
         return env
@@ -253,7 +253,7 @@ class Environment(MutableMapping[str, Any]):
             Task string which defines the computation to run
 
         """
-        from bellhop.writers import EnvironmentWriter
+        from aubellhop.writers import EnvironmentWriter
         EnvironmentWriter(self, fh, fname_base, taskcode).write()
 
     ############# SMALL METHODS ################
@@ -535,7 +535,7 @@ class Environment(MutableMapping[str, Any]):
                     new_row,                             # new row
                 ])
             self['soundspeed'].index = prev_ind + [self['_depth_max']]
-            warnings.warn("Bellhop.py has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
+            warnings.warn("aubellhop has used linear interpolation to ensure the sound speed profile ends at the max depth. Ensure this is what you want.", UserWarning)
         # TODO: check soundspeed range limits
 
     def _check_env_source(self) -> None:

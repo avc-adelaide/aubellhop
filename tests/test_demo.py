@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 import os
 import tempfile
 
@@ -39,7 +39,7 @@ def test_demo_runs():
             with open("bellhop_demo.py", 'r') as f:
                 content = f.read()
                 assert len(content) > 0
-                assert "import bellhop" in content
+                assert "import aubellhop" in content
                 assert "compute_arrivals" in content
                 
     finally:

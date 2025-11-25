@@ -1,5 +1,5 @@
 import pytest
-import bellhop as bh
+import aubellhop as bh
 
 def test_grain_read_data():
     """Test using a Bellhop example that ENV file parameters are being picked up properly.

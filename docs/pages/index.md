@@ -32,8 +32,8 @@ executable, being able to use the binary directly is recommended for debugging p
 
 A modern [Python interface](media/python/index.html) is provided in this package. Basic usage:
 ```
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env = bh.Environment() # create a default example environment
 arr = bh.compute_arrivals(env)
@@ -43,8 +43,8 @@ This approach uses a modern Python interface for specifying parameters and execu
 
 The Python interface also allows reading input files directly:
 ```
-import bellhop as bh
-import bellhop.plot as bhp
+import aubellhop as bh
+import aubellhop.plot as bhp
 
 env = bh.Environment.from_file("tests/MunkB_geo_rot/MunkB_geo_rot.env")
 tl = bh.compute_transmission_loss(env)
