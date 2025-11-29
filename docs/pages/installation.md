@@ -172,4 +172,4 @@ The resulting coverage report is saved to `docs/coverage-index.html`.
 
 ## Running
 
-Now that you've got this far, head over the to the **[BELLHOP Documentation](https://avc-adelaide.github.io/bellhoppe/)** to find out more about what the code can do.
+Now that you've got this far, head over the to the **[BELLHOP Documentation](https://avc-adelaide.github.io/aubellhop/)** to find out more about what the code can do.
