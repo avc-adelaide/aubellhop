@@ -20,7 +20,7 @@ Overview
 Environment class
 -----------------
 
-.. automodule:: bellhop.environment
+.. automodule:: aubellhop.environment
    :members:
    :undoc-members:
    :show-inheritance:

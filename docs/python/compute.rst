@@ -23,7 +23,7 @@ Overview
 Compute submodel
 -----------------
 
-.. automodule:: bellhop.compute
+.. automodule:: aubellhop.compute
    :members:
 
 

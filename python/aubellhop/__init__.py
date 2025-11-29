@@ -3,6 +3,9 @@
 
 from . import main
 
+from importlib.metadata import version
+__version__ = version("aubellhop")
+
 __all__ = main.__all__
 globals().update({name: getattr(main, name) for name in __all__})
 

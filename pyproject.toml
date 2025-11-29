@@ -107,7 +107,7 @@ directory = "_coverage_python"
 ####### HATCH #######
 
 [tool.hatch.build.targets.wheel]
-packages = ["bellhop","python/bellhop"]
+packages = ["aubellhop","python/aubellhop"]
 
 [tool.hatch.build]
 sources = [".", "python"]
@@ -152,7 +152,7 @@ covp = [
 ]
 debug = [
     "install-dev",
-    "echo PWD: `pwd`; echo PATH: $PATH; python -c 'import aubellhop; print(\"bellhop:\", bellhop.__file__)'"
+    "echo PWD: `pwd`; echo PATH: $PATH; python -c 'import aubellhop; print(\"bellhop:\", aubellhop.__file__, aubellhop.__version__)'"
 ]
 
 [tool.hatch.build.targets.sdist]
@@ -172,7 +172,7 @@ py-modules = []
 
 [tool.setuptools.packages.find]
 where = ["python"]
-include = ["bellhop*"]
+include = ["aubellhop*"]
 namespaces = false
 
 [tool.setuptools.package-data]
