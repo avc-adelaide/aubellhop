@@ -43,11 +43,8 @@ Changelog = "https://github.com/avc-adelaide/aubellhop/blob/master/CHANGES.md"
 ####### BUILD #######
 
 [build-system]
-requires = ["setuptools>=61.0", "wheel", "setuptools_scm"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
-write_to = "python/aubellhop/_version.py"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 ####### RUFF #######
 
@@ -106,11 +103,37 @@ directory = "_coverage_python"
 
 ####### HATCH #######
 
-[tool.hatch.build.targets.wheel]
-packages = ["aubellhop","python/aubellhop"]
+# Version from git tags using hatch-vcs
+[tool.hatch.version]
+source = "vcs"
 
-[tool.hatch.build]
-sources = [".", "python"]
+[tool.hatch.build.hooks.vcs]
+version-file = "python/aubellhop/_version.py"
+
+# Wheel build configuration
+[tool.hatch.build.targets.wheel]
+packages = ["python/aubellhop"]
+artifacts = ["python/aubellhop/bin/*"]
+
+# Source distribution configuration
+[tool.hatch.build.targets.sdist]
+include = [
+  "/python/aubellhop/**/*.py",
+  "/fortran/*.f90",
+  "/fortran/Makefile",
+  "/Makefile",
+  "/LICENSE",
+  "/README.md",
+  "/tests/**/*.py",
+]
+exclude = [
+  "/docs",
+  "/.github",
+  "/examples",
+  "/Matlab",
+  "**/__pycache__",
+  "**/*.pyc",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -154,27 +177,4 @@ debug = [
     "install-dev",
     "echo PWD: `pwd`; echo PATH: $PATH; python -c 'import aubellhop; print(\"bellhop:\", aubellhop.__file__, aubellhop.__version__)'"
 ]
-
-[tool.hatch.build.targets.sdist]
-ignore-vcs = true
-include = [
-  "/tests/*.py",
-]
-exclude = [
-  "/docs/*",
-]
-
-
-####### SETUPTOOLS #######
-
-[tool.setuptools]
-py-modules = []
-
-[tool.setuptools.packages.find]
-where = ["python"]
-include = ["aubellhop*"]
-namespaces = false
-
-[tool.setuptools.package-data]
-aubellhop = ["bin/*"]
 

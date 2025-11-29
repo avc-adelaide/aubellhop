@@ -76,7 +76,8 @@ export LDFLAGS
 
 .PHONY: all build install clean test doc docs cov lint \
         coverage-clean coverage-build coverage-install coverage-test \
-        coverage-report coverage-html coverage-full
+        coverage-report coverage-html coverage-full \
+        dist dist-sdist dist-wheel dist-clean
 
 all: build install wheel
 
@@ -126,6 +127,11 @@ help:
 	@echo "    [all] - default — build binaries"
 	@echo "    clean - remove all temporary files"
 	@echo "  install - copy built binaries into ./bin"
+	@echo "                                    "
+	@echo "  PACKAGING"
+	@echo "dist-sdist - build source distribution with hatch"
+	@echo "dist-wheel - build wheel with hatch"
+	@echo "     dist  - build both sdist and wheel with hatch"
 	@echo "                                    "
 	@echo "  CODE CHECKING"
 	@echo "     test - run test suite"
@@ -299,3 +305,21 @@ push: gitokay gitclean lint test
 	@echo "========================================="
 	git clean -fx
 	git pull && git push
+
+###### PACKAGING ######
+
+dist-sdist:
+	@echo "Building source distribution with hatch..."
+	hatch build --target sdist
+
+dist-wheel: wheel
+	@echo "Building wheel with hatch..."
+	hatch build --target wheel
+
+dist: wheel
+	@echo "Building sdist and wheel with hatch..."
+	hatch build
+
+dist-clean:
+	@echo "Cleaning distribution files..."
+	rm -rf dist/

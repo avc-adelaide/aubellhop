@@ -149,13 +149,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install build dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install build
+      - name: Install hatch
+        run: pipx install hatch
 
       - name: Build sdist
-        run: python -m build --sdist
+        run: hatch build --target sdist
 
       - name: Upload sdist
         uses: actions/upload-artifact@v4
