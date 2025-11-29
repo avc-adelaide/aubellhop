@@ -77,7 +77,7 @@ ignore_missing_imports = true
 ####### COVERAGE #######
 
 [tool.coverage.run]
-source = ["python/bellhop"]
+source = ["python/aubellhop"]
 omit = [
     "*/tests/*",
     "*/test_*",
@@ -176,5 +176,5 @@ include = ["aubellhop*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-bellhop = ["bin/*"]
+aubellhop = ["bin/*"]
 
