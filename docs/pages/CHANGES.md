@@ -2,6 +2,12 @@
 title: AUBELLHOP CHANGELOG
 ---
 
+## [0.1.6] - 2025-11-29
+
+* Add code signing for macOS to avoid overly fussy security features from killing the executable
+* Due to naming conflict with another unrelated `bellhop.py`, rename repo and package to `aubellhop`
+
+
 ## [0.1.5] - 2025-11-21
 
 * Intermediate releases mostly just debugging how to get everything reliably into PyPi
