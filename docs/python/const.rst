@@ -4,5 +4,5 @@ Internal constants
 Internal constants
 ------------------
 
-.. automodule:: bellhop.constants
+.. automodule:: aubellhop.constants
    :private-members:

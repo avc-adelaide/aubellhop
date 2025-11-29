@@ -3,6 +3,7 @@
 # This is the new Bellhop Makefile #
 ####################################
 
+PKGNAME = aubellhop
 
 ####### Executables ######
 
@@ -101,8 +102,8 @@ install: all
 	@echo "***************************************"
 
 wheel: install
-	mkdir -p python/bellhop/bin
-	cp bin/*.exe python/bellhop/bin
+	mkdir -p python/$(PKGNAME)/bin
+	cp bin/*.exe python/$(PKGNAME)/bin
 
 clean: coverage-clean
 	-rm -f bin/*.exe
@@ -175,11 +176,11 @@ lint: lintp typep lintf
 
 lintp:
 	@echo "Linting with RUFF..."
-	ruff check python/bellhop/
+	ruff check python/$(PKGNAME)/
 
 typep:
 	@echo "Type checking with TY..."
-	uvx ty check python/bellhop --exclude python/bellhop/plotutils.py
+	uvx ty check python/$(PKGNAME) --exclude python/$(PKGNAME)/plotutils.py
 
 lintf:
 	@echo "Linting fortran with FORTITUDE..."

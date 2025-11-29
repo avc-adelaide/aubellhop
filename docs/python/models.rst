@@ -26,7 +26,7 @@ Overview
 Models class
 -----------------
 
-.. automodule:: bellhop.models
+.. automodule:: aubellhop.models
    :members:
 
 
