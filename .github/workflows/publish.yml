@@ -80,10 +80,10 @@ jobs:
             cp312-* cp313-* cp314-*
           CIBW_SKIP: "*-win32 *-win_arm64"
           CIBW_BEFORE_BUILD_WINDOWS: |
-            C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc make"
+            C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc make && cd {project} && make clean && make && make install && make wheel"
           CIBW_ENVIRONMENT_WINDOWS: >
             PATH="C:\\msys64\\mingw64\\bin;C:\\msys64\\usr\\bin;$PATH"
-          CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
+          CIBW_TEST_COMMAND: python -c "import aubellhop; print('aubellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
 
@@ -99,6 +99,7 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: 15.0
           CIBW_BEFORE_BUILD_LINUX: |
               yum install -y gcc-gfortran || apk add --no-cache gfortran || (apt-get update && apt-get install -y gfortran) || true
+              cd {project} && make clean && make && make install && make wheel
           CIBW_BEFORE_BUILD_MACOS: |
               # Get the macOS SDK version used by Homebrew GCC
               SDK_VER=$(xcrun --show-sdk-version)
@@ -114,7 +115,10 @@ jobs:
               which gfortran
               gfortran --version
 
-              for BIN_PATH in python/bellhop/bin/bellhop.exe python/bellhop/bin/bellhop3d.exe; do
+              # Build Fortran binaries
+              cd {project} && make clean && make && make install && make wheel
+
+              for BIN_PATH in python/aubellhop/bin/bellhop.exe python/aubellhop/bin/bellhop3d.exe; do
                   if [ -f "$BIN_PATH" ]; then
                       echo "Ad-hoc signing $BIN_PATH for macOS..."
                       codesign --force --sign - "$BIN_PATH"
@@ -123,7 +127,7 @@ jobs:
                       echo "Warning: $BIN_PATH not found, skipping codesign"
                   fi
               done
-          CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
+          CIBW_TEST_COMMAND: python -c "import aubellhop; print('aubellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
 
