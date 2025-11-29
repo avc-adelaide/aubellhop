@@ -1,8 +1,8 @@
 # The BELLHOP underwater acoustics ray tracing tool
 
 [![PyPI](https://img.shields.io/pypi/v/aubellhop)](https://pypi.org/project/aubellhop/)
-[![Test Suite](https://github.com/avc-adelaide/bellhoppe/actions/workflows/check.yml/badge.svg)](https://github.com/avc-adelaide/bellhop/actions/workflows/check.yml)
-[![Code Lint](https://github.com/avc-adelaide/bellhoppe/actions/workflows/lint.yml/badge.svg)](https://github.com/avc-adelaide/bellhoppe/actions/workflows/lint.yml)
+[![Test Suite](https://github.com/avc-adelaide/aubellhop/actions/workflows/check.yml/badge.svg)](https://github.com/avc-adelaide/bellhop/actions/workflows/check.yml)
+[![Code Lint](https://github.com/avc-adelaide/aubellhop/actions/workflows/lint.yml/badge.svg)](https://github.com/avc-adelaide/aubellhop/actions/workflows/lint.yml)
 
 ## Installation
 
@@ -14,14 +14,14 @@ pip install aubellhop
 
 This includes pre-built Fortran executables for Linux, macOS, and Windows, so you don't need to compile anything yourself.
 
-See the [compilation and installation guide](https://avc-adelaide.github.io/bellhoppe/page/installation.html) for building from source if you wish to edit the code or the prebuilt binaries don't work for you.
+See the [compilation and installation guide](https://avc-adelaide.github.io/aubellhop/page/installation.html) for building from source if you wish to edit the code or the prebuilt binaries don't work for you.
 
 ## Documentation
 
-- [Bellhop documentation](https://avc-adelaide.github.io/bellhoppe/)
-- [aubellhop tutorials](https://avc-adelaide.github.io/bellhoppe/media/quarto/index.html)
-- [Python API documentation](https://avc-adelaide.github.io/bellhoppe/media/python/)
-- [Github package repository](https://github.com/avc-adelaide/bellhoppe)
+- [Bellhop documentation](https://avc-adelaide.github.io/aubellhop/)
+- [aubellhop tutorials](https://avc-adelaide.github.io/aubellhop/media/quarto/index.html)
+- [Python API documentation](https://avc-adelaide.github.io/aubellhop/media/python/)
+- [Github package repository](https://github.com/avc-adelaide/aubellhop)
 - [PyPi package site](https://pypi.org/project/aubellhop/)
 
 

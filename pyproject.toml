@@ -34,11 +34,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/avc-adelaide/bellhoppe"
-Documentation = "https://avc-adelaide.github.io/bellhoppe/"
-Repository = "https://github.com/avc-adelaide/bellhoppe.git"
-Issues = "https://github.com/avc-adelaide/bellhoppe/issues"
-Changelog = "https://github.com/avc-adelaide/bellhoppe/blob/master/CHANGES.md"
+Homepage = "https://github.com/avc-adelaide/aubellhop"
+Documentation = "https://avc-adelaide.github.io/aubellhop/"
+Repository = "https://github.com/avc-adelaide/aubellhop.git"
+Issues = "https://github.com/avc-adelaide/aubellhop/issues"
+Changelog = "https://github.com/avc-adelaide/aubellhop/blob/master/CHANGES.md"
 
 ####### BUILD #######
 
