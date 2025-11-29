@@ -152,8 +152,8 @@ class BellhopSimulator:
         """
         pkg_name = (__package__ or "unknown").split(".")[0]
         try:
-            pkg_bin = files(pkg_name).joinpath("bin", exe_name)
-            if pkg_bin.is_file() and os.access(pkg_bin, os.X_OK):
+            pkg_bin = files(pkg_name) / "bin" / exe_name
+            if pkg_bin.is_file():
                 return str(pkg_bin)
         except Exception:
             pass
