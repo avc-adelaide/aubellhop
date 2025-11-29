@@ -12,7 +12,7 @@ Main interfaces
    flowchart TD
        A["bh.Models<br/>Registry of models"]
        B["bh.Models.new(...)<br/>create new model"]
-       C["bh.Models.list()<br/>list all models"]
+       C["bh.Models.supported()<br/>list all models"]
        D["env = bh.Environment()<br/>create Environment instance"]
        E["bh.compute(env, ...)<br/>run with default model"]
 

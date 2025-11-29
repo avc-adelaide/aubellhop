@@ -18,7 +18,7 @@ Overview
    │ bh.Models.new(name="...")                     │
    │    → create new model                         │
    │                                               │
-   │ bh.Models.list()                              │
+   │ bh.Models.supported()                         │
    │    → list all models                          │
    └───────────────────────────────────────────────┘
 
