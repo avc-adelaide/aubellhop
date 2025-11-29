@@ -95,7 +95,7 @@ This style of execution is harder to demonstrate in a minimal example, but would
 import aubellhop as bh
 import pandas.testing as pdt
 
-if "bellhopcuda" not in bh.Models.list():
+if "bellhopcuda" not in bh.Models.supported():
     bh.Models.new(name="bellhopcuda",exe="bellhop.exe") # in reality you would of course have a separate binary
 
 env = bh.Environment()

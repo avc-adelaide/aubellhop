@@ -27,7 +27,7 @@ Load Bellhop and check the standard models available out of the box:
 ```{python}
 import aubellhop as bh
 import aubellhop.plot as bhp
-print(bh.Models.list())
+print(bh.Models.supported())
 ```
 
 Now define a standard 2D and 3D case and do some computations on them:

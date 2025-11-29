@@ -11,7 +11,7 @@ See file `bellhop.py` for the class definition of `BellhopSimulator`.
 
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any
 
 from .constants import ModelDefaults
 from .environment import Environment
@@ -24,7 +24,7 @@ class Models:
     of defined models.
     """
 
-    _models: List[BellhopSimulator] = []  # class-level storage for all models
+    _models: list[BellhopSimulator] = []  # class-level storage for all models
 
     @classmethod
     def init(cls) -> None:
@@ -61,7 +61,7 @@ class Models:
         return model
 
     @classmethod
-    def list(cls, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> List[str]:
+    def supported(cls, env: Environment | None = None, task: str | None = None, dim: int | None = None) -> list[str]:
         """List available models by name, maybe narrowed by env, task, and/or dimension."""
         if env is not None:
             env.check()
@@ -118,7 +118,7 @@ class Models:
         """
         if model is not None:
             return cls.get(model)
-        models = cls.list(env=env, task=task, dim=env._dimension)
+        models = cls.supported(env=env, task=task, dim=env._dimension)
         if debug:
             print(f'Models found: {models}')
         if len(models) > 0:
