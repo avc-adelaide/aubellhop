@@ -3,18 +3,22 @@
 import os
 import sys
 
+from aubellhop import __version__
+
 # Add Python package path
 conf_dir = os.path.dirname(__file__)
-package_dir = os.path.abspath(os.path.join(conf_dir, '../bellhop'))
+project_root = os.path.abspath(os.path.join(conf_dir, "..", ".."))
+sys.path.insert(0, project_root)
 
 # Add custom extensions directory
 sys.path.insert(0, os.path.abspath('_ext'))
 
 # -- Project information -----------------------------------------------------
-project = 'BELLHOP Python API'
-copyright = '2025, Will Robertson, Mandar Chitre'
+project = 'AUBELLHOP: Python wrapper and driver for Bellhop'
+copyright = '2025 Will Robertson'
 author = 'Will Robertson, Mandar Chitre'
-release = '0.1'
+release = __version__
+version = __version__
 
 # -- General configuration ---------------------------------------------------
 extensions = [
