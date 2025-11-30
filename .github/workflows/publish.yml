@@ -114,7 +114,7 @@ jobs:
               which gfortran
               gfortran --version
 
-              for BIN_PATH in python/bellhop/bin/bellhop.exe python/bellhop/bin/bellhop3d.exe; do
+              for BIN_PATH in python/aubellhop/bin/bellhop.exe python/aubellhop/bin/bellhop3d.exe; do
                   if [ -f "$BIN_PATH" ]; then
                       echo "Ad-hoc signing $BIN_PATH for macOS..."
                       codesign --force --sign - "$BIN_PATH"
@@ -183,3 +183,5 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true

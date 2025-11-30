@@ -23,7 +23,7 @@ class FortranBuildExt(build_ext):
         # Get the root directory
         root_dir = Path(__file__).parent.absolute()
         fortran_dir = root_dir / "fortran"
-        
+
         # Check for gfortran (including versioned variants on macOS)
         gfortran_path = shutil.which("gfortran")
         if gfortran_path is None:
@@ -33,7 +33,7 @@ class FortranBuildExt(build_ext):
                 gfortran_path = shutil.which(versioned_gfortran)
                 if gfortran_path is not None:
                     break
-        
+
         if gfortran_path is None:
             raise RuntimeError(
                 "gfortran compiler not found. Please install gfortran to build this package.\n"
@@ -41,11 +41,11 @@ class FortranBuildExt(build_ext):
                 "On macOS with Homebrew: brew install gcc\n"
                 "On Windows with MSYS2: pacman -S mingw-w64-x86_64-gcc-fortran"
             )
-        
+
         # Set FC environment variable for make
         build_env = os.environ.copy()
         build_env['FC'] = os.path.basename(gfortran_path)
-        
+
         # Build using the Makefile
         print("Building Fortran executables...")
         print(f"Using Fortran compiler: {gfortran_path}")
@@ -55,31 +55,31 @@ class FortranBuildExt(build_ext):
             subprocess.check_call(["make", "install"], cwd=root_dir, env=build_env)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to build Fortran executables: {e}")
-        
+
         # Verify binaries were created
         bin_dir = root_dir / "bin"
         bellhop_exe = bin_dir / "bellhop.exe"
         bellhop3d_exe = bin_dir / "bellhop3d.exe"
-        
+
         if not bellhop_exe.exists() or not bellhop3d_exe.exists():
             raise RuntimeError(
                 f"Failed to create executables. Expected files:\n"
                 f"  {bellhop_exe}\n"
                 f"  {bellhop3d_exe}"
             )
-        
+
         # Copy binaries to the package directory
-        package_dir = Path(self.build_lib) / "bellhop" / "bin"
+        package_dir = Path(self.build_lib) / "aubellhop" / "bin"
         package_dir.mkdir(parents=True, exist_ok=True)
-        
+
         print(f"Copying executables to {package_dir}...")
         shutil.copy2(bellhop_exe, package_dir / "bellhop.exe")
         shutil.copy2(bellhop3d_exe, package_dir / "bellhop3d.exe")
-        
+
         # Make them executable
         (package_dir / "bellhop.exe").chmod(0o755)
         (package_dir / "bellhop3d.exe").chmod(0o755)
-        
+
         print("Fortran executables built and copied successfully.")
 
 
