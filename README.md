@@ -21,6 +21,7 @@ See the [compilation and installation guide](https://avc-adelaide.github.io/aube
 - [Bellhop documentation](https://avc-adelaide.github.io/aubellhop/)
 - [aubellhop tutorials](https://avc-adelaide.github.io/aubellhop/media/quarto/index.html)
 - [Python API documentation](https://avc-adelaide.github.io/aubellhop/media/python/)
+- [Changelog](https://avc-adelaide.github.io/aubellhop/page/CHANGES.html)
 - [Github package repository](https://github.com/avc-adelaide/aubellhop)
 - [PyPi package site](https://pypi.org/project/aubellhop/)
 
