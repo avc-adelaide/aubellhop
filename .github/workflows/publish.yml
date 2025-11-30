@@ -83,8 +83,8 @@ jobs:
             C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-x86_64-gcc-fortran mingw-w64-x86_64-gcc make"
           CIBW_ENVIRONMENT_WINDOWS: >
             PATH="C:\\msys64\\mingw64\\bin;C:\\msys64\\usr\\bin;$PATH"
-          CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
-          CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
+          CIBW_TEST_COMMAND: python -c "import aubellhop as bh; bh.demo(); print('bellhop imported successfully')"
+          CIBW_TEST_REQUIRES: numpy scipy pandas
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
 
       - name: Build wheels (Linux or macOS)
@@ -123,7 +123,7 @@ jobs:
                       echo "Warning: $BIN_PATH not found, skipping codesign"
                   fi
               done
-          CIBW_TEST_COMMAND: python -c "import bellhop; print('bellhop imported successfully')"
+          CIBW_TEST_COMMAND: python -c "import aubellhop as bh; bh.demo(); print('bellhop imported successfully')"
           CIBW_TEST_REQUIRES: numpy scipy pandas matplotlib
           CIBW_TEST_SKIP: "*-macosx_arm64 *-macosx_universal2"
 
