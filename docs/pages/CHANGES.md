@@ -2,6 +2,17 @@
 title: AUBELLHOP CHANGELOG
 ---
 
+## [0.1.8] - 2025-11-30
+
+* Really fix the wheel building process to omit unnecessary files.
+* (I would like to switch from `setuptools` to `hatch` or `uv` but all in good time.)
+
+
+## [0.1.7] - 2025-11-29
+
+* Try to fix the wheel building process to omit unnecessary files, keeping the installation small.
+
+
 ## [0.1.6] - 2025-11-29
 
 * Add code signing for macOS to avoid overly fussy security features from killing the executable
