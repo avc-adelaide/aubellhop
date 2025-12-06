@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import MutableMapping
 from dataclasses import dataclass, fields
-from typing import Any, Dict, Iterator, TextIO, Self, Callable
+from typing import Any, Iterator, TextIO, Self, Callable
 
 from pprint import pformat
 import warnings
@@ -225,7 +225,7 @@ class Environment(MutableMapping[str, Any]):
 
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Environment':
+    def from_dict(cls, data: dict[str, Any]) -> "Environment":
         """Create Environment from dictionary.
 
         Unlike `Environment(**data)`, unknown fields are ignored (with a warning message)."""
@@ -272,7 +272,7 @@ class Environment(MutableMapping[str, Any]):
                 setattr(self, f.name, getattr(EnvDefaults(), f.name))
         return self
 
-    def to_dict(self) -> Dict[str,Any]:
+    def to_dict(self) -> dict[str,Any]:
         """Return a dictionary representation of the environment."""
         from dataclasses import asdict
         return asdict(self)
