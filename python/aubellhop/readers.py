@@ -1015,8 +1015,10 @@ class BellhopOutputReader:
                                 'receiver_depth': [receiver_depth[k]],
                                 'receiver_range': [receiver_range[m]],
                                 'arrival_number': [n],
-                                # 'arrival_amplitude': [data[0]*np.exp(1j * data[1]* np.pi/180)],
-                                'arrival_amplitude': [data[0] * np.exp( -1j * (np.deg2rad(data[1]) + freq[0] * 2 * np.pi * (data[3] * 1j +  data[2])))],
+                                # same convention as the Fortran field sum: A * exp(-i * (omega * delay - phase))
+                                'arrival_amplitude': [data[0] * np.exp(-1j * (freq[0] * 2 * np.pi * (data[2] + 1j * data[3])
+                                                                              - np.deg2rad(data[1])))],
+                                'arrival_phase': [data[1]],
                                 'time_of_arrival': [data[2]],
                                 'complex_time_of_arrival': [data[2] + 1j*data[3]],
                                 'angle_of_departure': [data[4]],

@@ -337,7 +337,7 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
     Parameters
     ----------
     arrivals : pandas.DataFrame
-        Arrivals times (s) and coefficients
+        Arrivals times (s) and coefficients for a single source/receiver pair
     fs : float
         Sampling rate (Hz)
     abs_time : bool, default=False
@@ -353,6 +353,15 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
     If `abs_time` is set to True, the impulse response is placed such that
     the zero time corresponds to the time of transmission of signal.
 
+    Each arrival contributes a tap of ``A * exp(i * phase)`` at its delay; the
+    carrier phase ``exp(-i * omega * delay)`` is not included since the delay is
+    represented by the tap position. Attenuation from the imaginary part of the
+    delay is included, evaluated at the simulation frequency. Arrivals that fall
+    in the same sample are summed.
+
+    If the arrivals cover more than one source or receiver, select one pair first,
+    e.g. ``arrivals[(arrivals.receiver_depth_ndx == 0) & (arrivals.receiver_range_ndx == 0)]``.
+
     Examples
     --------
     >>> import aubellhop as bh
@@ -360,10 +369,15 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
     >>> arrivals = bh.compute_arrivals(env)
     >>> ir = bh.arrivals_to_impulse_response(arrivals, fs=192000)
     """
-    t0 = 0 if abs_time else min(arrivals.time_of_arrival)
-    irlen = int(np.ceil((max(arrivals.time_of_arrival)-t0)*fs))+1
-    ir = np.zeros(irlen, dtype=np.complex128)
-    for _, row in arrivals.iterrows():
-        ndx = int(np.round((row.time_of_arrival.real-t0)*fs))
-        ir[ndx] = row.arrival_amplitude
+    pair_cols = [c for c in ('source_depth_ndx', 'receiver_depth_ndx', 'receiver_range_ndx') if c in arrivals.columns]
+    if pair_cols and len(arrivals[pair_cols].drop_duplicates()) > 1:
+        raise ValueError("Arrivals contain more than one source/receiver pair; select a single pair first")
+    t = np.real(np.asarray(arrivals.time_of_arrival, dtype=np.complex128))
+    amp = np.asarray(arrivals.arrival_amplitude, dtype=np.complex128)
+    if 'arrival_phase' in arrivals.columns:
+        amp = np.abs(amp) * np.exp(1j * np.deg2rad(np.asarray(arrivals.arrival_phase, dtype=np.float64)))
+    t0 = 0 if abs_time else np.min(t)
+    ndx = np.round((t - t0) * fs).astype(int)
+    ir = np.zeros(np.max(ndx) + 1, dtype=np.complex128)
+    np.add.at(ir, ndx, amp)
     return ir
