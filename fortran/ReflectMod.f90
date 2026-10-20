@@ -31,7 +31,7 @@ CONTAINS
     REAL     (KIND=8) :: c, cimag, gradc( 2 ), crr, crz, czz, rho         ! derivatives of sound speed
     REAL     (KIND=8) :: RM, RN, Tg, Th, rayt( 2 ), rayn( 2 ), rayt_tilde( 2 ), rayn_tilde( 2 ), cnjump, csjump
         ! for curvature change
-    REAL     (KIND=8) :: ck, co, si, cco, ssi, pdelta, rddelta, sddelta   ! for beam shift
+    REAL     (KIND=8) :: ck, co, si, cco, ssi, pdelta, rddelta   ! for beam shift
     COMPLEX  (KIND=8) :: gamma1, gamma2, gamma1Sq, gamma2Sq, GK, Refl, ch, a, b, d, sb, delta, ddelta
     REAL     (KIND=8) :: kappa                                            ! Boundary curvature
     REAL     (KIND=8) :: tBdry( 2 ), nBdry( 2 )                           ! tangent, normal to boundary
@@ -179,12 +179,12 @@ CONTAINS
              ddelta  = -a / ( ck*sb*d ) - a*cco / ssi / (ck*sb*d) + a*cco / (ck*b*sb*d) &
                   -a*co / si / (ck*sb*d*d) * (2* HS%rho * HS%rho *si*co-2*co*si)
              rddelta = -real( ddelta )
-             sddelta = rddelta / abs( rddelta )
 
              print *, 'beam displacing ...'
              ray2D( is1 )%x( 1 ) = ray2D( is1 )%x( 1 ) + real( delta )   ! displacement
              ray2D( is1 )%tau    = ray2D( is1 )%tau + pdelta             ! phase change
-             ray2D( is1 )%q      = ray2D( is1 )%q + sddelta * rddelta * si * c * ray2D( is )%p   ! beam-width change
+             ! ABS( rddelta ) replaces sign( rddelta ) * rddelta, which was 0/0 (NaN) when rddelta = 0
+             ray2D( is1 )%q      = ray2D( is1 )%q + ABS( rddelta ) * si * c * ray2D( is )%p   ! beam-width change
           END IF
 
        END IF

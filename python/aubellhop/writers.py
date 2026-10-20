@@ -210,7 +210,9 @@ class EnvironmentWriter:
         beampattern = " " if self.env['source_directionality'] is None else "*"
         txtype = FlagMaps.source_type_rev[self.env['source_type']]
         gridtype = FlagMaps.grid_type_rev[self.env['grid_type']]
-        runtype_str = self._quoted_opt(taskcode, beamtype, beampattern, txtype, gridtype)
+        dimtype = FlagMaps.dimension_rev[self.env['dimension']]  # Nx2D ("2") or full 3D ("3"); blank for 2D
+        beamshift = "S" if self.env['beam_reflection_shift'] else ""
+        runtype_str = self._quoted_opt(taskcode, beamtype, beampattern, txtype, gridtype, dimtype, beamshift)
         self._print_env_line(fh,f"{runtype_str}","RUN TYPE")
 
     def _write_env_beam_footer(self, fh: TextIO) -> None:

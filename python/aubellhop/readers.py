@@ -303,16 +303,18 @@ class EnvironmentReader:
 
     def _parse_task(self, task_line: str) -> None:
         """Parse the 'task' line."""
-        task_code = self._unquote_string(task_line) + "     "
+        task_code = self._unquote_string(task_line) + "       "
         self.env['task']        = FlagMaps.task.get(task_code[0])
         self.env['beam_type']   = FlagMaps.beam_type.get(task_code[1])
         self.env['_sbp_file']   = FlagMaps._sbp_file.get(task_code[2])
         self.env['source_type'] = FlagMaps.source_type.get(task_code[3])
         self.env['grid_type']   = FlagMaps.grid_type.get(task_code[4])
+        self.env['beam_reflection_shift'] = task_code[6] == "S"
         if self.env['_dimension'] == 2:
             self.env['dimension'] = BHStrings.two_d
         else:
-            self.env['dimension'] = FlagMaps.dimension.get(task_code[5])
+            # Bellhop3D treats a blank 6th character as Nx2D
+            self.env['dimension'] = FlagMaps.dimension.get(task_code[5].replace(" ", "2"))
 
         if self.env["_sbp_file"] == BHStrings.from_file:
             self.env["source_directionality"] = read_sbp(self.fname_base)
@@ -337,7 +339,7 @@ class EnvironmentReader:
             # Beam bearing fan
             beam_num_line = _read_next_valid_line(f)
             beam_num_parts = _parse_line(beam_num_line, none_pad=1)
-            self.env['beam_angle_num'] = int(beam_num_parts[0] or 0)
+            self.env['beam_bearing_num'] = int(beam_num_parts[0] or 0)
             angles_line = _read_next_valid_line(f)
             angle_parts = _parse_line(angles_line, none_pad=2)
             self.env['beam_bearing_min'] = _float(angle_parts[0])
