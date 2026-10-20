@@ -31,10 +31,13 @@ import aubellhop.plot as bhp
 print(bh.Models.supported())
 ```
 
-Now define a standard 2D and 3D case and do some computations on them:
+Now define a standard 2D case and a Bellhop3D case and do some computations on them.
+The examples on this page use `dimension="2.5D"` (Nx2D), which is fast;
+`dimension="3D"` runs the full 3D calculation, which by default traces a fan of bearing beams for every
+elevation angle and is far more expensive, so set `beam_bearing_num` explicitly if you use it:
 ```{python}
 env2d = bh.Environment(name="Example Bellhop2D",dimension="2D").check()
-env3d = bh.Environment(name="Example Bellhop3D",dimension="3D").check()
+env3d = bh.Environment(name="Example Bellhop3D",dimension="2.5D").check()
 output, ind = bh.compute(env=[env2d, env3d],task=["rays"])
 print(ind)
 ```
@@ -77,7 +80,7 @@ Only a 2D projection can be plotted (essentially, y-axis ignored):
 import aubellhop as bh
 import aubellhop.plot as bhp
 
-env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45).check()
+env3d = bh.Environment(name="Example Bellhop3D",dimension="2.5D",beam_angle_min=-45,beam_angle_max=45).check()
 rays3d = bh.compute_eigenrays(env3d)
 bhp.plot_rays(rays3d,env=env3d)
 ```
@@ -103,7 +106,7 @@ import matplotlib.pyplot as plt
 import aubellhop as bh
 import aubellhop.pyplot as bhp
 
-env3d = bh.Environment(name="Example Bellhop3D",dimension="3D",beam_angle_min=-45,beam_angle_max=45,beam_num=10_000).check()
+env3d = bh.Environment(name="Example Bellhop3D",dimension="2.5D",beam_angle_min=-45,beam_angle_max=45,beam_num=10_000).check()
 rays3d = bh.compute_eigenrays(env3d)
 
 fig = plt.figure()
