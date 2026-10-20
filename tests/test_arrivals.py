@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import pytest
 import aubellhop as bh
 
@@ -196,7 +198,51 @@ def test_bathy():
 def test_impulse_response():
     env = bh.Environment()
     arr = bh.compute_arrivals(env)
-    ir = bh.arrivals_to_impulse_response(arr, fs=19200)
-    assert ir is not None
+    fs = 19200
+    ir = bh.arrivals_to_impulse_response(arr, fs=fs)
+    t = arr.time_of_arrival.to_numpy()
+    ndx = np.round((t - t.min()) * fs).astype(int)
+    expected = np.zeros(ndx.max() + 1, dtype=complex)
+    np.add.at(expected, ndx, np.abs(arr.arrival_amplitude) * np.exp(1j * np.deg2rad(arr.arrival_phase)))
+    assert np.allclose(ir, expected)
+
+    ir_abs = bh.arrivals_to_impulse_response(arr, fs=fs, abs_time=True)
+    assert np.isclose(np.sum(ir_abs), np.sum(ir))
+    assert np.flatnonzero(ir_abs)[0] == np.round(t.min() * fs)
+
+
+def test_arrival_amplitude_matches_coherent_field():
+    # summing the narrowband arrival amplitudes should reproduce BELLHOP's coherent field
+    env = bh.Environment()
+    arr = bh.compute_arrivals(env)
+    field = bh.compute_transmission_loss(env, mode="coherent")
+    assert np.isclose(np.abs(arr.arrival_amplitude.sum()), np.abs(field.iloc[0, 0]), rtol=1e-2)
+
+
+def test_impulse_response_sums_coincident_arrivals():
+    arr = pd.DataFrame({
+        'time_of_arrival': [1.0, 1.0, 1.5],
+        'arrival_amplitude': [0.5 + 0j, 0.25 + 0j, 0.1 + 0j],
+        'arrival_phase': [0.0, 180.0, 90.0],
+    })
+    ir = bh.arrivals_to_impulse_response(arr, fs=10)
+    assert len(ir) == 6
+    assert np.isclose(ir[0], 0.25)
+    assert np.isclose(ir[5], 0.1j)
+    assert np.count_nonzero(ir) == 2
+
+
+def test_impulse_response_rejects_multiple_receivers():
+    arr = pd.DataFrame({
+        'source_depth_ndx': [0, 0],
+        'receiver_depth_ndx': [0, 1],
+        'receiver_range_ndx': [0, 0],
+        'time_of_arrival': [1.0, 1.1],
+        'arrival_amplitude': [1 + 0j, 1 + 0j],
+        'arrival_phase': [0.0, 0.0],
+    })
+    with pytest.raises(ValueError, match="more than one source/receiver"):
+        bh.arrivals_to_impulse_response(arr, fs=10)
+    assert len(bh.arrivals_to_impulse_response(arr[arr.receiver_depth_ndx == 1], fs=10)) == 1
 
 

@@ -88,7 +88,7 @@ Fortran coverage uses GCOV; Python coverage output lands in `_coverage_python/`.
 2. `writers.py` serialises it to a BELLHOP `.env` input file.
 3. `bellhop.py` (the `BellhopSimulator` class) shells out to `bellhop.exe` or `bellhop3d.exe`.
 4. `readers.py` parses the binary/text output files back into Python structures.
-5. `compute.py` exposes high-level functions (`compute_arrivals`, `compute_rays`, `compute_eigenrays`, `compute_transmission_loss`, `arrivals_to_impulse_response`) that orchestrate steps 2–4.
+5. `compute.py` exposes high-level functions (`compute_arrivals`, `compute_rays`, `compute_eigenrays`, `compute_transmission_loss`, `arrivals_to_impulse_response`, `arrivals_to_timeseries`) that orchestrate steps 2–4.
 6. `plot.py` / `plotutils.py` / `pyplot.py` visualise the results.
 
 The `Models` registry (`models.py`) holds named `BellhopSimulator` instances so callers don't manage simulator lifecycle manually. `main.py` re-exports the public API surface; `__init__.py` imports from `main.py`.
