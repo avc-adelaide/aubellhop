@@ -17,6 +17,9 @@ from __future__ import annotations
 from typing import Any, cast
 import numpy as np
 import pandas as pd
+import scipy.fft as sp_fft
+import scipy.signal as sp_signal
+from numpy.typing import NDArray
 
 from .constants import BHStrings, EnvDefaults, FileExt
 from .environment import Environment
@@ -331,7 +334,28 @@ def compute_transmission_loss(env: Environment, source_depth_ndx: int = 0, mode:
     assert isinstance(output, dict), "Single env should return single result"
     return output['results']
 
-def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = False) -> Any:
+def _arrival_taps(arrivals: Any, abs_time: bool, baseband: bool, fc: float | None
+                  ) -> tuple[NDArray[np.float64], NDArray[np.complex128]]:
+    """Delays (s, relative to the output time origin) and complex tap coefficients of a set of arrivals."""
+    pair_cols = [c for c in ('source_depth_ndx', 'receiver_depth_ndx', 'receiver_range_ndx') if c in arrivals.columns]
+    if pair_cols and len(arrivals[pair_cols].drop_duplicates()) > 1:
+        raise ValueError("Arrivals contain more than one source/receiver pair; select a single pair first")
+    t = np.real(np.asarray(arrivals.time_of_arrival, dtype=np.complex128))
+    amp = np.asarray(arrivals.arrival_amplitude, dtype=np.complex128)
+    if 'arrival_phase' in arrivals.columns:
+        amp = np.abs(amp) * np.exp(1j * np.deg2rad(np.asarray(arrivals.arrival_phase, dtype=np.float64)))
+    delay = t - (0 if abs_time else np.min(t))
+    if baseband:
+        if fc is None:
+            if 'frequency' not in arrivals.columns:
+                raise ValueError("Carrier frequency unknown: pass fc or include a 'frequency' column")
+            fc = float(np.asarray(arrivals.frequency)[0])
+        amp = amp * np.exp(-2j * np.pi * fc * delay)
+    return delay, amp
+
+
+def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = False,
+                                 baseband: bool = False, fc: float | None = None) -> Any:
     """Convert arrival times and coefficients to an impulse response.
 
     Parameters
@@ -342,22 +366,34 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
         Sampling rate (Hz)
     abs_time : bool, default=False
         Absolute time (True) or relative time (False)
+    baseband : bool, default=False
+        Return the complex baseband impulse response (True) or the passband one (False)
+    fc : float, optional
+        Carrier frequency (Hz) for the baseband response; defaults to the simulation frequency
 
     Returns
     -------
     numpy.ndarray
-        Impulse response
+        Complex impulse response
 
     Notes
     -----
     If `abs_time` is set to True, the impulse response is placed such that
     the zero time corresponds to the time of transmission of signal.
 
-    Each arrival contributes a tap of ``A * exp(i * phase)`` at its delay; the
-    carrier phase ``exp(-i * omega * delay)`` is not included since the delay is
-    represented by the tap position. Attenuation from the imaginary part of the
-    delay is included, evaluated at the simulation frequency. Arrivals that fall
-    in the same sample are summed.
+    Each arrival contributes a tap at its delay, rounded to the nearest sample;
+    arrivals that fall in the same sample are summed. Attenuation from the
+    imaginary part of the delay is included, evaluated at the simulation frequency.
+
+    The passband response has taps ``A * exp(i * phase)``. It applies to the analytic
+    signal ``sa`` of a real passband transmission: ``y = Re(convolve(sa, ir))``.
+    Taking the real part of the response first discards the phase shifts from
+    reflections, so this is not the same as convolving a real signal with ``ir.real``.
+
+    The baseband response has taps ``A * exp(i * phase) * exp(-i * 2 * pi * fc * delay)``
+    and applies to a complex baseband signal ``b`` with carrier ``exp(i * 2 * pi * fc * t)``.
+
+    Use :func:`arrivals_to_timeseries` to apply arrivals to a signal without rounding the delays.
 
     If the arrivals cover more than one source or receiver, select one pair first,
     e.g. ``arrivals[(arrivals.receiver_depth_ndx == 0) & (arrivals.receiver_range_ndx == 0)]``.
@@ -369,15 +405,77 @@ def arrivals_to_impulse_response(arrivals: Any, fs: float, abs_time: bool = Fals
     >>> arrivals = bh.compute_arrivals(env)
     >>> ir = bh.arrivals_to_impulse_response(arrivals, fs=192000)
     """
-    pair_cols = [c for c in ('source_depth_ndx', 'receiver_depth_ndx', 'receiver_range_ndx') if c in arrivals.columns]
-    if pair_cols and len(arrivals[pair_cols].drop_duplicates()) > 1:
-        raise ValueError("Arrivals contain more than one source/receiver pair; select a single pair first")
-    t = np.real(np.asarray(arrivals.time_of_arrival, dtype=np.complex128))
-    amp = np.asarray(arrivals.arrival_amplitude, dtype=np.complex128)
-    if 'arrival_phase' in arrivals.columns:
-        amp = np.abs(amp) * np.exp(1j * np.deg2rad(np.asarray(arrivals.arrival_phase, dtype=np.float64)))
-    t0 = 0 if abs_time else np.min(t)
-    ndx = np.round((t - t0) * fs).astype(int)
+    delay, amp = _arrival_taps(arrivals, abs_time, baseband, fc)
+    ndx = np.round(delay * fs).astype(int)
     ir = np.zeros(np.max(ndx) + 1, dtype=np.complex128)
     np.add.at(ir, ndx, amp)
     return ir
+
+
+def arrivals_to_timeseries(arrivals: Any, signal: Any, fs: float, abs_time: bool = False,
+                           baseband: bool = False, fc: float | None = None) -> Any:
+    """Compute the received time series for a transmitted signal.
+
+    Parameters
+    ----------
+    arrivals : pandas.DataFrame
+        Arrivals times (s) and coefficients for a single source/receiver pair
+    signal : array_like
+        Transmitted signal sampled at `fs`: real passband, or complex baseband if `baseband` is True
+    fs : float
+        Sampling rate (Hz)
+    abs_time : bool, default=False
+        Absolute time (True) or relative time (False)
+    baseband : bool, default=False
+        Treat `signal` and the output as complex baseband (True) or real passband (False)
+    fc : float, optional
+        Carrier frequency (Hz) for baseband signals; defaults to the simulation frequency
+
+    Returns
+    -------
+    numpy.ndarray
+        Received signal: real for passband, complex for baseband.
+        Its length is ``len(signal)`` plus the delay spread in samples.
+
+    Notes
+    -----
+    Each arrival is applied as a gain ``A * exp(i * phase)`` on the analytic
+    signal, so phase shifts from reflections are kept: a phase of 180 degrees
+    inverts the pulse and 90 degrees gives its Hilbert transform
+    (negated). Delays are
+    applied exactly (including fractions of a sample) in the frequency domain.
+    For baseband signals the output uses the carrier ``exp(i * 2 * pi * fc * t)``,
+    so the passband equivalent is ``Re(y * exp(i * 2 * pi * fc * t))``.
+
+    Reflection phases and attenuation are those computed at the simulation
+    frequency, and the passband signal must be sampled above twice its highest frequency.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import aubellhop as bh
+    >>> env = bh.Environment()
+    >>> arrivals = bh.compute_arrivals(env)
+    >>> fs = 192000
+    >>> t = np.arange(0, 1e-3, 1 / fs)
+    >>> pulse = np.sin(2 * np.pi * env['frequency'] * t) * np.hanning(len(t))
+    >>> rx = bh.arrivals_to_timeseries(arrivals, pulse, fs)
+    """
+    x = np.asarray(signal)
+    if x.ndim != 1:
+        raise ValueError("signal must be one-dimensional")
+    if not baseband and np.iscomplexobj(x):
+        raise ValueError("Passband signal must be real; set baseband=True for complex baseband signals")
+    delay, amp = _arrival_taps(arrivals, abs_time, baseband, fc)
+    nout = len(x) + int(np.ceil(np.max(delay) * fs))
+    nfft = sp_fft.next_fast_len(nout + len(x))  # padding keeps fractional-delay tails from wrapping
+    if baseband:
+        spec = np.fft.fft(x.astype(np.complex128), nfft)
+    else:
+        spec = np.fft.fft(sp_signal.hilbert(x.astype(np.float64), nfft))
+    f = np.fft.fftfreq(nfft, 1 / fs)
+    h = np.zeros(nfft, dtype=np.complex128)
+    for d, a in zip(delay, amp):
+        h += a * np.exp(-2j * np.pi * f * d)
+    y = np.fft.ifft(spec * h)[:nout]
+    return y if baseband else np.real(y)

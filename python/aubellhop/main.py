@@ -35,6 +35,7 @@ from aubellhop.compute import compute_eigenrays as compute_eigenrays
 from aubellhop.compute import compute_arrivals as compute_arrivals
 from aubellhop.compute import compute_transmission_loss as compute_transmission_loss
 from aubellhop.compute import arrivals_to_impulse_response as arrivals_to_impulse_response
+from aubellhop.compute import arrivals_to_timeseries as arrivals_to_timeseries
 
 from aubellhop.demo import demo as demo
 
