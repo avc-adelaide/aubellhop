@@ -313,7 +313,8 @@ class EnvironmentReader:
         if self.env['_dimension'] == 2:
             self.env['dimension'] = BHStrings.two_d
         else:
-            self.env['dimension'] = FlagMaps.dimension.get(task_code[5])
+            # Bellhop3D treats a blank 6th character as Nx2D
+            self.env['dimension'] = FlagMaps.dimension.get(task_code[5].replace(" ", "2"))
 
         if self.env["_sbp_file"] == BHStrings.from_file:
             self.env["source_directionality"] = read_sbp(self.fname_base)
@@ -338,7 +339,7 @@ class EnvironmentReader:
             # Beam bearing fan
             beam_num_line = _read_next_valid_line(f)
             beam_num_parts = _parse_line(beam_num_line, none_pad=1)
-            self.env['beam_angle_num'] = int(beam_num_parts[0] or 0)
+            self.env['beam_bearing_num'] = int(beam_num_parts[0] or 0)
             angles_line = _read_next_valid_line(f)
             angle_parts = _parse_line(angles_line, none_pad=2)
             self.env['beam_bearing_min'] = _float(angle_parts[0])
