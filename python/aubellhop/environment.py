@@ -171,12 +171,12 @@ class Environment(MutableMapping[str, Any]):
     beam_num: int = 0  # (0 = auto)
     beam_bearing_num: int = 0
     single_beam_index: int | None = None
+    beam_reflection_shift: bool = False  # Goos-Hanchen beam displacement at half-space reflections
     _single_beam: str = BHStrings.default # value inferred from `single_beam_index`
 
     # Cerveny Gaussian Beams
     beam_width_type: str | None = None
     beam_reflection_curvature_change: str | None = None
-    beam_reflection_shift: str | None = None
     beam_epsilon_multipler: float | None = None
     beam_range_loop: float | None = None # km in env file
     beam_images_num: int | None = None

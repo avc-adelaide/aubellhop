@@ -303,12 +303,13 @@ class EnvironmentReader:
 
     def _parse_task(self, task_line: str) -> None:
         """Parse the 'task' line."""
-        task_code = self._unquote_string(task_line) + "     "
+        task_code = self._unquote_string(task_line) + "       "
         self.env['task']        = FlagMaps.task.get(task_code[0])
         self.env['beam_type']   = FlagMaps.beam_type.get(task_code[1])
         self.env['_sbp_file']   = FlagMaps._sbp_file.get(task_code[2])
         self.env['source_type'] = FlagMaps.source_type.get(task_code[3])
         self.env['grid_type']   = FlagMaps.grid_type.get(task_code[4])
+        self.env['beam_reflection_shift'] = task_code[6] == "S"
         if self.env['_dimension'] == 2:
             self.env['dimension'] = BHStrings.two_d
         else:
